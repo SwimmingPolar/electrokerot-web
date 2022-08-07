@@ -50,25 +50,29 @@
 //      price that is not lowest and that cannot be packaged or bundled (has only 1 overlapping vendor when ordering more than 2 parts)
 // 3. .. the more preprocessing logics, the less time to find feasible combinations ...
 const p_price = [
-  [3000, 3000, 3500, 5000, 4000, 3500, 4000],
-  [3500, 4000, 4500, 5500, 5000, 4000, 4500],
-  [2000, 3000, 2500, 4500, 3000, 3500, 4000],
-  [1000, 1000, 3000, 3000, 3500, 3000, 3500],
-  [1000, 3000, 3000, 3000, 2500, 3000, 4000],
-  [2000, 3000, 2500, 4500, 3000, 3500, 4000],
-  [1000, 1000, 3000, 3000, 3500, 3000, 3500],
-  [1000, 3000, 3000, 3000, 2500, 3000, 4000],
-];
+  [3000, 3000, 3500, 5000, 4000, 3000, 3500, 2500],
+  [3500, 4000, 4500, 5500, 5000, 3500, 4000, 3000],
+  [2000, 3000, 2500, 4500, 3000, 2000, 2500, 1500],
+  [1000, 1000, 3000, 3000, 3500, 1000, 3000, 2000],
+  [1000, 3000, 3000, 3000, 2500, 1000, 3000, 2000],
+  [2000, 3000, 2500, 4500, 3000],
+  [1000, 1000, 3000, 3000, 3500],
+  [1000, 3000, 3000, 3000, 2500],
+  [1000, 1000, 3000, 3000, 3500],
+  [2000, 3000, 2500, 4500, 3000]
+]
 const vendors = [
-  [4, 6, 1, 2, 8, 3, 5],
-  [3, 4, 2, 1, 0, 5, 6],
-  [1, 7, 5, 2, 3, 4, 8],
-  [5, 1, 0, 6, 7, 4, 3],
-  [1, 3, 8, 5, 2, 0, 4],
-  [1, 7, 5, 2, 3, 4, 8],
-  [5, 1, 0, 6, 7, 4, 3],
-  [1, 3, 8, 5, 2, 0, 4],
-];
+  [3, 4, 2, 1, 0, 5, 7, 8],
+  [1, 7, 5, 2, 3, 4, 6, 0],
+  [5, 1, 0, 6, 7, 2, 3, 4],
+  [1, 3, 8, 5, 2, 4, 6, 7],
+  [1, 7, 5, 2, 3, 4, 6, 0],
+  [5, 1, 0, 6, 7],
+  [1, 3, 8, 5, 2],
+  [5, 1, 0, 6, 7],
+  [5, 1, 0, 6, 7],
+  [5, 1, 0, 6, 7]
+]
 
 const shipping_costs = {
   0: 0,
@@ -80,76 +84,105 @@ const shipping_costs = {
   6: 3000,
   7: 0,
   8: 0,
-};
+  9: 2500
+}
 
 const overlapping_vendors = vendors.reduce(
   (vendorList, parts) =>
     parts.reduce(
       (vendorList, vendor) => ({
         ...vendorList,
-        [vendor]: vendorList[vendor] + 1 || 1,
+        [vendor]: vendorList[vendor] + 1 || 1
       }),
       vendorList
     ),
   {}
-);
-console.log(overlapping_vendors);
-
-const generatedCombinations = [];
-function selectPart(allParts = [], currentPart = 0, selectedParts = []) {
-  if (allParts.length <= currentPart) {
-    generatedCombinations.push([...selectedParts]);
-    return;
-  }
-  for (let i = 0; i < allParts[currentPart].length; i++) {
-    selectedParts.push([p_price[currentPart][i], vendors[currentPart][i]]);
-    selectPart(allParts, currentPart + 1, selectedParts);
-    selectedParts.pop();
-  }
-}
-
-console.time();
-// p_price: product price matrix
-selectPart(p_price);
-console.timeEnd();
-console.log(generatedCombinations.length);
+)
 
 // returns overall cost of
 const getTotalCost = productsList => {
-  let productsCost = 0;
-  const usedVendors = new Set();
+  let productsCost = 0
+  const usedVendors = new Set()
   productsList.forEach(product => {
-    const [price, vendor] = product;
-    usedVendors.add(vendor);
-    productsCost += price;
-  });
+    const [price, vendor] = product
+    usedVendors.add(vendor)
+    productsCost += price
+  })
   const shippingCost = Array.from(usedVendors).reduce(
     (shippingCost, vendor) => shippingCost + +shipping_costs[vendor],
     0
-  );
-  return productsCost + shippingCost;
-};
+  )
+  return productsCost + shippingCost
+}
 
-const getVendors = productsList => productsList.map(product => product[1]);
+const getVendors = productsList => productsList.map(product => product[1])
 
 // filter products combinations with price greater than priceFilter
 const p_price_with_shipping = p_price.map((products, i) =>
   products.map((price, j) => +price + shipping_costs[vendors[i][j]])
-);
-const priceFilter = p_price_with_shipping.reduce(
-  (sum, products) => sum + Math.min(...products),
-  0
-);
+)
+const priceFilter = p_price_with_shipping.reduce((sum, products, i) => {
+  const lowestPrice = Math.min(...products)
+  const lowestPriceIndexes = products
+    .map((price, j) => (price === lowestPrice ? j : undefined))
+    .filter(e => e !== undefined)
+  const lowestPriceIndexesSortedByMostOverlappingVendors =
+    lowestPriceIndexes.sort((a, b) => {
+      const aOverlappingVendors = overlapping_vendors[vendors[i][a]]
+      const bOverlappingVendors = overlapping_vendors[vendors[i][b]]
+      return bOverlappingVendors - aOverlappingVendors
+    })
+  return sum + products[lowestPriceIndexesSortedByMostOverlappingVendors[0]]
+}, 0)
+
+// const priceFilter = p_price_with_shipping.reduce(
+//   (sum, products) => sum + Math.min(...products),
+//   0
+// )
+
+const generatedCombinations = []
+const selectedParts = []
+function selectPart(currentPart = 0) {
+  if (p_price.length <= currentPart) {
+    const totalCost = getTotalCost(selectedParts)
+    if (totalCost <= priceFilter) {
+      generatedCombinations.push([...selectedParts])
+    }
+    return
+  }
+  for (let i = 0; i < p_price[currentPart].length; i++) {
+    selectedParts.push([p_price[currentPart][i], vendors[currentPart][i]])
+    selectPart(currentPart + 1)
+    selectedParts.pop()
+  }
+}
+
+const totalOperation = p_price.reduce(
+  (total, products) => total * products.length,
+  1
+)
+console.log(
+  `Total operation: ${String(totalOperation).replace(
+    /\B(?=(\d{3})+(?!\d))/g,
+    ','
+  )}`
+)
+console.time()
+// p_price: product price matrix
+selectPart()
+console.timeEnd()
+console.log(generatedCombinations.length)
+
 const getFeasibleLists = result =>
-  result.filter(e => getTotalCost(e) <= priceFilter);
+  result.filter(e => getTotalCost(e) <= priceFilter)
 const sortLists = list =>
   list.sort((a, b) => {
-    return getTotalCost(a) < getTotalCost(b) ? -1 : 1;
-  });
+    return getTotalCost(a) - getTotalCost(b)
+  })
 
-const ff = getFeasibleLists(generatedCombinations);
-const ss = sortLists(ff);
-const res = ss.map(list => getTotalCost(list));
+const ff = getFeasibleLists(generatedCombinations)
+const ss = sortLists(ff)
+const res = ss.map(list => getTotalCost(list))
 
-console.log(ss[0]);
-console.log(res[0]);
+console.log(ss[0])
+console.log(res[0])
