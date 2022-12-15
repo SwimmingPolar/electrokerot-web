@@ -4,13 +4,21 @@ import { ComponentPropsWithoutRef } from 'react'
 import styled from 'styled-components'
 import { media } from 'styles'
 
-const Box = styled.div`
+export const Main = styled.main`
   display: flex;
   flex-direction: column;
+  height: 100%;
   width: 280px;
-  margin: 35px auto;
+  margin: 85px auto;
   align-items: center;
   gap: 15px;
+
+  ${media.mobile`
+     margin: 35px auto;
+   `}
+  ${media.foldable`
+     margin: 15px auto;
+   `}
 
   .backward {
     display: flex;
@@ -39,13 +47,13 @@ const Box = styled.div`
   }
 `
 
-const TitleBox = styled.div`
+export const TitleBox = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 58px;
   width: 100%;
   border-bottom: 1px solid ${({ theme }) => theme.colors.black};
+  height: 58px;
 
   h1 {
     font-size: 32px;
@@ -53,9 +61,7 @@ const TitleBox = styled.div`
     font-family: ${({ theme }) => theme.fonts.primary};
   }
 `
-const FormBox = styled.div`
-  display: flex;
-  flex-direction: column;
+export const FormBox = styled.div`
   display: flex;
   flex-direction: column;
   width: 100%;
@@ -86,7 +92,7 @@ const SocialSignupBox = styled.div`
   width: 100%;
 `
 
-const Separator = styled.div`
+export const Separator = styled.div`
   height: 10px;
   display: flex;
   justify-content: center;
@@ -120,7 +126,6 @@ const SocialSignupButtonGroup = styled.div`
 `
 
 const StyledSocialSignupButton = styled.button`
-  cursor: pointer;
   height: 32px;
   border: 1.5px solid ${({ theme }) => theme.colors.black};
   border-radius: 6px;
@@ -128,6 +133,7 @@ const StyledSocialSignupButton = styled.button`
   font-family: ${({ theme }) => theme.fonts.primary};
   font-size: 12px;
   font-weight: 700;
+  cursor: pointer;
 
   :hover,
   :focus-visible {
@@ -145,7 +151,7 @@ type SignupProps = {
 
 export const Signup = ({ handleExitMotion }: SignupProps) => {
   return (
-    <Box>
+    <Main>
       <TitleBox>
         <h1>회원가입</h1>
       </TitleBox>
@@ -176,6 +182,6 @@ export const Signup = ({ handleExitMotion }: SignupProps) => {
         <KeyboardBackspaceIcon />
         <span>뒤로 가기</span>
       </ModalNavLink>
-    </Box>
+    </Main>
   )
 }

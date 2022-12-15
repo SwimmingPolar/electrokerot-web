@@ -347,7 +347,7 @@ describe('Modal navigation for mobile', () => {
   // user navigation:        /login -> /
   // actual router history:  /login -> /
   // ----------------------------------------------
-  describe('/login -> /', () => {
+  describe.only('/login -> /', () => {
     withMedia(
       ({ device }) => {
         cy.visit(PageUrl.login)

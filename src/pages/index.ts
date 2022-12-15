@@ -1,4 +1,5 @@
-export * from './Parts/PartsMenuPage'
 export * from './Auth/LoginPage'
 export * from './Auth/SignupPage'
-export { default as Builds } from './Builds'
+export * from './Parts/PartListPage'
+export * from './Parts/PartsMenuPage'
+export * from './Builds/BuildPage'

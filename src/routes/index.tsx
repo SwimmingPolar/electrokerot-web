@@ -2,7 +2,13 @@ import { DummyDiv, ModalBackdrop } from 'components'
 import { ModalRoutes } from 'constant'
 import { AnimatePresence, motion } from 'framer-motion'
 import { useDeviceDetect, useRecordHistory } from 'hooks'
-import { LoginPage, PartsMenuPage, SignupPage } from 'pages'
+import {
+  BuildPage,
+  LoginPage,
+  PartListPage,
+  PartsMenuPage,
+  SignupPage
+} from 'pages'
 import {
   Location,
   Navigate,
@@ -72,6 +78,8 @@ export const RoutesProvider = () => {
         <Routes location={backgroundLocation || location}>
           <Route path="/" element={<Navigate to="/parts" replace={true} />} />
           <Route path="/parts" element={<PartsMenuPage />} />
+          <Route path="/parts/:category" element={<PartListPage />} />
+          <Route path="/builds" element={<BuildPage />} />
           <Route path="*" element={<div>404</div>} />
         </Routes>
         {showModal && (

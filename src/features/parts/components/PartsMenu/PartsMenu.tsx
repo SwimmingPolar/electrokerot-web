@@ -1,8 +1,8 @@
 import { NavLink } from 'components'
-import { PartsMenuTypes } from 'types'
 import { FC } from 'react'
 import styled from 'styled-components'
 import { media } from 'styles'
+import { PartsCategories, PartsCategoriesKr } from 'types'
 
 const PartsMenuBox = styled.div`
   display: flex;
@@ -14,9 +14,6 @@ const PartsMenuBox = styled.div`
   background-color: ${({ theme }) => theme.colors.background};
 
   ${media.mobile`
-    margin-top: 65px;
-  `}
-  ${media.foldable`
     margin-top: 65px;
   `}
   ${media.tablet`
@@ -120,20 +117,6 @@ const MenuIcon = styled.div<{ url: string }>`
   `}
 `
 
-const PartsNameKr = {
-  cpu: 'CPU',
-  motherboard: '메인보드',
-  memory: '메모리',
-  graphics: '그래픽카드',
-  ssd: 'SSD',
-  hdd: 'HDD',
-  power: '파워',
-  case: '케이스',
-  cooler: '쿨러'
-} as {
-  [key: string]: string
-}
-
 const PartsMenuTitle = () => {
   return (
     <PartsMenuTitleBox>
@@ -144,13 +127,13 @@ const PartsMenuTitle = () => {
 
 const PartsMenuListItem = () => (
   <>
-    {PartsMenuTypes.map(partsName => (
-      <ImageBox key={partsName}>
-        <NavLink to={`/parts/${partsName}`}>
+    {PartsCategories.map(category => (
+      <ImageBox key={category}>
+        <NavLink to={`/parts/${category}`}>
           <MenuIconBox>
-            <MenuIcon url={`../assets/icons/${partsName}.png`} />
+            <MenuIcon url={`../assets/icons/${category}.png`} />
           </MenuIconBox>
-          <span>{PartsNameKr[partsName]}</span>
+          <span>{PartsCategoriesKr[category]}</span>
         </NavLink>
       </ImageBox>
     ))}
