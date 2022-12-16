@@ -28,7 +28,7 @@ export default {
     withRouter({
       path: '*',
       options: {
-        initialEntries: ['/parts'],
+        initialEntries: ['/parts/cpu'],
         initialIndex: 0
       }
     }),
