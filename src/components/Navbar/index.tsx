@@ -1,49 +1,63 @@
+import { NavbarHeight, SidebarWidth } from 'constant'
 import styled from 'styled-components'
-import { elementDepth, media } from 'styles'
+import { DeviceList, ElementDepth, media } from 'styles'
 import Logo from './components/Logo'
 import Menu, { MenuProps } from './components/Menu'
-
-const NAVBAR_HEIGHT = 60
 
 const NavbarBox = styled.div`
   flex-direction: column;
 `
 
 const TopPadding = styled.div<{ fixed?: boolean }>`
-  flex-basis: ${({ fixed }) => (fixed ? NAVBAR_HEIGHT : 0)}px;
+  flex-basis: ${({ fixed }) => (fixed ? NavbarHeight : 0)}px;
 `
 
 const FixedNavBox = styled.div`
   position: relative;
 `
 
-const FixedNav = styled.div<{ fixed?: boolean; fullWidth?: boolean }>`
+type Device = keyof typeof DeviceList
+
+const CalculateNavbarWidth = (
+  fullWidth?: boolean | undefined,
+  sidebarWidth?: SidebarWidth | undefined
+) => {
+  if (fullWidth) return null
+
+  // Loop through given sidebarWidth which contains width of the sidebar
+  // that should be subtracted from the navbar width
+  // and return generated css
+  return Object.keys(sidebarWidth || []).map(device => {
+    return media[device as Device]`
+        width: calc(100% - ${sidebarWidth?.[device as Device]}px)}
+      `
+  })
+}
+
+const FixedNav = styled.div<{
+  fixed?: boolean
+  sidebarWidth?: SidebarWidth
+  fullWidth?: boolean
+}>`
   position: ${({ fixed }) => (fixed ? 'fixed' : 'relative')};
   width: 100%;
-  height: ${NAVBAR_HEIGHT}px;
+  height: ${NavbarHeight}px;
   top: 0;
-  z-index: ${elementDepth.parts.navbar};
+  z-index: ${ElementDepth.parts.navbar};
   border-bottom: 1px solid ${({ theme }) => theme.colors.primary200};
   background-color: #fff;
   flex-direction: row;
   justify-content: space-between;
+  color: ${props => props.fixed && props.theme.black};
 
-  ${({ fullWidth }) =>
-    !fullWidth &&
-    media.desktopSmall`
-    width: calc(100% - 450px);
-  `}
-
-  ${({ fullWidth }) =>
-    !fullWidth &&
-    media.desktopLarge`
-    width: calc(100% - 580px);
-  `}
+  ${({ fullWidth, sidebarWidth }) =>
+    CalculateNavbarWidth(fullWidth, sidebarWidth)}
 `
 
 // type MenuList = MenuProps['menuList']
 export type NavbarProps = {
   fixed?: boolean
+  sidebarWidth?: SidebarWidth
   fullWidth?: boolean
   siteName?: string
   menuList: MenuProps['menuList']
@@ -71,6 +85,7 @@ export const navbarProps = {
 
 export const Navbar = ({
   fixed,
+  sidebarWidth,
   fullWidth,
   siteName,
   menuList
@@ -81,6 +96,7 @@ export const Navbar = ({
       <FixedNavBox>
         <FixedNav
           fixed={fixed}
+          sidebarWidth={sidebarWidth}
           fullWidth={fullWidth}
           className="scrollbar-padding"
         >

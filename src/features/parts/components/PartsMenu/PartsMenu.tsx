@@ -2,7 +2,7 @@ import { NavLink } from 'components'
 import { FC } from 'react'
 import styled from 'styled-components'
 import { media } from 'styles'
-import { PartsCategories, PartsCategoriesKr } from 'types'
+import { PartsCategories, PartsCategoriesKr } from 'constant'
 
 const PartsMenuBox = styled.div`
   display: flex;

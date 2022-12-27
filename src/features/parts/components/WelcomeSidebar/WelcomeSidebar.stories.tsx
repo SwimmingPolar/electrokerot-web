@@ -10,10 +10,6 @@ export default {
   args: {
     title: '손님 맞을래요?',
     comment: '그래서 얼마까지 알아보고 오셨어요'
-  },
-  argTypes: {
-    header: { control: 'text' },
-    comment: { control: 'text' }
   }
 } as ComponentMeta<typeof WelcomeSidebar>
 

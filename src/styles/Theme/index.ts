@@ -10,6 +10,7 @@ export const palette = {
     gray300: '#BFBFBF',
     gray400: '#A6A6A6',
     background: '#f0f4f7',
+    surface: '#ffffff',
     black: '#000000',
     white: '#ffffff',
     blue100: '#EEFAFF',

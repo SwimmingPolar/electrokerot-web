@@ -8,7 +8,7 @@ const LogoBox = styled.div`
   margin-left: 30px;
 
   h1 {
-    line-height: 64px;
+    line-height: 55px;
     text-align: center;
     font-size: 45px;
     font-family: ${({ theme }) => theme.fonts.logo};

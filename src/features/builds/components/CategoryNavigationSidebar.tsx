@@ -1,25 +1,54 @@
 import { NavLink } from 'components'
+import {
+  CategoryNavigationSidebarWidth,
+  NavbarHeight,
+  PartsCategories,
+  PartsCategoriesKr
+} from 'constant'
+import { useScrollbarWidth } from 'hooks'
 import { FC } from 'react'
 import styled from 'styled-components'
-import { media } from 'styles'
-import { PartsCategories, PartsCategoriesKr } from 'types'
+import { ElementDepth, media } from 'styles'
 
 const Box = styled.div`
+  display: flex;
   flex-direction: column;
-  width: 200px;
-  height: 100%;
   background-color: ${({ theme }) => theme.colors.white};
-  border-right: 1px solid ${({ theme }) => theme.colors.primary200};
+  border-left: 1px solid ${({ theme }) => theme.colors.primary200};
   box-shadow: 0px 0px 4px 1px rgba(0, 0, 0, 0.25);
+  /* Default depth to build summary as it will replace build summary on mobile view */
+  z-index: ${ElementDepth.parts.buildSummary};
+  overflow: hidden;
+  height: 100vh;
+  position: sticky;
 
   ${media.mobile`
-    width: 70px;
+    box-shadow: none;
+    width: ${CategoryNavigationSidebarWidth.mobile + 'px'};
+    position: fixed;
+    right: 0;
+    bottom: 0;
   `}
   ${media.tablet`
-    width: 96px;
+    width: ${CategoryNavigationSidebarWidth.tablet + 'px'};
+    position: fixed;
+    right: 0;
+    bottom: 0;
+    height: calc(100vh - ${NavbarHeight + 'px'});
   `}
   ${media.desktopSmall`
-    width: 64px
+    width: ${CategoryNavigationSidebarWidth.desktopSmall + 'px'};
+  `}
+  ${media.desktopLarge`
+    width: ${CategoryNavigationSidebarWidth.desktopLarge + 'px'};
+  `}
+  ${media.desktop`
+    /* This is to stay above global navbar */
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: ${ElementDepth.parts.sidebar};
   `}
 
   /* Show the sidebar on the right side by default */
@@ -31,27 +60,32 @@ const Box = styled.div`
   `}
 `
 
-const CategoriesBox = styled.div`
+const CategoriesBox = styled.div<{ scrollbarWidth: number }>`
   display: flex;
-  height: 100%;
   flex-direction: column;
   align-items: center;
-  margin: 0 auto;
-  margin-top: 120px;
-  width: 100%;
   background-color: ${({ theme }) => theme.colors.white};
-  gap: 10px;
+  overscroll-behavior: contain;
 
   ${media.mobile`
-    margin-top: 0;
     gap: 0;
+    overflow-y: scroll;
+    /* To account for 'Box' component's border-left  */
+    margin-left: -1px;
+    margin-right: ${(props: any) => -props.scrollbarWidth + 'px'};
   `}
   ${media.tablet`
-    margin-top: 98px;
+    gap: 5px;
+    overflow-y: scroll;
+    margin-right: ${(props: any) => -props.scrollbarWidth + 'px'};
   `}
   ${media.desktopSmall`
-    margin-top: 64px;
+    margin-top: 75px;
     gap: 15px;
+  `}
+  ${media.desktopLarge`
+    margin-top: 120px;
+    gap: 10px;
   `}
 `
 
@@ -59,12 +93,12 @@ const LinkBox = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 180px;
-  height: 55px;
+  width: 100%;
   font-size: 18px;
   font-family: ${({ theme }) => theme.fonts.primary};
   color: ${({ theme }) => theme.colors.primary};
   background-color: ${({ theme }) => theme.colors.white};
+  flex-shrink: 0;
 
   a {
     display: flex;
@@ -75,19 +109,15 @@ const LinkBox = styled.div`
     align-items: center;
 
     &.active {
+      /* @Issue: font-weight: 800 Korean not supported */
       font-weight: bold;
     }
   }
 
   ${media.mobile`
-    width: 70px;
     height: 50px;
     border: 1px solid ${({ theme }) => theme.colors.primary200};
     margin-top: -1px;
-
-    &:first-child {
-      margin-top: 0;
-    }
 
     :hover {
       color: ${({ theme }) => theme.colors.blue300};
@@ -105,24 +135,19 @@ const LinkBox = styled.div`
   `}
 
   ${media.tablet`
-    width: 96px;
     height: 96px;
 
-    :hover {
-      background-color: none;
-    }
     :has(a.active) {
       color: ${({ theme }) => theme.colors.blue300};
     }
 
     a {
       font-size: 16px;
-      gap: 7px;
+      gap: 5px;
     }
   `}
 
   ${media.desktopSmall`
-    width: 64px;
     height: 75px;
 
     :hover {
@@ -139,6 +164,8 @@ const LinkBox = styled.div`
   `}
 
   ${media.desktopLarge`
+    width: 180px;
+    height: 55px;
     border-radius: 5px;
     border: 1px solid transparent;
     transition-duration: 0.15s;
@@ -209,9 +236,11 @@ const Categories = () => (
 )
 
 export const CategoryNavigationSidebar: FC = () => {
+  const scrollbarWidth = useScrollbarWidth()
+
   return (
     <Box>
-      <CategoriesBox>
+      <CategoriesBox scrollbarWidth={scrollbarWidth}>
         <Categories />
       </CategoriesBox>
     </Box>

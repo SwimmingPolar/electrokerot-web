@@ -1,5 +1,6 @@
+import { WelcomeSidebarWidth } from 'constant'
 import styled from 'styled-components'
-import { media, elementDepth } from 'styles'
+import { ElementDepth, media } from 'styles'
 
 const Outer = styled.div`
   display: none;
@@ -7,15 +8,15 @@ const Outer = styled.div`
   height: 100%;
   background-color: ${({ theme }) => theme.colors.white};
   box-shadow: 0px 0px 4px 1px rgba(0, 0, 0, 0.25);
-  z-index: ${elementDepth.parts.sidebar};
+  z-index: ${ElementDepth.parts.sidebar};
 
   ${media.desktopSmall`
     display: flex;
-    width: 450px;
+    width: ${WelcomeSidebarWidth.desktopSmall + 'px'}
   `}
   ${media.desktopLarge`
     display: flex;
-    width: 580px;
+    width: ${WelcomeSidebarWidth.desktopLarge + 'px'}
   `}
 `
 const Inner = styled.div`

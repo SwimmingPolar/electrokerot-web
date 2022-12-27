@@ -1,4 +1,3 @@
-import { SBArrayType } from '@storybook/csf'
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 import { Navbar, navbarProps } from 'components/Navbar'
 import { withRouter } from 'lib'
@@ -32,50 +31,8 @@ export default {
       </Layout>
     )
   ],
-  args: navbarProps,
+  args: navbarProps
   // @Issue: can't change the args in the storybook
-  argTypes: {
-    fixed: {
-      name: 'fixed',
-      type: { name: 'boolean', required: false },
-      description: 'Fix navbar to the top of the screen',
-      control: {
-        type: 'boolean'
-      }
-    },
-    fullWidth: {
-      name: 'fullWidth',
-      type: { name: 'boolean', required: false },
-      description: 'Make navbar full width',
-      control: {
-        type: 'boolean'
-      }
-    },
-    siteName: {
-      name: 'site name',
-      type: { name: 'string', required: true },
-      description: 'name of the site',
-      control: {
-        type: 'text'
-      }
-    },
-    logoUrl: {
-      name: 'logo url',
-      type: { name: 'string', required: false },
-      description: 'url of the site logo',
-      control: {
-        type: 'text'
-      }
-    },
-    menuList: {
-      name: 'menu list',
-      type: { name: 'array', required: true } as SBArrayType,
-      description: 'list of menu items',
-      control: {
-        type: 'array'
-      }
-    }
-  }
 } as ComponentMeta<typeof Navbar>
 
 const Template: ComponentStory<typeof Navbar> = args => <Navbar {...args} />

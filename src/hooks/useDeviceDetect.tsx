@@ -142,6 +142,10 @@ export const useDeviceDetect = () => {
     isDesktopFriendly: useMemo(
       () => ['tablet', 'desktopSmall', 'desktopLarge'].includes(device || ''),
       [device]
+    ),
+    isDesktop: useMemo(
+      () => ['desktopSmall', 'desktopLarge'].includes(device || ''),
+      [device]
     )
   }
 }
