@@ -1,9 +1,12 @@
-import { ContentLayout as Content } from '../ContentLayout/ContentLayout'
+import SearchIcon from '@mui/icons-material/Search'
+import LayersOutlinedIcon from '@mui/icons-material/LayersOutlined'
+import { PartsCategoriesKr, PartsCategoriesType } from 'constant'
+import { useDeviceDetect } from 'hooks'
 import { FC } from 'react'
+import { useParams } from 'react-router-dom'
 import styled from 'styled-components'
 import { ElementDepth, media } from 'styles'
-import { useParams } from 'react-router-dom'
-import SearchIcon from '@mui/icons-material/Search'
+import { ContentLayout as Content } from '../ContentLayout/ContentLayout'
 
 const Box = styled(Content)`
   display: flex;
@@ -27,21 +30,43 @@ const Category = styled.div`
   display: flex;
   justify-content: center;
   font-weight: bold;
-  margin-left: 50px;
+  flex-shrink: 0;
+  margin-left: 20px;
 
   h1 {
-    font-size: 32px;
+    font-size: 24px;
   }
+
+  ${media.tablet`
+    margin-left: 30px;
+  `}
+
+  ${media.desktop`
+    margin-left: 50px;
+    h1 {
+      font-size: 32px;
+    }
+  `}
 `
 
 const Search = styled.div`
-  width: 450px;
-  height: 42px;
+  height: 32px;
+  width: 300px;
   border: 1px solid ${({ theme }) => theme.colors.primary200};
   border-radius: 5px;
   overflow: hidden;
-  margin-right: 20px;
+  margin-right: 15px;
   position: relative;
+
+  ${media.tablet`
+    height: 42px;
+    width: 400px;
+    border-radius: 20px;
+  `}
+  ${media.desktop`
+    height: 42px;
+    width: 450px;
+  `}
 `
 const SearchInput = styled.input`
   width: 100%;
@@ -57,14 +82,19 @@ const SearchInput = styled.input`
 `
 
 const SearchButtonBox = styled.div`
-  width: 55px;
-  height: 42px;
+  width: 45px;
+  height: 32px;
   margin: -1px -1px;
   right: 0;
   bottom: 0;
   position: absolute;
   border: 1px solid ${({ theme }) => theme.colors.primary200};
   background-color: ${({ theme }) => theme.colors.gray100};
+
+  ${media.device('tablet', 'desktopSmall', 'desktopLarge')`
+    width: 55px;
+    height: 42px;
+  `}
 `
 
 const SearchButton = styled.button`
@@ -76,21 +106,41 @@ const SearchButton = styled.button`
   cursor: pointer;
 `
 
+const IconBox = styled.div`
+  display: flex;
+  flex-direction: row;
+  margin-right: 15px;
+
+  gap: 5px;
+
+  .icon {
+    font-size: 32px;
+  }
+`
+
 export const CategoryAndSearch: FC = () => {
-  const { category } = useParams()
+  const { category } = useParams() as { category: PartsCategoriesType }
+  const { isMobileFriendly } = useDeviceDetect()
   return (
     <Box>
       <Category>
-        <h1>{category?.toUpperCase()}</h1>
+        <h1>{PartsCategoriesKr[category].toUpperCase()}</h1>
       </Category>
-      <Search>
-        <SearchInput type="text" placeholder="검색" />
-        <SearchButtonBox>
-          <SearchButton>
-            <SearchIcon />
-          </SearchButton>
-        </SearchButtonBox>
-      </Search>
+      {!isMobileFriendly ? (
+        <Search>
+          <SearchInput type="text" placeholder="검색" />
+          <SearchButtonBox>
+            <SearchButton>
+              <SearchIcon />
+            </SearchButton>
+          </SearchButtonBox>
+        </Search>
+      ) : (
+        <IconBox>
+          <SearchIcon className="icon search-icon" />
+          <LayersOutlinedIcon className="icon filter-icon" />
+        </IconBox>
+      )}
     </Box>
   )
 }

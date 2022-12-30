@@ -1,11 +1,13 @@
-import { ContentLayout as Content } from '../ContentLayout/ContentLayout'
-import { FC } from 'react'
 import styled from 'styled-components'
 import { ElementDepth, media } from 'styles'
+import { ContentLayout as Content } from '../ContentLayout/ContentLayout'
+import { UpperBox } from './components/UpperBox'
+import { LowerBox } from './components/LowerBox'
 
 const Box = styled(Content)`
   z-index: ${ElementDepth.parts.category};
-  height: 206px;
+  padding: 20px;
+  gap: 20px;
 
   ${media.mobile`
     height: 46px;
@@ -21,6 +23,11 @@ const Box = styled(Content)`
   `}
 `
 
-export const Filter: FC = () => {
-  return <Box></Box>
+export const Filter = () => {
+  return (
+    <Box>
+      <UpperBox />
+      <LowerBox />
+    </Box>
+  )
 }

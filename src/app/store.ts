@@ -1,11 +1,12 @@
 import { configureStore } from '@reduxjs/toolkit'
-import { AuthReducer, ModalReducer } from 'features'
+import { AuthReducer, ModalReducer, PartsReducer } from 'features'
 import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux'
 
 export const store = configureStore({
   reducer: {
     auth: AuthReducer,
-    modal: ModalReducer
+    modal: ModalReducer,
+    parts: PartsReducer
   },
   devTools: process.env.NODE_ENV !== 'production' ? true : false
 })

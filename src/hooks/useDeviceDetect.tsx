@@ -13,23 +13,13 @@ export type DeviceGroup = 'desktopFriendly' | 'mobileFriendly'
 const desktopFriendly = ['desktopLarge', 'desktopSmall', 'tablet']
 const mobileFriendly = ['mobile', 'foldable']
 
-export const getDeviceGroup = (
-  device: Exclude<DeviceType, null>
-): DeviceGroup | undefined => {
-  if (desktopFriendly.includes(device)) {
-    return 'desktopFriendly'
-  } else if (mobileFriendly.includes(device)) {
-    return 'mobileFriendly'
-  }
-}
-
 export const Viewports = {
   mobile: {
-    width: 414,
+    width: 480,
     height: 896
   },
   foldable: {
-    width: 717,
+    width: 743,
     height: 512
   },
   tablet: {
@@ -43,6 +33,16 @@ export const Viewports = {
   desktopLarge: {
     width: 1400,
     height: 1080
+  }
+}
+
+export const getDeviceGroup = (
+  device: Exclude<DeviceType, null>
+): DeviceGroup | undefined => {
+  if (desktopFriendly.includes(device)) {
+    return 'desktopFriendly'
+  } else if (mobileFriendly.includes(device)) {
+    return 'mobileFriendly'
   }
 }
 

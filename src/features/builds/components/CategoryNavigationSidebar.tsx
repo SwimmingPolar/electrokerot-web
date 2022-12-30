@@ -28,6 +28,8 @@ const Box = styled.div`
     position: fixed;
     right: 0;
     bottom: 0;
+    top: ${NavbarHeight + 'px'};
+    height: 100%;
   `}
   ${media.tablet`
     width: ${CategoryNavigationSidebarWidth.tablet + 'px'};
@@ -66,13 +68,14 @@ const CategoriesBox = styled.div<{ scrollbarWidth: number }>`
   align-items: center;
   background-color: ${({ theme }) => theme.colors.white};
   overscroll-behavior: contain;
+  height: 100%;
 
   ${media.mobile`
     gap: 0;
     overflow-y: scroll;
     /* To account for 'Box' component's border-left  */
     margin-left: -1px;
-    margin-right: ${(props: any) => -props.scrollbarWidth + 'px'};
+    margin-right: ${(props: any) => -props.scrollbarWidth + 'px'}; 
   `}
   ${media.tablet`
     gap: 5px;
@@ -114,7 +117,7 @@ const LinkBox = styled.div`
     }
   }
 
-  ${media.mobile`
+  ${media.device('mobile', 'foldable')`
     height: 50px;
     border: 1px solid ${({ theme }) => theme.colors.primary200};
     margin-top: -1px;
@@ -122,16 +125,42 @@ const LinkBox = styled.div`
     :hover {
       color: ${({ theme }) => theme.colors.blue300};
       border: 1px solid ${({ theme }) => theme.colors.blue300};
+      border-width: 1px 1px 1px 2px;
       z-index: 99999;
+      margin-left: -1px;
+
+      :nth-of-type(1) {
+        border-width: 2px 1px 1px 2px;
+      }
     }
 
     :has(a.active) {
       color: ${({ theme }) => theme.colors.blue300};
+      border: 1px solid ${({ theme }) => theme.colors.blue300};
+      border-width: 1px 1px 1px 2px;
+      z-index: 99999;
+      margin-left: -1px;
+
+      :nth-of-type(1) {
+        border-width: 2px 1px 1px 2px;
+      }
     }
 
     a {
       font-size: 12px;
     }
+
+    a.active {
+      margin-left: -1px;
+    }
+
+    a.active:nth-of-type(1) {
+      margin-top: -1px;
+    }
+    a:hover:nth-of-type(1) {
+      margin-top: -1px;
+    }
+
   `}
 
   ${media.tablet`
@@ -143,6 +172,7 @@ const LinkBox = styled.div`
 
     a {
       font-size: 16px;
+      line-height: 18px;
       gap: 5px;
     }
   `}

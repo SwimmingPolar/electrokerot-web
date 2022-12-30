@@ -40,6 +40,18 @@ export const BuildSummaryWidth = {
   tablet: CategoryNavigationSidebarWidth.tablet
 } as SidebarWidth
 
+export const PartsCategoriesKr = {
+  cpu: 'CPU',
+  motherboard: '메인보드',
+  memory: '메모리',
+  graphics: '그래픽카드',
+  ssd: 'SSD',
+  hdd: 'HDD',
+  power: '파워',
+  case: '케이스',
+  cooler: '쿨러'
+}
+
 const DefaultCategories = [
   'cpu',
   'motherboard',
@@ -51,23 +63,17 @@ const DefaultCategories = [
   'power'
 ]
 
-export const PartsCategoriesKr = {
-  cpu: 'CPU',
-  motherboard: '메인보드',
-  memory: '메모리',
-  graphics: '그래픽카드',
-  ssd: 'SSD',
-  hdd: 'HDD',
-  power: '파워',
-  case: '케이스',
-  cooler: '쿨러'
-} as {
-  [key: string]: string
-}
+export type PartsCategoriesType = keyof typeof PartsCategoriesKr
+export const PartsCategories = Object.keys(PartsCategoriesKr) as [
+  PartsCategoriesType
+]
 
-export const PartsCategories = [...DefaultCategories, 'cooler']
-export const BuildPartsCategories = [
-  ...DefaultCategories,
+export type BuildPartsCategoriesType =
+  | Omit<PartsCategoriesType, 'cooler'>
+  | 'cpuCooler'
+  | 'systemCooler'
+
+export const BuildPartsCategories = DefaultCategories.concat([
   'cpuCooler',
   'systemCooler'
-]
+]) as [BuildPartsCategoriesType]
