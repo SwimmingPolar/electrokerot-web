@@ -20,11 +20,7 @@
     ]
   },
   {
-    "subCategory": "두께",
-    "values": ["20.2mm", "20mm", "26.1mm", "26.11mm", "26mm"]
-  },
-  {
     "subCategory": "전송 속도",
-    "values": ["~100MV/s", "100MB/s~200MB/s", "100MB/s~300MB/s", "300MB/s~"]
+    "values": ["~100MB/s", "100-200MB/s", "100-300MB/s", "300MB/s~"]
   }
 ]
