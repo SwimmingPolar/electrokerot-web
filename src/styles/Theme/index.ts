@@ -24,9 +24,6 @@ export const theme = {
     logo: 'Black Han Sans, sans-serif',
     primary: 'Arial, sans-serif',
     secondary: 'Nanum Gothic, sans-serif'
-  },
-  pages: {
-    parts: {}
   }
 }
 export const getTheme = (mode: 'light' | 'dark') => ({

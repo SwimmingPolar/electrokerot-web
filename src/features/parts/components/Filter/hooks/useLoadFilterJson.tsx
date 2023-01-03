@@ -5,9 +5,9 @@ import { useEffect } from 'react'
 import { useParams } from 'react-router-dom'
 
 export const useLoadFilterJson = () => {
-  const { category } = useParams()
+  const { category } = useParams() as { category: PartsCategoriesType }
   const dispatch = useDispatch()
-  const filters = useSelector(selectFilters)[category as PartsCategoriesType]
+  const filters = useSelector(selectFilters)[category]
 
   useEffect(() => {
     // Filter json file loader

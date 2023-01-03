@@ -10,6 +10,12 @@ export type Gap = {
   desktop: number
 }
 
+export const RowCount = {
+  desktopLarge: 5,
+  desktopSmall: 4,
+  tablet: 4
+}
+
 export const Gap = {
   mobile: 0,
   foldable: 0,

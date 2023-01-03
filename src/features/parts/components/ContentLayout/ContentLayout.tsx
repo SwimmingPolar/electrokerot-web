@@ -16,7 +16,8 @@ export const ContentLayout = styled.div`
   `}
 
   :first-of-type {
-    border-radius: 7px 7px 0 0;
+    border-top-left-radius: 7px;
+    border-top-right-radius: 7px;
     margin-top: 0;
 
     ${media.mobile`
@@ -36,7 +37,8 @@ export const ContentLayout = styled.div`
     `}
   }
   :last-of-type {
-    border-radius: 0 0 7px 7px;
+    border-bottom-left-radius: 7px;
+    border-bottom-right-radius: 7px;
     ${media.desktop`
       margin-bottom: ${Gap.desktop + 'px'};
     `}

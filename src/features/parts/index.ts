@@ -1,7 +1,6 @@
 export * from './components/BuildSummary/BuildSummary'
 export * from './components/CategoryAndSearch/CategoryAndSearch'
 export * from './components/Filter/Filter'
-export * from './components/NavigationSidebar/NavigationSidebar'
 export * from './components/PartList/PartList'
 export * from './components/PartsMenu/PartsMenu'
 export * from './components/WelcomeSidebar/WelcomeSidebar'

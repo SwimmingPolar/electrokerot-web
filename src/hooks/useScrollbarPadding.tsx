@@ -1,34 +1,53 @@
 import { useIsPresent } from 'framer-motion'
 import { useDeviceDetect } from 'hooks'
-import { useLayoutEffect, useState } from 'react'
+import { useEffect, useLayoutEffect, useState } from 'react'
 
-export const useScrollbarWidth = () => {
-  const [scrollbarWidth, setScrollbarWidth] = useState(0)
+// export const getScrollbarWidth = () =>
+//   window.innerWidth - document.documentElement.clientWidth
 
-  useLayoutEffect(() => {
-    const hiddenElement = document.createElement('div')
-    hiddenElement.style.height = 'calc(100vh + 1px)'
-    hiddenElement.style.visibility = 'hidden'
+export const getScrollbarWidth = () => {
+  const hiddenElement = document.createElement('div')
+  hiddenElement.style.height = 'calc(100vh + 1px)'
+  hiddenElement.style.visibility = 'hidden'
 
-    const overflowStyle = document.documentElement.style.overflowY
-    document.documentElement.style.overflowY = 'scroll'
+  const overflowStyle = document.documentElement.style.overflowY
+  document.documentElement.style.overflowY = 'scroll'
 
-    document.body.appendChild(hiddenElement)
+  document.body.appendChild(hiddenElement)
 
-    const scrollbarWidth = window.innerWidth - hiddenElement.clientWidth
+  const scrollbarWidth = window.innerWidth - hiddenElement.clientWidth
 
-    document.body.removeChild(hiddenElement)
+  document.body.removeChild(hiddenElement)
 
-    document.documentElement.style.overflowY = overflowStyle
-
-    setScrollbarWidth(scrollbarWidth)
-  })
+  document.documentElement.style.overflowY = overflowStyle
 
   return scrollbarWidth
 }
 
-export const getScrollbarWidth = () =>
-  window.innerWidth - document.documentElement.clientWidth
+export const useScrollbarWidth = () => {
+  const [scrollbarWidth, setScrollbarWidth] = useState(0)
+
+  // Initial scrollbar width
+  useLayoutEffect(() => {
+    const scrollbarWidth = getScrollbarWidth()
+    setScrollbarWidth(scrollbarWidth)
+  }, [])
+
+  // Get scrollbar width on window resize
+  useEffect(() => {
+    const handleResize = () => {
+      const scrollbarWidth = getScrollbarWidth()
+      setScrollbarWidth(scrollbarWidth)
+    }
+
+    window.addEventListener('resize', handleResize)
+    return () => {
+      window.removeEventListener('resize', handleResize)
+    }
+  }, [])
+
+  return scrollbarWidth
+}
 
 export const useScrollbarPadding = () => {
   const { isMobileFriendly } = useDeviceDetect()

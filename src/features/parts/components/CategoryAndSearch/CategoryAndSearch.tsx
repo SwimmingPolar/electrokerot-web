@@ -121,6 +121,7 @@ const IconBox = styled.div`
 export const CategoryAndSearch: FC = () => {
   const { category } = useParams() as { category: PartsCategoriesType }
   const { isMobileFriendly } = useDeviceDetect()
+
   return (
     <Box>
       <Category>

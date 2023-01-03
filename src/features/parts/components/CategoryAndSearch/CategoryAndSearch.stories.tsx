@@ -1,10 +1,10 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
+import { CategoryAndSearch } from 'features'
 import { withRouter } from 'lib'
-import { PartListPage } from 'pages'
 
 export default {
-  title: 'Pages/Parts/PartListPage',
-  component: PartListPage,
+  title: 'features/Parts/CategoryAndSearch',
+  component: CategoryAndSearch,
   parameters: {
     layout: 'fullscreen'
   },
@@ -17,10 +17,10 @@ export default {
       }
     })
   ]
-} as ComponentMeta<typeof PartListPage>
+} as ComponentMeta<typeof CategoryAndSearch>
 
-const Template: ComponentStory<typeof PartListPage> = args => (
-  <PartListPage {...args} />
+const Template: ComponentStory<typeof CategoryAndSearch> = args => (
+  <CategoryAndSearch {...args} />
 )
 
 export const Default = Template.bind({})
