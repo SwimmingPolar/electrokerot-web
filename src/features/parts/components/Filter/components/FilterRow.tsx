@@ -5,7 +5,7 @@ import {
   FilterValuesType,
   selectFiltersState,
   selectSelectedFilters,
-  setFilterOptions,
+  toggleFilterOptions,
   toggleSubFilter
 } from 'features'
 import { useDeviceDetect } from 'hooks'
@@ -161,7 +161,7 @@ export const FilterRow = ({
   const handleOptionChange = useCallback(
     (value: string) => {
       dispatch(
-        setFilterOptions({
+        toggleFilterOptions({
           category: partCategory,
           filterOptions: {
             filterName,
@@ -170,7 +170,7 @@ export const FilterRow = ({
         })
       )
     },
-    [partCategory]
+    [filterName, partCategory]
   )
 
   const selectedValues =

@@ -1,13 +1,13 @@
 import CloseIcon from '@mui/icons-material/Close'
 import { Modal } from '@mui/material'
 import { Navbar, navbarProps } from 'components'
-import { ModalClassName } from 'constant'
+import { ModalClassName, ModalRoutesType } from 'constant'
 import { AnimationProps, motion } from 'framer-motion'
-import { useDeviceDetect, useModal } from 'hooks'
-import React, { useEffect } from 'react'
+import { useDeviceDetect } from 'hooks'
+import React from 'react'
 import styled from 'styled-components'
 import { media } from 'styles'
-import { ModalRoutesType } from 'constant'
+import { useModal } from './hooks'
 
 const ModalBox = styled.div`
   position: relative;

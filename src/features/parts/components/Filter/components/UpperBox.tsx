@@ -3,7 +3,11 @@ import FilterAltIcon from '@mui/icons-material/FilterAlt'
 import LayersOutlinedIcon from '@mui/icons-material/LayersOutlined'
 import { useDispatch, useSelector } from 'app'
 import { PartsCategoriesType } from 'constant'
-import { selectFilters, toggleFilter } from 'features'
+import {
+  selectFilters,
+  ToggleChangeFiltersPopupType,
+  toggleFilter
+} from 'features'
 import { useCallback } from 'react'
 import { useParams } from 'react-router-dom'
 import styled from 'styled-components'
@@ -81,7 +85,11 @@ const ChangeSelectedFiltersBox = styled.div`
   `}
 `
 
-export const UpperBox = () => {
+type UpperBoxType = {
+  toggleChangeFiltersPopup: ToggleChangeFiltersPopupType
+}
+
+export const UpperBox = ({ toggleChangeFiltersPopup }: UpperBoxType) => {
   const dispatch = useDispatch()
   const { category } = useParams() as { category: PartsCategoriesType }
 
@@ -108,9 +116,12 @@ export const UpperBox = () => {
           <ArrowDropDownOutlinedIcon className={'icon arrow'} />
         </button>
       </FilterButtonBox>
-      <SelectedFiltersList />
+      <SelectedFiltersList
+        toggleChangeFiltersPopupType={toggleChangeFiltersPopup}
+      />
       <ChangeSelectedFiltersBox>
-        <button>
+        {/* If target filter is empty, will show all available filters */}
+        <button onClick={toggleChangeFiltersPopup(true)('') as () => void}>
           <LayersOutlinedIcon className="icon layer" />
           <span>필터 변경</span>
         </button>

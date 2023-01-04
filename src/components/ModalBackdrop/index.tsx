@@ -2,7 +2,7 @@ import { AnimationProps, motion } from 'framer-motion'
 import { useDeviceDetect, useUnsetIsDirectAccess } from 'hooks'
 import styled from 'styled-components'
 import { media } from 'styles'
-import { useCloseModalOnUnmount } from '../ModalLayout/useOpenModalOnMount'
+import { useCloseModalOnUnmount } from 'hooks'
 
 export const variants = {
   initial: {

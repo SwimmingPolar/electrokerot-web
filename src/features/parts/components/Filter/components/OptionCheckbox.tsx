@@ -16,7 +16,7 @@ export const OptionCheckbox = ({
   )
   const handleChange = useCallback(() => {
     handleOptionChange(value)
-  }, [handleOptionChange])
+  }, [handleOptionChange, value])
 
   return (
     <div className={`label-box ${checked ? 'checked' : ''}`} key={value}>

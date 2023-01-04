@@ -9,8 +9,10 @@ export * from './useIsDirectAccess'
 export * from './useMotionFinder'
 // adds padding to right-side the element if the scrollbar disappears
 export * from './useScrollbarPadding'
-//
-export * from '../components/ModalLayout/useModal'
+// Activate empty routing
+export * from './useEmptyRoute'
+// export all hooks from ModalLayout
+export * from '../components/ModalLayout/hooks'
 
 /*
  * list of hooks to apply globally

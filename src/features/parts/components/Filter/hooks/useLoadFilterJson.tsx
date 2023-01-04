@@ -29,9 +29,4 @@ export const useLoadFilterJson = () => {
       getFilters()
     }
   }, [category])
-
-  return {
-    category,
-    filters
-  }
 }

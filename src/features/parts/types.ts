@@ -31,8 +31,8 @@ export type FiltersStateType = {
 // State type
 export type PartsState = {
   filters: FiltersType
-  selectedFilters: SelectedFiltersType
   filtersState: FiltersStateType
+  selectedFilters: SelectedFiltersType
 }
 
 // Reducer argument types
@@ -44,6 +44,13 @@ export type SetFiltersType = {
 }
 
 export type SetFilterOptionsType = {
+  payload: {
+    category: PartsCategoriesType
+    filterOptions: SelectedFiltersElementType[]
+  }
+}
+
+export type ToggleFilterOptionsType = {
   payload: {
     category: PartsCategoriesType
     filterOptions: {

@@ -1,6 +1,10 @@
 import { useSelector } from 'app'
 import { PartsCategoriesType } from 'constant'
-import { selectFilters, selectSelectedFilters } from 'features'
+import {
+  selectFilters,
+  selectSelectedFilters,
+  ToggleChangeFiltersPopupType
+} from 'features'
 import { useScrollbarWidth } from 'hooks'
 import { useMemo } from 'react'
 import { useParams } from 'react-router-dom'
@@ -70,17 +74,23 @@ const SelectedFilterItemsBox = styled.div<{ scrollbarWidth: number }>`
 
 const SelectedFilterItem = ({
   filterName,
-  values
+  values,
+  toggleChangeFiltersPopup
 }: {
   filterName: string
   values: string[]
+  toggleChangeFiltersPopup: ToggleChangeFiltersPopupType
 }) => {
   if (values.length <= 0) {
     return null
   }
 
   return (
-    <button className="filter-item">
+    <button
+      className="filter-item"
+      // Toggle change filters popup for specific filter name
+      onClick={toggleChangeFiltersPopup(true)(filterName) as () => void}
+    >
       <div className="filter-name">
         <span className="filter-content">{filterName + ':  '}</span>
       </div>
@@ -96,7 +106,13 @@ const SelectedFilterItem = ({
   )
 }
 
-export const SelectedFiltersList = () => {
+type SelectedFiltersListType = {
+  toggleChangeFiltersPopupType: ToggleChangeFiltersPopupType
+}
+
+export const SelectedFiltersList = ({
+  toggleChangeFiltersPopupType
+}: SelectedFiltersListType) => {
   const { category } = useParams() as { category: PartsCategoriesType }
 
   // Needed to get the filter names to sort the selected filters
@@ -149,6 +165,7 @@ export const SelectedFiltersList = () => {
               key={index}
               filterName={filterName}
               values={filterOptions}
+              toggleChangeFiltersPopup={toggleChangeFiltersPopupType}
             />
           ))}
         </SelectedFilterItemsBox>

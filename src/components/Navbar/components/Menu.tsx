@@ -1,11 +1,12 @@
 import MenuIcon from '@mui/icons-material/Menu'
 import { Drawer } from '@mui/material'
 import { ModalNavLink, NavLink } from 'components'
+import { ModalRoutes } from 'constant'
 import {
-  useCallOnPopstate,
   useCallOnMediaChange,
+  useCallOnPopstate,
   useDeviceDetect,
-  useNavigate
+  useEmptyRoute
 } from 'hooks'
 import {
   KeyboardEvent,
@@ -15,7 +16,6 @@ import {
   useCallback,
   useState
 } from 'react'
-import { ModalRoutes } from 'constant'
 import styled from 'styled-components'
 import { media } from 'styles'
 
@@ -155,45 +155,19 @@ const MenuList = ({ menuList, onMenuSelect, isMobile }: MenuListProps) => {
 const Menu = ({ menuList }: MenuProps) => {
   const [open, setOpen] = useState(false)
   const { isDesktopFriendly, isMobile, isFoldable } = useDeviceDetect()
-  const navigate = useNavigate()
 
-  // This is for mobile devices where the user
-  // can close menu by action gestures such as
-  // swiping the left edge of the screen or
-  // touch the back button of the device.
-  const pushEmptyRoute = useCallback(() => history.pushState(null, '', ''), [])
-  const clearEmptyRoute = useCallback(() => navigate(-1), [navigate])
+  const { toggleModal: toggleDrawer, clearEmptyRoute } = useEmptyRoute({
+    setOpen
+  })
 
-  const toggleDrawer = useCallback(
-    (state: boolean) => (event: MouseEvent | KeyboardEvent) => {
-      // remove focus from the button
-      event?.currentTarget && (event.currentTarget as HTMLButtonElement).blur()
-
-      // open or close drawer
-      setOpen(state)
-
-      // when the user open the menu,
-      if (state === true) {
-        pushEmptyRoute()
-      }
-      // when the user close the menu,
-      else {
-        clearEmptyRoute()
-      }
-    },
-    []
-  )
-
-  const handleClose = useCallback(() => setOpen(false), [])
+  const handleClose = useCallback(() => setOpen(false), [setOpen])
   // @Issue: The browser gets zoomed if switched fast enough between mobile and desktop view to show the drawer.
   const handleResize = useCallback(() => {
     if (open) {
       clearEmptyRoute()
     }
-  }, [open])
+  }, [open, clearEmptyRoute])
 
-  // hide menu on backward action
-  useCallOnPopstate(handleClose)
   // hide menu if not on mobile device
   useCallOnMediaChange(handleResize)
 

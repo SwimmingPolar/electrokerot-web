@@ -1,5 +1,5 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
-import { Navbar, navbarProps } from 'components/Navbar'
+import { Navbar, navbarProps } from 'components'
 import { withRouter } from 'lib'
 import styled from 'styled-components'
 

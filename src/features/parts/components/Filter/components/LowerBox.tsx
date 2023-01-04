@@ -1,8 +1,13 @@
 import { useSelector } from 'app'
-import { selectFiltersState } from 'features'
+import { PartsCategoriesType } from 'constant'
+import {
+  selectFilters,
+  selectFiltersState,
+  ToggleChangeFiltersPopupType
+} from 'features'
 import { useDeviceDetect } from 'hooks'
+import { useParams } from 'react-router-dom'
 import styled from 'styled-components'
-import { useLoadFilterJson } from '../hooks/useLoadFilterJson'
 import { FilterRow } from './FilterRow'
 
 const Box = styled.div`
@@ -12,11 +17,16 @@ const Box = styled.div`
   gap: 11px;
 `
 
-export const LowerBox = () => {
-  const { isMobileFriendly } = useDeviceDetect()
+type UpperBoxType = {
+  toggleChangeFiltersPopup: ToggleChangeFiltersPopupType
+}
 
-  // Dynamically load filter json file to reduce bundle size
-  const { category, filters } = useLoadFilterJson()
+export const LowerBox = ({ toggleChangeFiltersPopup }: UpperBoxType) => {
+  const { isMobileFriendly } = useDeviceDetect()
+  const { category } = useParams() as { category: PartsCategoriesType }
+
+  // Get filters list for the category
+  const filters = useSelector(selectFilters)?.[category] || []
 
   // Decides whether the filter is open or not
   const isFilterOpen = useSelector(selectFiltersState)[category]?.open

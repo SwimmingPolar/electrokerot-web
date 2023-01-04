@@ -15,7 +15,9 @@ export const palette = {
     white: '#ffffff',
     blue100: '#EEFAFF',
     blue200: '#4492D4',
-    blue300: '#0498EC'
+    blue300: '#0498EC',
+    closeButton: '#AAAAAA',
+    confirmButton: '#0498EC'
   },
   dark: {}
 }
