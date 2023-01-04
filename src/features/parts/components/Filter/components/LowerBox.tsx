@@ -14,7 +14,7 @@ const Box = styled.div`
   display: flex;
   flex: 1;
   flex-direction: column;
-  gap: 11px;
+  gap: 9px;
 `
 
 type UpperBoxType = {

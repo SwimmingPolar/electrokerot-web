@@ -1,5 +1,5 @@
 import { ModalRoutes } from 'constant'
-import { useEffect } from 'react'
+import { useCallback, useEffect } from 'react'
 import {
   // React Router Dom's Location type
   Location as RRDLocation,
@@ -99,37 +99,6 @@ type CreateHandler = {
   alwaysTrigger?: boolean
 }
 
-// Creates a popstate event handler
-const createHandler = ({
-  callback,
-  direction,
-  key,
-  alwaysTrigger
-}: CreateHandler) => {
-  const handler = (event: PopStateEvent) => {
-    // If 'alwaysTrigger' is not set, and the popstate was triggered
-    if (!alwaysTrigger) {
-      // And the popstate event is triggered by the hook programmatically, we do not invoke handler.
-      // This handler is only for the situation where the user is
-      // using the browser's back and forward buttons
-      if (window.location.navigationByHook) {
-        return
-      }
-    }
-
-    // get the location key from the event and the current location key
-    const fromKey = key
-    const toKey = event.state?.key
-
-    // invoke callback by checking the direction
-    if (isBackwardOrForward(fromKey, toKey) === direction) {
-      callback(fromKey, toKey)
-    }
-  }
-
-  return handler
-}
-
 type HookFactoryTypeOptions = {
   alwaysTrigger?: boolean
 }
@@ -145,14 +114,37 @@ const hookFactory =
     const location = useLocation()
     const { key } = location
 
+    const handler = useCallback(
+      (event: PopStateEvent) => {
+        // If 'alwaysTrigger' is not set, and the popstate was triggered
+        if (!alwaysTrigger) {
+          // And the popstate event is triggered by the hook programmatically, we do not invoke handler.
+          // This handler is only for the situation where the user is
+          // using the browser's back and forward buttons
+          if (window.location.navigationByHook) {
+            return
+          }
+        }
+
+        // get the location key from the event and the current location key
+        const fromKey = key
+        const toKey = event.state?.key
+
+        // invoke callback by checking the direction
+        if (isBackwardOrForward(fromKey, toKey) === direction) {
+          callback(fromKey, toKey)
+        }
+      },
+      [callback, location, key]
+    )
+
     useEffect(() => {
-      const handler = createHandler({ callback, direction, key, alwaysTrigger })
       // bind the handler
       window.addEventListener('popstate', handler)
 
       return () => {
         // unbind the handler
-        window.removeEventListener('popstate', handler)
+        // window.removeEventListener('popstate', handler)
 
         // Reset the 'navigationByHook' flag to false when unmounting if any is set.
         // Debounce the reset process, if the call stack is not empty. This is needed
@@ -162,7 +154,7 @@ const hookFactory =
           window.location.navigationByHook = false
         }, 0)
       }
-    }, [callback, key])
+    }, [callback, location])
   }
 
 // Simply call on backward or forward button click
@@ -176,6 +168,7 @@ export const useCallOnPopstate = (callback: Callback) => {
   }, [callback])
 }
 
+// Call on browser navigation (when url changes)
 export const useCallOnBackward = hookFactory(BACKWARD)
 export const useCallOnForward = hookFactory(FORWARD)
 export const useCallOnBrowserNavigation: HookFactoryType = (

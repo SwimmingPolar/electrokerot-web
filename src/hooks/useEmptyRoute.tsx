@@ -1,6 +1,5 @@
-import { useCallOnPopstate } from 'hooks/useCallOnBrowserNavigation'
+import { useCallOnPopstate, useNavigate } from 'hooks'
 import { KeyboardEvent, MouseEvent, useCallback } from 'react'
-import { useNavigate } from 'react-router-dom'
 
 type UseEmptyRouteType = {
   setOpen: (state: boolean) => void
@@ -41,10 +40,12 @@ export const useEmptyRoute = ({ setOpen }: UseEmptyRouteType) => {
     [setOpen]
   )
 
+  const handlePopstate = useCallback(() => {
+    setOpen(false)
+  }, [toggleModal])
+
   // Close the modal on browser navigation
-  useCallOnPopstate(() => {
-    toggleModal(false)(null as any)
-  })
+  useCallOnPopstate(handlePopstate)
 
   return {
     toggleModal,

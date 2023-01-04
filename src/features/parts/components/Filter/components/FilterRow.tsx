@@ -44,6 +44,7 @@ const FilterRowBox = styled.div`
     .label-box {
       display: flex;
       flex-direction: row;
+      height: 24px;
       /* default row count: 5 */
       width: calc(100% / ${RowCount.desktopLarge});
       /* 4 rows on desktopSmall and tablet */
@@ -53,7 +54,7 @@ const FilterRowBox = styled.div`
       ${media.tablet`
         width: calc(100% / ${RowCount.tablet});
       `}
-      height: 24px;
+      background-color: ${({ theme }) => theme.colors.white};
     }
 
     /* Label */
@@ -77,6 +78,7 @@ const FilterRowBox = styled.div`
     /* Checkbox */
     .MuiCheckbox-root {
       padding: 4px;
+      background-color: ${({ theme }) => theme.colors.white};
     }
 
     /* To make the label smaller, let the padding take up all the space */
@@ -90,6 +92,7 @@ const FilterRowBox = styled.div`
     justify-content: space-between;
     align-self: center;
     width: 42px;
+    background-color: ${({ theme }) => theme.colors.white};
     cursor: pointer;
 
     span {

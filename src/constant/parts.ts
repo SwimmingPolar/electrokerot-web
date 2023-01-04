@@ -10,6 +10,25 @@ export type Gap = {
   desktop: number
 }
 
+export const FilterSideMenu = {
+  button: {
+    desktop: {
+      height: 54
+    },
+    mobile: {
+      height: 54
+    }
+  },
+  sideMenu: {
+    desktop: {
+      width: 112
+    },
+    mobile: {
+      width: 112
+    }
+  }
+}
+
 export const RowCount = {
   desktopLarge: 5,
   desktopSmall: 4,

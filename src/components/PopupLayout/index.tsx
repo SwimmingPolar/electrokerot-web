@@ -1,14 +1,26 @@
 import styled from 'styled-components'
 import CloseIcon from '@mui/icons-material/Close'
 import { useScrollbarWidth } from 'hooks'
+import { media } from 'styles'
 
 // Layout
 const Box = styled.div`
   display: flex;
   flex-direction: column;
-  height: 100%;
-  width: 100%;
   background-color: ${({ theme }) => theme.colors.white};
+  box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+  overflow: hidden;
+  border-radius: 7px;
+  ${media.desktopLarge`
+    margin-left: -100px;
+  `}
+`
+
+const ScrollBox = styled.div`
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  height: 100%;
   position: relative;
 `
 
@@ -39,7 +51,9 @@ const ContentBox = styled.div<{ scrollbarWidth: number }>`
   flex: 1;
   overflow-x: hidden;
   overflow-y: scroll;
-  margin-right: ${({ scrollbarWidth }) => -scrollbarWidth}px;
+  margin-right: ${({ scrollbarWidth }) => -scrollbarWidth * 2}px;
+  flex-direction: row;
+  position: relative;
 `
 
 // Buttons
@@ -49,11 +63,13 @@ const ButtonBox = styled.div`
   position: sticky;
   bottom: 0;
   width: 100%;
+  box-shadow: rgba(14, 30, 37, 0.12) 0px 2px 4px 0px,
+    rgba(14, 30, 37, 0.32) 0px 2px 16px 0px;
 
   button {
     flex: 1;
     cursor: pointer;
-    height: 45px;
+    height: 54px;
     font-family: ${({ theme }) => theme.fonts.secondary};
     font-size: 25px;
     font-weight: 500;
@@ -93,23 +109,27 @@ export const PopupLayout = ({
 
   return (
     <Box>
-      {/* Show title only if they exist */}
-      {title ? (
-        <TitleBox>
-          <h3>{title}</h3>
-          <button className="icon" onClick={onClose}>
-            <CloseIcon />
-          </button>
-        </TitleBox>
-      ) : null}
-      {/* Render content inside ContentBox */}
-      <ContentBox scrollbarWidth={scrollbarWidth}>{children}</ContentBox>
-      <ButtonBox>
-        <CloseButton onClick={onClose}>{closeButtonName || '닫기'}</CloseButton>
-        <ConfirmButton onClick={onConfirm}>
-          {confirmButtonName || '확인'}
-        </ConfirmButton>
-      </ButtonBox>
+      <ScrollBox>
+        {/* Show title only if they exist */}
+        {title ? (
+          <TitleBox>
+            <h3>{title}</h3>
+            <button className="icon" onClick={onClose}>
+              <CloseIcon />
+            </button>
+          </TitleBox>
+        ) : null}
+        {/* Render content inside ContentBox */}
+        <ContentBox scrollbarWidth={scrollbarWidth}>{children}</ContentBox>
+        <ButtonBox>
+          <CloseButton onClick={onClose}>
+            {closeButtonName || '닫기'}
+          </CloseButton>
+          <ConfirmButton onClick={onConfirm}>
+            {confirmButtonName || '확인'}
+          </ConfirmButton>
+        </ButtonBox>
+      </ScrollBox>
     </Box>
   )
 }

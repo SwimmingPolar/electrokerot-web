@@ -1,14 +1,7 @@
 import { Modal } from '@mui/material'
 import { ChangeFiltersPopup } from 'features'
 import { useEmptyRoute } from 'hooks'
-import {
-  FC,
-  KeyboardEvent,
-  MouseEvent,
-  useCallback,
-  useRef,
-  useState
-} from 'react'
+import { FC, KeyboardEvent, MouseEvent, useCallback, useState } from 'react'
 import styled from 'styled-components'
 import { ElementDepth, media } from 'styles'
 import { ContentLayout as Content } from '../ContentLayout/ContentLayout'
@@ -30,7 +23,14 @@ const Box = styled(Content)`
   `}
 `
 
-const ModalBox = styled.div``
+const ModalBox = styled.div`
+  display: flex;
+  width: 100%;
+  height: 100%;
+  justify-content: center;
+  align-items: center;
+  flex-direction: row;
+`
 
 export type ToggleChangeFiltersPopupType = (
   state: boolean
@@ -64,7 +64,7 @@ export const Filter: FC = () => {
       else {
         return () => {
           setTargetFilter('')
-          setOpen(false)
+          toggleModal(false)(null as any)
         }
       }
     },

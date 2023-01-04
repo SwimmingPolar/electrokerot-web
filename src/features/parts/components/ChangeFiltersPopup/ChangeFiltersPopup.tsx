@@ -8,16 +8,24 @@ import {
   setFilterOptions,
   ToggleChangeFiltersPopupType
 } from 'features'
+import { useScrollbarPadding, useScrollbarWidth } from 'hooks'
 import { useCallback, useMemo, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import styled from 'styled-components'
+import { SideMenu } from './components/SideMenu'
 
-const Box = styled.div<{ targetFilter?: string }>`
+const Box = styled.div<{ targetFilter?: string; scrollbarWidth: number }>`
   /* Without 'targetFilter', make the modal smaller */
+  display: flex;
   width: ${({ targetFilter }) => (!targetFilter ? '540px' : '420px')};
   height: ${({ targetFilter }) => (!targetFilter ? '720px' : '580px')};
-  overflow: hidden;
   background-color: ${({ theme }) => theme.colors.white};
+  /* Popup layout has double negative margin-right to hide scrollbar for popup itself
+     and the scrollbar for the side menu. On individual filter it does not
+     have side menu hence, no scrollbar either.
+     So we have to compensate for this double negative margin-right */
+  padding-right: ${({ targetFilter, scrollbarWidth }) =>
+    !targetFilter ? '0px' : scrollbarWidth + 'px'};
 `
 
 const SelectedFiltersSectionBox = styled.div`
@@ -36,6 +44,7 @@ const SelectedFilterNameBox = styled.div`
     font-weight: 800;
     font-family: ${({ theme }) => theme.fonts.secondary};
     color: ${({ theme }) => theme.colors.primary};
+    padding: 16px 10px;
   }
 `
 const SelectedFilterOptionsBox = styled.div`
@@ -74,6 +83,8 @@ const SelectedFilterOptionsBox = styled.div`
   }
 `
 
+const SideMenuScrollPadding = styled.div``
+
 type SelectedFiltersSectionType = {
   filterName: string
   filterOptions: string[]
@@ -98,9 +109,8 @@ const SelectedFilter = ({
   return (
     <SelectedFilterBox>
       <SelectedFilterNameBox>
-        <h3>{filterName}</h3>
+        <h3 id={filterName.replace(/\s/g, '')}>{filterName}</h3>
       </SelectedFilterNameBox>
-      <br />
       <SelectedFilterOptionsBox>
         {filterOptions.map((option, index) => (
           <button
@@ -134,8 +144,12 @@ export const ChangeFiltersPopup = ({
   const [clonedSelectedFilters, setClonedSelectedFilters] = useState(
     structuredClone(selectedFilters)
   )
-  const dispatch = useDispatch()
+  // Extract filter names for the side menu
+  const filterNames = filters.map(
+    filter => filter.category || filter.subCategory
+  ) as string[]
 
+  const dispatch = useDispatch()
   const handleConfirmClick = useCallback(() => {
     // Update the selectedFilters in the store
     dispatch(
@@ -201,9 +215,14 @@ export const ChangeFiltersPopup = ({
     [filters]
   )
 
+  // When modal is open, hide the scrollbar
+  // and compensate for the scrollbar width
+  useScrollbarPadding()
+  const scrollbarWidth = useScrollbarWidth()
+
   return (
-    <Box targetFilter={targetFilter}>
-      <PopupLayout onConfirm={handleConfirmClick} onClose={handleCloseClick}>
+    <PopupLayout onConfirm={handleConfirmClick} onClose={handleCloseClick}>
+      <Box targetFilter={targetFilter} scrollbarWidth={scrollbarWidth}>
         <SelectedFiltersSectionBox>
           {filtersToShow.map(({ category, subCategory, values }, index) => (
             <SelectedFilter
@@ -215,7 +234,9 @@ export const ChangeFiltersPopup = ({
             />
           ))}
         </SelectedFiltersSectionBox>
-      </PopupLayout>
-    </Box>
+      </Box>
+      {/* Show sidebar only when showing the entire filters */}
+      {!targetFilter ? <SideMenu filterNames={filterNames} /> : null}
+    </PopupLayout>
   )
 }
