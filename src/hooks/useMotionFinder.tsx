@@ -1,9 +1,31 @@
+import { ModalPageOrders as PageOrders, ModalRoutes } from 'constant'
 import { AnimationProps } from 'framer-motion'
-import { getLastPathname, useDeviceDetect } from 'hooks'
+import {
+  didModalOpenedWithinApp,
+  getLastPathname,
+  useDeviceDetect
+} from 'hooks'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useLocation } from 'react-router-dom'
 import { MotionConfig } from 'styles'
-import { ModalPageOrders as PageOrders, ModalRoutes } from 'constant'
+
+// When deciding the motion for the modal, we need to know
+// if the modal is accessed directly via url. If so, we need to
+// remove the 'initial' property from the motion config.
+// didModalOpenedWithinApp() will return true if accessed directly via url
+// but will keep returning true until the modal is unmounted.
+// So, we need to use a closure to make sure that the function
+// only returns true once.
+const isDirectAccess = (() => {
+  let executed = false
+  return () => {
+    if (executed) {
+      return false
+    }
+    executed = true
+    return !didModalOpenedWithinApp()
+  }
+})()
 
 export const useMotionDecider = () => {
   const { isMobileFriendly } = useDeviceDetect()
@@ -38,6 +60,11 @@ export const useMotionDecider = () => {
 
     // Delete 'exit' property, so the modal doesn't use 'exit' motion set on initial mount
     delete initialMotion.exit
+    // Remove 'initial' property, so the modal doesn't use 'initial' motion set on initial mount
+    // if the modal is accessed directly via url
+    if (isDirectAccess()) {
+      delete initialMotion.initial
+    }
 
     // If the current device is mobile friendly, then remove all motions
     if (isMobileFriendly) {

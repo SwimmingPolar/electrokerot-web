@@ -3,12 +3,12 @@ import { selectModalStates } from 'features'
 import {
   didModalOpenedWithinApp,
   getDeltaToNearestNonModalPage,
-  useDeviceDetect
+  useDeviceDetect,
+  useNavigate
 } from 'hooks'
 import { useCallback, useMemo } from 'react'
 import { shallowEqual } from 'react-redux'
 import { useLocation } from 'react-router-dom'
-import { useNavigate } from 'hooks'
 
 /*
 Desktop:

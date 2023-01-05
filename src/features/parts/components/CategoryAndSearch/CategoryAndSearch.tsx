@@ -1,5 +1,5 @@
-import SearchIcon from '@mui/icons-material/Search'
 import LayersOutlinedIcon from '@mui/icons-material/LayersOutlined'
+import SearchIcon from '@mui/icons-material/Search'
 import { PartsCategoriesKr, PartsCategoriesType } from 'constant'
 import { useDeviceDetect } from 'hooks'
 import { FC } from 'react'

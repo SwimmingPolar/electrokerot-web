@@ -12,8 +12,8 @@ import { useScrollbarPadding, useScrollbarWidth } from 'hooks'
 import { useCallback, useMemo, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import styled from 'styled-components'
-import { useToggleFilterOptions } from '../Filter/hooks/useToggleFilterOptions'
 import { SideMenu } from './components/SideMenu'
+import RestartAltIcon from '@mui/icons-material/RestartAlt'
 
 const Box = styled.div<{ targetFilter?: string; scrollbarWidth: number }>`
   /* Without 'targetFilter', make the modal smaller */
@@ -44,10 +44,22 @@ const SelectedFilterNameBox = styled.div`
   button {
     cursor: pointer;
     width: fit-content;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+
+    .icon {
+      font-size: 22px;
+      color: ${({ theme }) => theme.colors.gray300};
+      transition: 0.2s color ease-in-out;
+    }
 
     &:hover {
       h3 {
         text-decoration: underline;
+      }
+      .icon {
+        color: ${({ theme }) => theme.colors.primary};
       }
     }
   }
@@ -57,7 +69,7 @@ const SelectedFilterNameBox = styled.div`
     font-weight: 800;
     font-family: ${({ theme }) => theme.fonts.secondary};
     color: ${({ theme }) => theme.colors.primary};
-    padding: 16px 10px;
+    padding: 15px 2px 15px 10px;
   }
 `
 
@@ -149,6 +161,7 @@ const SelectedFilter = ({
           >
             {filterName}
           </h3>
+          <RestartAltIcon className="icon reset" />
         </button>
       </SelectedFilterNameBox>
       <SelectedFilterOptionsBox>
@@ -216,13 +229,6 @@ export const ChangeFiltersPopup = ({
           selectedFilter => selectedFilter.filterName === filterName
         )?.filterOptions || []
       )
-
-      // const newOptions = oldOptions?.includes(option)
-      //   ? // Remove the option if it's already selected.
-      //     // And return spliced array
-      //     oldOptions.splice(oldOptions.indexOf(option), 1) && oldOptions
-      //   : // Add the option if it's not selected
-      //     [...oldOptions, option]
 
       let newOptions: string[]
       // If minus filter is selected, remove the option from the selectedFilters. (if statement order matters)
@@ -296,10 +302,6 @@ export const ChangeFiltersPopup = ({
 
       // Check if no options are selected
       const isNotSelectedAtAll = clonedSelectedValues.length === 0
-
-      console.log('isAllSelected', isAllSelected)
-      console.log('isAllMinusSelected', isAllMinusSelected)
-      console.log('isNotSelectedAtAll', isNotSelectedAtAll)
 
       let newSelectedValues: string[]
       // If all are selected, turn into all minus selected

@@ -10,7 +10,7 @@ import { FC } from 'react'
 import styled from 'styled-components'
 import { ElementDepth, media } from 'styles'
 
-const Box = styled.div`
+const Box = styled.div<{ scrollbarWidth: number }>`
   display: flex;
   flex-direction: column;
   background-color: ${({ theme }) => theme.colors.white};
@@ -37,6 +37,11 @@ const Box = styled.div`
     right: 0;
     bottom: 0;
     height: calc(100vh - ${NavbarHeight + 'px'});
+
+    &.scrollbar-padding--enabled {
+      width: ${({ scrollbarWidth }: any) =>
+        CategoryNavigationSidebarWidth.tablet + scrollbarWidth + 'px'};
+    }
   `}
   ${media.desktopSmall`
     width: ${CategoryNavigationSidebarWidth.desktopSmall + 'px'};
@@ -51,6 +56,8 @@ const Box = styled.div`
     left: 0;
     right: 0;
     z-index: ${ElementDepth.parts.sidebar};
+    padding-right: 0 !important;
+    margin-right: 0 !important;
   `}
 
   /* Show the sidebar on the right side by default */
@@ -75,12 +82,17 @@ const CategoriesBox = styled.div<{ scrollbarWidth: number }>`
     overflow-y: scroll;
     /* To account for 'Box' component's border-left  */
     margin-left: -1px;
-    margin-right: ${(props: any) => -props.scrollbarWidth + 'px'}; 
+    margin-right: ${({ scrollbarWidth }: any) => -scrollbarWidth + 'px'};
   `}
   ${media.tablet`
     gap: 5px;
     overflow-y: scroll;
-    margin-right: ${(props: any) => -props.scrollbarWidth + 'px'};
+    margin-right: ${({ scrollbarWidth }: any) => -scrollbarWidth + 'px'};
+
+    &.scrollbar-padding--enabled {
+      margin-right: ${({ scrollbarWidth }: any) => -scrollbarWidth * 2 + 'px'};
+      padding-right: 0;
+    }
   `}
   ${media.desktopSmall`
     margin-top: 75px;
@@ -89,6 +101,10 @@ const CategoriesBox = styled.div<{ scrollbarWidth: number }>`
   ${media.desktopLarge`
     margin-top: 120px;
     gap: 10px;
+  `}
+  ${media.desktop`
+    padding-right: 0 !important;
+    margin-right: 0 !important;
   `}
 `
 
@@ -269,8 +285,11 @@ export const CategoryNavigationSidebar: FC = () => {
   const scrollbarWidth = useScrollbarWidth()
 
   return (
-    <Box>
-      <CategoriesBox scrollbarWidth={scrollbarWidth}>
+    <Box scrollbarWidth={scrollbarWidth} className="scrollbar-padding">
+      <CategoriesBox
+        scrollbarWidth={scrollbarWidth}
+        className="scrollbar-padding"
+      >
         <Categories />
       </CategoriesBox>
     </Box>

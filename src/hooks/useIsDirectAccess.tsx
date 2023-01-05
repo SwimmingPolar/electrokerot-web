@@ -1,35 +1,27 @@
 import { useLayoutEffect } from 'react'
-import { ModalRoutes } from 'constant'
 
 interface CustomWindow extends Window {
-  _isDirectAccess: boolean
+  _isDirectAccess: string
 }
 
 declare const window: CustomWindow
 
-type AccessType = 'direct' | 'routing'
+const AccessConfirmationPhrase = 'accessing_within_app'
 
-export const setAccessType = (accessType: AccessType) => {
-  window._isDirectAccess = accessType === 'direct'
+export const setAccessType = () => {
+  // Any string will do.
+  // The catch is that we need to check if this variable is undefined or not
+  // If undefined, then the modal is accessed directly via url
+  window._isDirectAccess = AccessConfirmationPhrase
 }
 
 export const useIsDirectAccess = () => {
   useLayoutEffect(() => {
-    const { pathname } = window.location
-    if (ModalRoutes.includes(pathname)) {
-      setAccessType('direct')
-    } else {
-      setAccessType('routing')
-    }
-  }, [])
-}
-
-export const useUnsetIsDirectAccess = () => {
-  useLayoutEffect(() => {
     return () => {
-      setAccessType('routing')
+      setAccessType()
     }
   }, [])
 }
 
-export const didModalOpenedWithinApp = () => !window._isDirectAccess
+export const didModalOpenedWithinApp = () =>
+  !(window._isDirectAccess === undefined)

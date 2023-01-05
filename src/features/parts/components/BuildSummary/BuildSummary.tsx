@@ -21,15 +21,15 @@ const Box = styled.aside<{ scrollbarWidth: number }>`
     width: ${BuildSummaryWidth.desktopSmall + 'px'};
 
     &.scrollbar-padding--enabled {
-      width: calc(${BuildSummaryWidth.desktopSmall + 'px'} +
-                  ${({ scrollbarWidth }: any) => scrollbarWidth + 'px'});
+      width: ${({ scrollbarWidth }: any) =>
+        BuildSummaryWidth.desktopSmall + scrollbarWidth + 'px'};
     }
   `}
   ${media.desktopLarge`
     width: ${BuildSummaryWidth.desktopLarge + 'px'};
     &.scrollbar-padding--enabled {
-      width: calc(${BuildSummaryWidth.desktopLarge + 'px'} +
-                  ${({ scrollbarWidth }: any) => scrollbarWidth + 'px'});
+      width: ${({ scrollbarWidth }: any) =>
+        BuildSummaryWidth.desktopLarge + scrollbarWidth + 'px'};
     }
   `}
   ${media.desktop`

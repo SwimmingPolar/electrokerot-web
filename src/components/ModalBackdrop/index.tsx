@@ -1,8 +1,7 @@
 import { AnimationProps, motion } from 'framer-motion'
-import { useDeviceDetect, useUnsetIsDirectAccess } from 'hooks'
+import { useCloseModalOnUnmount, useDeviceDetect } from 'hooks'
 import styled from 'styled-components'
 import { media } from 'styles'
-import { useCloseModalOnUnmount } from 'hooks'
 
 export const variants = {
   initial: {
@@ -42,8 +41,6 @@ export const DummyDiv = () => (
 export const ModalBackdrop = () => {
   // unset all modal states on unmount, and remove last pathname
   useCloseModalOnUnmount()
-  // unset isDirectAccess on unmount if modal was opened directly via url
-  useUnsetIsDirectAccess()
 
   let backdropVariants = Object.assign({}, variants)
   const { isMobileFriendly } = useDeviceDetect()
