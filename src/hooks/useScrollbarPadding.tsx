@@ -84,16 +84,22 @@ export const useScrollbarPadding = () => {
       ) || []
 
     // add padding
-    elements.forEach(
-      element => (element.style.paddingRight = `${scrollbarWidth}px`)
-    )
+    elements.forEach(element => {
+      element.style.paddingRight = `${scrollbarWidth}px`
+      element.classList.add('scrollbar-padding--enabled')
+    })
 
     // when unmounting
     return () => {
       // enable scrollbar
       document.documentElement.style.overflowY = 'auto'
+      // @Issue: 패딩 없앨 때, 없애는 것이 아니라 복원해야하는 것이 아닌가?
+      //         그러면 원래 값도 저장해야 하나?
       // remove padding enabled by this hook
-      elements.forEach(element => (element.style.paddingRight = ''))
+      elements.forEach(element => {
+        element.style.paddingRight = ''
+        element.classList.remove('scrollbar-padding--enabled')
+      })
     }
   }, [isPresent, isMobileFriendly])
 }

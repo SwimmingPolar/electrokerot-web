@@ -18,7 +18,7 @@ const FixedNavBox = styled.div`
 
 type Device = keyof typeof DeviceList
 
-const CalculateNavbarWidth = (
+const calculateNavbarWidth = (
   fullWidth?: boolean | undefined,
   sidebarWidth?: SidebarWidth | undefined
 ) => {
@@ -51,7 +51,7 @@ const FixedNav = styled.div<{
   color: ${props => props.fixed && props.theme.black};
 
   ${({ fullWidth, sidebarWidth }) =>
-    CalculateNavbarWidth(fullWidth, sidebarWidth)}
+    calculateNavbarWidth(fullWidth, sidebarWidth)}
 `
 
 // type MenuList = MenuProps['menuList']

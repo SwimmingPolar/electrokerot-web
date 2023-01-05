@@ -4,7 +4,7 @@ import { FC } from 'react'
 import styled from 'styled-components'
 import { ElementDepth, media } from 'styles'
 
-const Box = styled.aside`
+const Box = styled.aside<{ scrollbarWidth: number }>`
   display: none;
   background-color: ${({ theme }) => theme.colors.surface};
   z-index: ${ElementDepth.parts.buildSummary};
@@ -19,9 +19,18 @@ const Box = styled.aside`
 
   ${media.desktopSmall`
     width: ${BuildSummaryWidth.desktopSmall + 'px'};
+
+    &.scrollbar-padding--enabled {
+      width: calc(${BuildSummaryWidth.desktopSmall + 'px'} +
+                  ${({ scrollbarWidth }: any) => scrollbarWidth + 'px'});
+    }
   `}
   ${media.desktopLarge`
     width: ${BuildSummaryWidth.desktopLarge + 'px'};
+    &.scrollbar-padding--enabled {
+      width: calc(${BuildSummaryWidth.desktopLarge + 'px'} +
+                  ${({ scrollbarWidth }: any) => scrollbarWidth + 'px'});
+    }
   `}
   ${media.desktop`
     display: flex;
@@ -33,6 +42,10 @@ const ContentBox = styled.div<{ scrollbarWidth: number }>`
   overflow-y: scroll;
   margin-right: ${({ scrollbarWidth }) => -scrollbarWidth + 'px'};
   overscroll-behavior: contain;
+
+  &.scrollbar-padding--enabled {
+    margin-right: ${({ scrollbarWidth }) => -scrollbarWidth * 2 + 'px'};
+  }
 `
 
 const Content = styled.div`
@@ -45,7 +58,7 @@ export const BuildSummary: FC = () => {
   const scrollbarWidth = useScrollbarWidth()
 
   return (
-    <Box>
+    <Box scrollbarWidth={scrollbarWidth} className="scrollbar-padding">
       <ContentBox scrollbarWidth={scrollbarWidth} className="scrollbar-padding">
         <Content>
           {Array.from({ length: 100 }).map((_, index) => (

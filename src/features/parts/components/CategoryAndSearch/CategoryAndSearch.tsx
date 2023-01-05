@@ -35,6 +35,7 @@ const Category = styled.div`
 
   h1 {
     font-size: 24px;
+    margin-bottom: -2.5px;
   }
 
   ${media.tablet`

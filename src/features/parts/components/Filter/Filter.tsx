@@ -8,6 +8,7 @@ import { ContentLayout as Content } from '../ContentLayout/ContentLayout'
 import { LowerBox } from './components/LowerBox'
 import { UpperBox } from './components/UpperBox'
 import { useLoadFilterJson } from './hooks/useLoadFilterJson'
+import { SelectedFilterItemsBoxClassName } from './components/SelectedFiltersList'
 
 const Box = styled(Content)`
   z-index: ${ElementDepth.parts.category};
@@ -30,6 +31,10 @@ const ModalBox = styled.div`
   justify-content: center;
   align-items: center;
   flex-direction: row;
+
+  ${media.desktopLarge`
+    margin-left: -100px;
+  `}
 `
 
 export type ToggleChangeFiltersPopupType = (
@@ -55,6 +60,15 @@ export const Filter: FC = () => {
       // that returns handler.
       if (state) {
         return (targetFilter: string) => (event: MouseEvent | KeyboardEvent) => {
+          // Prevent button from being clicked while scrolling
+          const container = document.querySelector(
+            `.${SelectedFilterItemsBoxClassName}`
+          )
+          if (container?.classList.contains('scrolling') === true) {
+            return
+          }
+
+          // Open popup
           setTargetFilter(targetFilter)
           toggleModal(state)(event)
         }
@@ -75,7 +89,7 @@ export const Filter: FC = () => {
     <Box>
       <UpperBox toggleChangeFiltersPopup={toggleChangeFiltersPopup} />
       <LowerBox toggleChangeFiltersPopup={toggleChangeFiltersPopup} />
-      <Modal open={open} onClose={toggleModal(false)}>
+      <Modal open={open} onClose={toggleModal(false)} disableScrollLock>
         <ModalBox>
           <ChangeFiltersPopup
             targetFilter={targetFilter}

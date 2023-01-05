@@ -5,6 +5,8 @@ import {
   FilterValuesType,
   selectFiltersState,
   selectSelectedFilters,
+  setBackupFilterOptionValues,
+  setFilterOptions,
   toggleFilterOptions,
   toggleSubFilter
 } from 'features'
@@ -20,18 +22,6 @@ const FilterRowBox = styled.div`
   flex-direction: row;
   justify-content: space-between;
   width: 100%;
-
-  /* Filter Name */
-  .filter-name {
-    width: 135px;
-    font-size: 14px;
-    font-family: ${({ theme }) => theme.fonts.secondary};
-    font-weight: 800;
-    height: 24px;
-    display: flex;
-    align-items: center;
-    color: ${({ theme }) => theme.colors.primary};
-  }
 
   /* Filter Options */
   .filter-options {
@@ -107,6 +97,29 @@ const FilterRowBox = styled.div`
   }
 `
 
+const FilterNameBox = styled.div`
+  display: flex;
+  width: 135px;
+  flex-direction: row;
+
+  button {
+    cursor: pointer;
+    :hover {
+      text-decoration: underline;
+    }
+  }
+
+  span {
+    display: flex;
+    align-items: center;
+    font-size: 14px;
+    font-family: ${({ theme }) => theme.fonts.secondary};
+    font-weight: 800;
+    height: 24px;
+    color: ${({ theme }) => theme.colors.primary};
+  }
+`
+
 const ShowMore = ({
   filterName,
   optionsLength,
@@ -152,8 +165,98 @@ export const FilterRow = ({
   const { category: partCategory } = useParams() as {
     category: PartsCategoriesType
   }
+
+  const selectedFilters =
+    useSelector(selectSelectedFilters)?.[partCategory] || []
+
+  // Get currently selected values
+  const selectedValues =
+    selectedFilters.find(
+      selectedFilter => selectedFilter.filterName === filterName
+    )?.filterOptions || []
+
   const isSubFilterOpen = useSelector(selectFiltersState)?.[partCategory]
     ?.subFilters?.[filterName] as boolean
+
+  // Get backup selected filter values
+  const backupSelectedFilterValues =
+    useSelector(selectSelectedFilters).backup?.[partCategory]?.find(
+      filter => filter.filterName === filterName
+    )?.filterOptions || []
+
+  const handleFilterNameClick = useCallback(() => {
+    const isAllSelected =
+      // To know if all the options are selected, check if the length
+      // of the selected values is the same as the length of the values
+      selectedValues.length === values.length &&
+      // And make sure none of the values are minus filters.
+      selectedValues.every(value => !/^!!.+/.test(value))
+
+    const isAllMinusSelected =
+      selectedValues.length === values.length &&
+      selectedValues.every(value => /^!!.+/.test(value))
+
+    const isNotSelectedAtAll = selectedValues.length === 0
+
+    let newSelectedValues: string[]
+    // If all are selected, turn into all minus selected
+    if (isAllSelected) {
+      newSelectedValues = values.map(value => '!!' + value)
+    }
+    // If all are minus selections, unselect all
+    else if (isAllMinusSelected) {
+      newSelectedValues = []
+    }
+    // If no options are selected, restore from backup
+    else if (isNotSelectedAtAll) {
+      newSelectedValues =
+        backupSelectedFilterValues.length === 0
+          ? values
+          : backupSelectedFilterValues
+    }
+    // If options are sparsely selected, select all
+    // And save currently selected values to backup in the store.
+    else {
+      newSelectedValues = values
+      dispatch(
+        setBackupFilterOptionValues({
+          category: partCategory,
+          filterName,
+          filterOptions: selectedValues
+        })
+      )
+    }
+
+    const filterIndex = selectedFilters.findIndex(
+      filter => filter.filterName === filterName
+    )
+    // Clone the selected filters to avoid mutating the state
+    const clonedSelectedFilters = structuredClone(selectedFilters)
+    if (filterIndex !== -1) {
+      clonedSelectedFilters.splice(filterIndex, 1)
+    }
+
+    // Set the new selected values
+    dispatch(
+      setFilterOptions({
+        category: partCategory,
+        filterOptions: [
+          ...clonedSelectedFilters,
+          {
+            filterName,
+            filterOptions: newSelectedValues
+          }
+        ]
+      })
+    )
+  }, [
+    selectedFilters,
+    selectedValues,
+    values,
+    filterName,
+    partCategory,
+    backupSelectedFilterValues
+  ])
 
   // Default count of rows to show
   const rowCount = RowCount[device as keyof typeof RowCount]
@@ -176,15 +279,14 @@ export const FilterRow = ({
     [filterName, partCategory]
   )
 
-  const selectedValues =
-    useSelector(selectSelectedFilters)?.[partCategory]?.find(
-      selectedFilter => selectedFilter.filterName === filterName
-    )?.filterOptions || []
-
   return (
     <FilterRowBox>
       {/* Filter Name */}
-      <span className="filter-name">{filterName}</span>
+      <FilterNameBox>
+        <button onClick={handleFilterNameClick}>
+          <span>{filterName}</span>
+        </button>
+      </FilterNameBox>
 
       {/* Filter Options */}
       <FormGroup className="filter-options">

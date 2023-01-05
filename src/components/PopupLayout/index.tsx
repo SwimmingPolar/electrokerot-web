@@ -1,7 +1,6 @@
-import styled from 'styled-components'
 import CloseIcon from '@mui/icons-material/Close'
 import { useScrollbarWidth } from 'hooks'
-import { media } from 'styles'
+import styled from 'styled-components'
 
 // Layout
 const Box = styled.div`
@@ -11,9 +10,6 @@ const Box = styled.div`
   box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
   overflow: hidden;
   border-radius: 7px;
-  ${media.desktopLarge`
-    margin-left: -100px;
-  `}
 `
 
 const ScrollBox = styled.div`

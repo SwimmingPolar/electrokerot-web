@@ -2,8 +2,7 @@ import { PageLayout } from 'components'
 import {
   BuildSummaryWidth,
   CategoryNavigationSidebarWidth,
-  Gap,
-  SidebarWidth
+  Gap
 } from 'constant'
 import {
   BuildSummary,
@@ -13,7 +12,7 @@ import {
   PartList
 } from 'features'
 import { useDeviceDetect } from 'hooks'
-import { FC, useMemo } from 'react'
+import { FC } from 'react'
 import styled from 'styled-components'
 import { media } from 'styles'
 
@@ -58,6 +57,7 @@ const Content = styled.div`
 // normal flow.
 const BuildSummaryPadding = styled.div`
   flex-grow: 0;
+  overflow-y: scroll;
 
   ${media.mobile`
     width: ${BuildSummaryWidth.mobile + 'px'}
@@ -82,18 +82,11 @@ export const PartListPage: FC = () => {
   // Make sure sidebar is visible only on desktop
   const { isDesktop } = useDeviceDetect()
 
-  const sidebarWidth = useMemo(() => {
-    const { desktopSmall, desktopLarge } = CategoryNavigationSidebarWidth
-    // Do not adjust the width of navbar on mobile friendly view
-    if (!isDesktop) {
-      return {} as SidebarWidth
-    }
-
-    return {
-      desktopSmall,
-      desktopLarge
-    } as SidebarWidth
-  }, [isDesktop])
+  const { desktopSmall, desktopLarge } = CategoryNavigationSidebarWidth
+  const sidebarWidth = {
+    desktopSmall,
+    desktopLarge
+  }
 
   return (
     // NavbarBox is needed to make the sidebar sticky

@@ -19,11 +19,14 @@ const Box = styled.div`
   display: flex;
   flex-direction: column;
   position: absolute;
+  width: 100%;
   gap: 3px;
 `
 
 const AnchorBox = styled.div`
+  width: 100%;
   background-color: ${({ theme }) => theme.colors.gray200};
+
   :hover {
     background-color: ${({ theme }) => theme.colors.white};
   }
@@ -39,7 +42,7 @@ const Anchor = styled.a`
   font-size: 13px;
   font-weight: 800;
   font-family: ${({ theme }) => theme.fonts.secondary};
-  color: ${({ theme }) => theme.colors.primary};
+  color: ${({ theme }) => theme.colors.black};
 `
 
 export const SideMenu = ({ filterNames }: { filterNames: string[] }) => {
@@ -62,7 +65,10 @@ export const SideMenu = ({ filterNames }: { filterNames: string[] }) => {
         {filterNames.map((filterName, index) => (
           <AnchorBox key={index}>
             <Anchor
-              href={`#${filterName.replace(/\s/g, '')}`}
+              href={`#${filterName.replace(
+                /([^ㄱ-ㅎ|ㅏ-ㅣ|가-힣a-zA-Z]|^\d*(?=\D))/g,
+                ''
+              )}`}
               onClick={handleClick}
             >
               {filterName}

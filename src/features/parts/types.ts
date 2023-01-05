@@ -17,6 +17,10 @@ export type SelectedFiltersElementType = {
 
 export type SelectedFiltersType = {
   [key in PartsCategoriesType]?: SelectedFiltersElementType[]
+} & {
+  backup: {
+    [key in PartsCategoriesType]?: SelectedFiltersElementType[]
+  }
 }
 
 export type FiltersStateType = {
@@ -47,6 +51,14 @@ export type SetFilterOptionsType = {
   payload: {
     category: PartsCategoriesType
     filterOptions: SelectedFiltersElementType[]
+  }
+}
+
+export type SetBackupFilterOptionValuesType = {
+  payload: {
+    category: PartsCategoriesType
+    filterName: string
+    filterOptions: string[]
   }
 }
 

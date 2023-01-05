@@ -1,5 +1,6 @@
 import { Checkbox, FormControlLabel } from '@mui/material'
-import { useCallback, useMemo } from 'react'
+import { useCallback, useEffect, useMemo } from 'react'
+import { palette } from 'styles'
 
 export const OptionCheckbox = ({
   selectedValues,
@@ -12,6 +13,10 @@ export const OptionCheckbox = ({
 }) => {
   const checked = useMemo(
     () => selectedValues.includes(value),
+    [selectedValues]
+  )
+  const minusChecked = useMemo(
+    () => selectedValues.includes(`!!${value}`),
     [selectedValues]
   )
   const handleChange = useCallback(() => {
@@ -27,7 +32,17 @@ export const OptionCheckbox = ({
           <Checkbox
             checked={checked}
             onChange={handleChange}
-            sx={{ '& .MuiSvgIcon-root': { fontSize: 18 } }}
+            sx={{
+              '& .MuiSvgIcon-root': {
+                fontSize: 18,
+                color: checked
+                  ? palette.light.blue
+                  : minusChecked
+                  ? palette.light.red
+                  : ''
+              }
+            }}
+            indeterminate={minusChecked}
           />
         }
       />

@@ -16,6 +16,8 @@ import { useMoveScroll } from '../hooks/useMoveScroll'
 import { sortSelectedFilters } from '../lib'
 import { GradientShadow } from './GradientShadow'
 
+export const SelectedFilterItemsBoxClassName = 'selected-filter-items-box'
+
 const SelectedFiltersListBox = styled.div`
   flex: 1;
   display: flex;
@@ -52,6 +54,8 @@ const SelectedFilterItemsBox = styled.div<{ scrollbarWidth: number }>`
 
     :hover {
       border: 1px solid ${({ theme }) => theme.colors.primary};
+      box-shadow: rgba(9, 30, 66, 0.3) 0px 1px 1px,
+        rgba(9, 30, 66, 0.125) 0px 0px 1px 1px;
     }
 
     ${media.device('foldable', 'mobile')`
@@ -158,7 +162,7 @@ export const SelectedFiltersList = ({
         <SelectedFilterItemsBox
           scrollbarWidth={scrollbarWidth}
           onScroll={handleScroll}
-          className="selected-filter-items-box"
+          className={SelectedFilterItemsBoxClassName}
         >
           {sortedFilters.map(({ filterName, filterOptions }, index) => (
             <SelectedFilterItem
