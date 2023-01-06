@@ -1,31 +1,9 @@
 import { ModalPageOrders as PageOrders, ModalRoutes } from 'constant'
 import { AnimationProps } from 'framer-motion'
-import {
-  didModalOpenedWithinApp,
-  getLastPathname,
-  useDeviceDetect
-} from 'hooks'
+import { getLastPathname, useDeviceDetect, useIsDirectAccess } from 'hooks'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useLocation } from 'react-router-dom'
 import { MotionConfig } from 'styles'
-
-// When deciding the motion for the modal, we need to know
-// if the modal is accessed directly via url. If so, we need to
-// remove the 'initial' property from the motion config.
-// didModalOpenedWithinApp() will return true if accessed directly via url
-// but will keep returning true until the modal is unmounted.
-// So, we need to use a closure to make sure that the function
-// only returns true once.
-const isDirectAccess = (() => {
-  let executed = false
-  return () => {
-    if (executed) {
-      return false
-    }
-    executed = true
-    return !didModalOpenedWithinApp()
-  }
-})()
 
 export const useMotionDecider = () => {
   const { isMobileFriendly } = useDeviceDetect()
@@ -34,6 +12,8 @@ export const useMotionDecider = () => {
 
   const currentPath = location.pathname
   const previousPath = getLastPathname()
+
+  const isDirect = useIsDirectAccess()
 
   const initialMotion = useMemo(() => {
     let initialMotion = {} as AnimationProps
@@ -61,8 +41,7 @@ export const useMotionDecider = () => {
     // Delete 'exit' property, so the modal doesn't use 'exit' motion set on initial mount
     delete initialMotion.exit
     // Remove 'initial' property, so the modal doesn't use 'initial' motion set on initial mount
-    // if the modal is accessed directly via url
-    if (isDirectAccess()) {
+    if (isDirect) {
       delete initialMotion.initial
     }
 
@@ -72,7 +51,7 @@ export const useMotionDecider = () => {
     }
 
     return initialMotion
-  }, [isMobileFriendly])
+  }, [isMobileFriendly, isDirect])
 
   // Use above initial motion as default motion
   const [motion, setMotion] = useState<AnimationProps>(initialMotion)

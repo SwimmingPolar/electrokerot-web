@@ -1,12 +1,12 @@
 import { useSelector } from 'app'
 import { selectModalStates } from 'features'
 import {
-  didModalOpenedWithinApp,
   getDeltaToNearestNonModalPage,
   useDeviceDetect,
+  useIsDirectAccess,
   useNavigate
 } from 'hooks'
-import { useCallback, useMemo } from 'react'
+import { useCallback, useEffect } from 'react'
 import { shallowEqual } from 'react-redux'
 import { useLocation } from 'react-router-dom'
 
@@ -68,9 +68,11 @@ actual router history:  / -> /login -> /
 export const useDecideNavigationMethod = () => {
   const { isMobileFriendly } = useDeviceDetect()
   const isDesktopFriendly = !isMobileFriendly
-  const isModalOpenedWithinApp = useMemo(didModalOpenedWithinApp, [
-    didModalOpenedWithinApp()
-  ])
+  // const isModalOpenedWithinApp = useMemo(didModalOpenedWithinApp, [
+  //   didModalOpenedWithinApp()
+  // ])
+  const didModalOpenedWithinApp = useIsDirectAccess()
+
   const modalStates = useSelector(selectModalStates, shallowEqual)
   const navigate = useNavigate()
   const location = useLocation()
@@ -81,13 +83,15 @@ export const useDecideNavigationMethod = () => {
       // routing for DESKTOP
       if (isDesktopFriendly) {
         // If modal was opened within app
-        if (isModalOpenedWithinApp) {
+        if (didModalOpenedWithinApp) {
+          console.log('direct')
           const navigationDelta = getDeltaToNearestNonModalPage(location)
           return navigate(-navigationDelta)
         }
         // If modal was opened via direct access,
         // which means there may be no previous path to go back to
         else {
+          console.log('in-direct')
           // If the current path is signup page,
           // then go to new path replacing the current path
           // so signup page is not saved in history
@@ -111,7 +115,7 @@ export const useDecideNavigationMethod = () => {
         return navigate(newPathname)
       }
     },
-    [isDesktopFriendly, modalStates, isModalOpenedWithinApp]
+    [isDesktopFriendly, modalStates]
   )
 
   return { handleNavigation }

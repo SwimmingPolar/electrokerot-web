@@ -1,4 +1,4 @@
-import { useLayoutEffect } from 'react'
+import { useLayoutEffect, useState } from 'react'
 
 interface CustomWindow extends Window {
   _isDirectAccess: string
@@ -6,22 +6,24 @@ interface CustomWindow extends Window {
 
 declare const window: CustomWindow
 
-const AccessConfirmationPhrase = 'accessing_within_app'
+const AccessConfirmationPhrase = 'accessed_within_app'
 
 export const setAccessType = () => {
-  // Any string will do.
-  // The catch is that we need to check if this variable is undefined or not
-  // If undefined, then the modal is accessed directly via url
+  // Any value that is not undefined will do.
   window._isDirectAccess = AccessConfirmationPhrase
 }
 
+// Should use this hook only once at the very root of the app
+// On initial render, isDirect will be 'true', then it will be 'false'
+// If the function should be called only once then do not put
+// 'isDirect' in the dependency array
 export const useIsDirectAccess = () => {
-  useLayoutEffect(() => {
-    return () => {
-      setAccessType()
-    }
-  }, [])
-}
+  const [isDirect, setIsDirect] = useState(window._isDirectAccess === undefined)
 
-export const didModalOpenedWithinApp = () =>
-  !(window._isDirectAccess === undefined)
+  useLayoutEffect(() => {
+    setAccessType()
+    setIsDirect(false)
+  }, [])
+
+  return isDirect
+}
