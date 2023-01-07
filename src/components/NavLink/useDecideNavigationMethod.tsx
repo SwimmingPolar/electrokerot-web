@@ -84,14 +84,12 @@ export const useDecideNavigationMethod = () => {
       if (isDesktopFriendly) {
         // If modal was opened within app
         if (didModalOpenedWithinApp) {
-          console.log('direct')
           const navigationDelta = getDeltaToNearestNonModalPage(location)
           return navigate(-navigationDelta)
         }
         // If modal was opened via direct access,
         // which means there may be no previous path to go back to
         else {
-          console.log('in-direct')
           // If the current path is signup page,
           // then go to new path replacing the current path
           // so signup page is not saved in history

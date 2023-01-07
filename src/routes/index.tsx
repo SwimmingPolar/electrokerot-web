@@ -9,6 +9,7 @@ import {
   PartsMenuPage,
   SignupPage
 } from 'pages'
+import { Suspense } from 'react'
 import {
   Location,
   Navigate,
@@ -75,15 +76,17 @@ export const RoutesProvider = () => {
                   2. Add custom 'esc' feature that closes the modal only when the modal is not animating. (ModalLayout)
                   3. Disable navigation between modals when the modal is animating.  */}
       <AnimatePresence>
-        <Routes location={backgroundLocation || location}>
-          <Route path="/" element={<Navigate to="/parts" replace={true} />} />
-          <Route path="/parts" element={<PartsMenuPage />} />
-          <Route path="/parts/:category" element={<PartListPage />} />
-          <Route path="/builds" element={<BuildPage />} />
-          <Route path="*" element={<div>404</div>} />
-        </Routes>
+        <Suspense fallback={<div style={{ backgroundColor: 'black' }} />}>
+          <Routes location={backgroundLocation || location}>
+            <Route path="/" element={<Navigate to="/parts" replace={true} />} />
+            <Route path="/parts" element={<PartsMenuPage />} />
+            <Route path="/parts/:category" element={<PartListPage />} />
+            <Route path="/builds" element={<BuildPage />} />
+            <Route path="*" element={<div>404</div>} />
+          </Routes>
+        </Suspense>
         {showModal && (
-          // @Important: key must be added to prevent animation from being skipped
+          // @Important: key must be added to prevent animation from being skipped.
           // If the user navigate from login page (any modal page) to another modal page,
           // before it gets unmounted after the animation finishes, and then navigate
           // back to the first modal page, the second component's entry animation will be skipped.
