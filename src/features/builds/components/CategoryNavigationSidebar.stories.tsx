@@ -6,7 +6,7 @@ import styled from 'styled-components'
 const Box = styled.div`
   display: flex;
   flex-direction: row;
-  height: 100%;
+  position: relative;
 
   > * {
     order: 2;
@@ -16,6 +16,7 @@ const Box = styled.div`
 const Content = styled.div`
   flex: 1;
   padding: 50px;
+  height: 1200px;
 `
 
 export default {

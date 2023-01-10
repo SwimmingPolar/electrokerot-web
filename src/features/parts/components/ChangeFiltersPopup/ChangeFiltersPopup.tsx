@@ -1,3 +1,4 @@
+import RestartAltIcon from '@mui/icons-material/RestartAlt'
 import { useDispatch, useSelector } from 'app'
 import { PopupLayout } from 'components'
 import { PartsCategoriesType } from 'constant'
@@ -13,7 +14,6 @@ import { useCallback, useMemo, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import styled from 'styled-components'
 import { SideMenu } from './components/SideMenu'
-import RestartAltIcon from '@mui/icons-material/RestartAlt'
 
 const Box = styled.div<{ targetFilter?: string; scrollbarWidth: number }>`
   /* Without 'targetFilter', make the modal smaller */
@@ -131,11 +131,10 @@ const SelectedFilter = ({
   handleClick: handleOptionClick,
   handleFilterNameClick
 }: SelectedFiltersSectionType) => {
-  // Extract the selected options for the filter
+  // Extract the selected options' state (selected, selected minus, or unselected)
   const selectedFilter = selectedFilters.find(
     selectedFilter => selectedFilter.filterName === filterName
   )
-
   const getFilterState = (option: string) => {
     const isChecked = selectedFilter?.filterOptions.includes(option)
     const isMinusChecked = selectedFilter?.filterOptions.includes(`!!${option}`)
@@ -330,16 +329,21 @@ export const ChangeFiltersPopup = ({
       const clonedFilterIndex = clonedSelectedFilters.findIndex(
         filter => filter.filterName === filterName
       )
+
       setClonedSelectedFilters(prevClonedSelectedFilters => {
+        // Clone the previous cloned selected filters to avoid mutating the state
+        let newClonedSelectedFilters = structuredClone(
+          prevClonedSelectedFilters
+        )
         if (clonedFilterIndex !== -1) {
-          prevClonedSelectedFilters.splice(clonedFilterIndex, 1)
+          newClonedSelectedFilters.splice(clonedFilterIndex, 1)
         }
-        prevClonedSelectedFilters = [
-          ...prevClonedSelectedFilters,
+        newClonedSelectedFilters = [
+          ...newClonedSelectedFilters,
           { filterName, filterOptions: newSelectedValues }
         ]
 
-        return prevClonedSelectedFilters
+        return newClonedSelectedFilters
       })
     },
     [

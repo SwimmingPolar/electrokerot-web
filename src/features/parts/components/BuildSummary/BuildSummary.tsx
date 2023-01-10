@@ -37,6 +37,29 @@ const Box = styled.aside<{ scrollbarWidth: number }>`
   `}
 `
 
+const BoxPadding = styled.div`
+  overflow-y: scroll;
+
+  ${media.mobile`
+    width: ${BuildSummaryWidth.mobile + 'px'};
+  `}
+  ${media.foldable`
+    width: ${BuildSummaryWidth.foldable + 'px'};
+  `}
+  ${media.tablet`
+    width: ${BuildSummaryWidth.tablet + 'px'};
+  `}
+  ${media.desktopSmall`
+    width: ${BuildSummaryWidth.desktopSmall + 'px'};
+  `}
+  ${media.desktopLarge`
+    width: ${BuildSummaryWidth.desktopLarge + 'px'};
+  `}
+  ${media.desktop`
+    order: 0 !important;
+  `}
+`
+
 const ContentBox = styled.div<{ scrollbarWidth: number }>`
   flex: 1;
   overflow-y: scroll;
@@ -58,14 +81,20 @@ export const BuildSummary: FC = () => {
   const scrollbarWidth = useScrollbarWidth()
 
   return (
-    <Box scrollbarWidth={scrollbarWidth} className="scrollbar-padding">
-      <ContentBox scrollbarWidth={scrollbarWidth} className="scrollbar-padding">
-        <Content>
-          {Array.from({ length: 100 }).map((_, index) => (
-            <div key={index}>{index}</div>
-          ))}
-        </Content>
-      </ContentBox>
-    </Box>
+    <>
+      <BoxPadding className="scrollbar-padding" />
+      <Box scrollbarWidth={scrollbarWidth} className="scrollbar-padding">
+        <ContentBox
+          scrollbarWidth={scrollbarWidth}
+          className="scrollbar-padding"
+        >
+          <Content>
+            {Array.from({ length: 100 }).map((_, index) => (
+              <div key={index}>{index}</div>
+            ))}
+          </Content>
+        </ContentBox>
+      </Box>
+    </>
   )
 }

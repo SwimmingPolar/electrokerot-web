@@ -19,8 +19,8 @@ const Box = styled.div<{ scrollbarWidth: number }>`
   /* Default depth to build summary as it will replace build summary on mobile view */
   z-index: ${ElementDepth.parts.buildSummary};
   overflow: hidden;
-  height: 100vh;
-  position: sticky;
+  height: 100%;
+  position: fixed;
 
   ${media.mobile`
     box-shadow: none;
@@ -66,6 +66,29 @@ const Box = styled.div<{ scrollbarWidth: number }>`
   /* On desktop devices, move the sidebar to left side */
   ${media.desktop`
     order: 1 !important;
+  `}
+`
+
+const BoxPadding = styled.div`
+  overflow-y: scroll;
+
+  ${media.mobile`
+    width: ${CategoryNavigationSidebarWidth.mobile + 'px'};
+  `}
+  ${media.foldable`
+    width: ${CategoryNavigationSidebarWidth.foldable + 'px'};
+  `}
+  ${media.tablet`
+    width: ${CategoryNavigationSidebarWidth.tablet + 'px'};
+  `}
+  ${media.desktopSmall`
+    width: ${CategoryNavigationSidebarWidth.desktopSmall + 'px'};
+  `}
+  ${media.desktopLarge`
+    width: ${CategoryNavigationSidebarWidth.desktopLarge + 'px'};
+  `}
+  ${media.desktop`
+    order: 0 !important;
   `}
 `
 
@@ -285,13 +308,16 @@ export const CategoryNavigationSidebar: FC = () => {
   const scrollbarWidth = useScrollbarWidth()
 
   return (
-    <Box scrollbarWidth={scrollbarWidth} className="scrollbar-padding">
-      <CategoriesBox
-        scrollbarWidth={scrollbarWidth}
-        className="scrollbar-padding"
-      >
-        <Categories />
-      </CategoriesBox>
-    </Box>
+    <>
+      <BoxPadding className="scrollbar-padding" />
+      <Box scrollbarWidth={scrollbarWidth} className="scrollbar-padding">
+        <CategoriesBox
+          scrollbarWidth={scrollbarWidth}
+          className="scrollbar-padding"
+        >
+          <Categories />
+        </CategoriesBox>
+      </Box>
+    </>
   )
 }

@@ -51,28 +51,6 @@ const Content = styled.div`
   `}
 `
 
-// BuildSummary has position of 'fixed' and will be out of DOM flow.
-// This will make the content area overflow to build summary area.
-// So, we are adding empty space to account for the width of the element that's out of
-// normal flow.
-const BuildSummaryPadding = styled.div`
-  flex-grow: 0;
-  overflow-y: scroll;
-
-  ${media.mobile`
-    width: ${BuildSummaryWidth.mobile + 'px'}
-  `}
-  ${media.tablet`
-    width: ${BuildSummaryWidth.tablet + 'px'}
-  `}
-  ${media.desktopSmall`
-    width: ${BuildSummaryWidth.desktopSmall + 'px'}
-  `}
-  ${media.desktopLarge`
-    width: ${BuildSummaryWidth.desktopLarge + 'px'}
-  `}
-`
-
 // Because of the navbar's 'position: fixed', the left part of the navbar
 // will be hidden behind the sidebar. So we need to subtract the width of
 // the sidebar from the navbar's width.
@@ -99,9 +77,6 @@ export const PartListPage: FC = () => {
             <Filter />
             <PartList />
           </Content>
-          {/* This is always needed as build summary may not be rendered
-          but instead navigation bar will replace build summary. */}
-          <BuildSummaryPadding className="scrollbar-padding" />
           {/* Show build summary only on desktop */}
           {isDesktop ? <BuildSummary /> : <CategoryNavigationSidebar />}
         </PageBox>
