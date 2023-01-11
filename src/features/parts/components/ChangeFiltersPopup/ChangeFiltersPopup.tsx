@@ -247,6 +247,40 @@ export const ChangeFiltersPopup = ({
     [category, clonedSelectedFilters, selectedFiltersWithAllCategory]
   )
 
+  // Handler for when the user clicks on the reset whole filters button
+  const handleResetFilters = useCallback(() => {
+    const isAnyFilterOn = clonedSelectedFilters.length > 0
+
+    // If any filter is on, save currently selected filters to backup.
+    // And reset the cloned selected filters to empty.
+    if (isAnyFilterOn) {
+      const backupSelectedFilters = clonedSelectedFilters.reduce(
+        (acc, { filterName, filterOptions }) => ({
+          ...acc,
+          [filterName]: filterOptions
+        }),
+        {} as { [key: string]: string[] }
+      )
+
+      setBackupSelectedFilters(backupSelectedFilters)
+      setClonedSelectedFilters([])
+    }
+
+    // If no filter is on, restore from backup
+    // And reset backup to empty.
+    else {
+      const restoredSelectedFilters = Object.entries(backupSelectedFilters).map(
+        ([filterName, filterOptions]) => ({
+          filterName,
+          filterOptions
+        })
+      )
+
+      setClonedSelectedFilters(restoredSelectedFilters)
+      setBackupSelectedFilters({})
+    }
+  }, [clonedSelectedFilters, backupSelectedFilters])
+
   // When modal is open, hide the scrollbar
   // and compensate for the scrollbar width
   useScrollbarPadding()
@@ -259,7 +293,7 @@ export const ChangeFiltersPopup = ({
           targetFilter={targetFilter}
           category={category}
           handleChangeCategory={handleChangeCategory}
-          selectedFilters={clonedSelectedFilters}
+          handleResetFilters={handleResetFilters}
         />
         <FiltersList
           targetFilter={targetFilter}

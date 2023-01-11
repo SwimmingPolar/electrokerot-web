@@ -1,3 +1,4 @@
+import RestartAltIcon from '@mui/icons-material/RestartAlt'
 import FormControl from '@mui/material/FormControl'
 import InputLabel from '@mui/material/InputLabel'
 import MenuItem from '@mui/material/MenuItem'
@@ -8,11 +9,11 @@ import {
   PartsCategoriesKr,
   PartsCategoriesType
 } from 'constant'
-import { SelectedFiltersElementType } from 'features'
-import { useMemo } from 'react'
 import styled from 'styled-components'
 
-const Box = styled.div``
+const Box = styled.div`
+  display: flex;
+`
 
 const SelectBox = styled.div`
   display: flex;
@@ -26,53 +27,69 @@ const SelectBox = styled.div`
   border-top-left-radius: 7px;
   background-color: ${({ theme }) => theme.colors.white};
   z-index: 3;
+  justify-content: space-between;
+
+  .select-box {
+    font-size: 14px;
+    font-weight: 700;
+    font-family: ${({ theme }) => theme.fonts.secondary};
+  }
+
+  .select-item {
+  }
+`
+
+const RestoreButtonBox = styled.div`
+  margin-right: 15px;
+  button {
+    cursor: pointer;
+    width: fit-content;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 3px;
+
+    .icon.reset {
+      font-size: 22px;
+      color: ${({ theme }) => theme.colors.gray300};
+      transition: 0.2s color ease-in-out;
+    }
+
+    span {
+      color: ${({ theme }) => theme.colors.gray300};
+      font-size: 13px;
+      font-weight: 700;
+      font-family: ${({ theme }) => theme.fonts.secondary};
+      transition: 0.2s color ease-in-out;
+    }
+
+    &:hover {
+      .icon.reset {
+        color: ${({ theme }) => theme.colors.primary};
+      }
+      span {
+        color: ${({ theme }) => theme.colors.primary};
+      }
+    }
+  }
 `
 
 type PopupHeaderType = {
   targetFilter: string | undefined
   category: PartsCategoriesType
   handleChangeCategory: (event: SelectChangeEvent) => void
-  selectedFilters: SelectedFiltersElementType[]
+  handleResetFilters: () => void
 }
 
 export const PopupHeader = ({
   targetFilter,
   category,
   handleChangeCategory,
-  selectedFilters
+  handleResetFilters
 }: PopupHeaderType) => {
   if (targetFilter) {
     return null
   }
-
-  // // Show the shadow if the filters overflow
-  // const hasOverflow = useAreFiltersOverflow(selectedFilters)
-  // // Show the shadow if the scroll is not at the end
-  // const { isScrollAtStart, isScrollAtEnd, handleScroll } = useIsScrollAtEnd({
-  //   selectedFilters,
-  //   containerSelector: SelectedFilterItemsBoxClassName
-  // })
-  // // Enable scrolling on the list
-  // useMoveScroll(SelectedFilterItemsBoxClassName)
-
-  // // Shadows for both edges of the list
-  // const StyledGradientShadow = ({
-  //   direction
-  // }: {
-  //   direction: 'left' | 'right'
-  // }) => (
-  //   <GradientShadow
-  //     hasOverflow={hasOverflow}
-  //     isScrollAtEnd={isScrollAtEnd}
-  //     isScrollAtStart={isScrollAtStart}
-  //     direction={direction}
-  //   />
-  // )
-
-  const selectedFiltersName = useMemo(
-    () => selectedFilters.map(({ filterName }) => filterName),
-    [selectedFilters]
-  )
 
   return (
     <Box>
@@ -84,14 +101,27 @@ export const PopupHeader = ({
             onChange={handleChangeCategory}
             label="category"
             sx={{ padding: '0 30px' }}
+            className="select-box"
           >
             {PartsCategories.map((category, index) => (
-              <MenuItem key={index} value={category}>
+              <MenuItem
+                key={index}
+                value={category}
+                sx={{
+                  fontSize: '13px'
+                }}
+              >
                 {PartsCategoriesKr[category]}
               </MenuItem>
             ))}
           </Select>
         </FormControl>
+        <RestoreButtonBox>
+          <button onClick={handleResetFilters}>
+            <span>필터 초기화</span>
+            <RestartAltIcon className="icon reset" />
+          </button>
+        </RestoreButtonBox>
       </SelectBox>
     </Box>
   )
