@@ -136,10 +136,12 @@ export const SelectedFiltersList = ({
   // Show the shadow if the filters overflow
   const hasOverflow = useAreFiltersOverflow(selectedFilters)
   // Show the shadow if the scroll is not at the end
-  const { isScrollAtStart, isScrollAtEnd, handleScroll } =
-    useIsScrollAtEnd(selectedFilters)
+  const { isScrollAtStart, isScrollAtEnd, handleScroll } = useIsScrollAtEnd({
+    selectedFilters,
+    containerSelector: SelectedFilterItemsBoxClassName
+  })
   // Enable scrolling on the list
-  useMoveScroll()
+  useMoveScroll(SelectedFilterItemsBoxClassName)
 
   // Shadows for both edges of the list
   const StyledGradientShadow = ({

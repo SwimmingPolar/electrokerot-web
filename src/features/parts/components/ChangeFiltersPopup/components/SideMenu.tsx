@@ -1,5 +1,7 @@
+import CircleIcon from '@mui/icons-material/Circle'
 import { FilterSideMenu } from 'constant'
-import { MouseEvent, useCallback } from 'react'
+import { SelectedFiltersElementType } from 'features'
+import { MouseEvent, useCallback, useEffect, useMemo } from 'react'
 import styled from 'styled-components'
 
 const Window = styled.div`
@@ -23,7 +25,7 @@ const Box = styled.div`
   gap: 3px;
 `
 
-const AnchorBox = styled.div`
+const ButtonBox = styled.div`
   width: 100%;
   background-color: ${({ theme }) => theme.colors.gray200};
 
@@ -31,26 +33,69 @@ const AnchorBox = styled.div`
     background-color: ${({ theme }) => theme.colors.white};
   }
 `
-const Anchor = styled.a`
+const Button = styled.button`
   display: flex;
   justify-content: center;
   align-items: center;
-  text-align: center;
-  padding: 15px 12px;
+  padding: 15px 10px;
   word-break: keep-all;
   line-height: 15px;
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 800;
   font-family: ${({ theme }) => theme.fonts.secondary};
   color: ${({ theme }) => theme.colors.black};
+  text-align: center;
+  cursor: pointer;
+
+  .icon.dot {
+    white-space: pre;
+    text-overflow: clip;
+    overflow: hidden;
+  }
 `
 
-export const SideMenu = ({ filterNames }: { filterNames: string[] }) => {
+type SideMenuType = {
+  targetFilter: string | undefined
+  filterNames: string[]
+  selectedFilters: SelectedFiltersElementType[]
+}
+
+export const SideMenu = ({
+  targetFilter,
+  filterNames,
+  selectedFilters
+}: SideMenuType) => {
+  // Show sidebar only when showing the entire filters
+  if (targetFilter) {
+    return null
+  }
+
+  // Extract selected filter names to indicate which filter is active
+  const selectedFilterNames = useMemo(
+    () =>
+      selectedFilters.map(
+        selectedFilter =>
+          // Extract name of selected filter
+          // only if there is at least one selected option
+          selectedFilter.filterOptions.length > 0 && selectedFilter.filterName
+      ),
+    [selectedFilters]
+  )
+
   const handleClick = useCallback((event: MouseEvent) => {
     event.preventDefault()
-    const target = event.target as HTMLAnchorElement
-    const targetId = target.getAttribute('href') || ''
-    const targetElement = document.querySelector(targetId)
+    // const target = event.target as HTMLAnchorElement
+    // const targetId = target.getAttribute('href') || ''
+    // const targetElement = document.querySelector(targetId)
+    const headerList = Array.from(
+      document.querySelectorAll('.filter-item .filter-name') || []
+    )
+    const targetId = (event.target as HTMLAnchorElement).getAttribute(
+      'data-filter-name'
+    )
+    const targetElement = headerList.find(
+      header => header.getAttribute('id') === targetId
+    )
 
     if (targetElement) {
       targetElement.scrollIntoView({
@@ -61,19 +106,30 @@ export const SideMenu = ({ filterNames }: { filterNames: string[] }) => {
 
   return (
     <Window>
-      <Box>
+      <Box className="filter-box">
         {filterNames.map((filterName, index) => (
-          <AnchorBox key={index}>
-            <Anchor
-              href={`#${filterName.replace(
-                /([^ㄱ-ㅎ|ㅏ-ㅣ|가-힣a-zA-Z]|^\d*(?=\D))/g,
-                ''
-              )}`}
-              onClick={handleClick}
-            >
+          <ButtonBox key={index}>
+            <Button data-filter-name={filterName} onClick={handleClick}>
+              {selectedFilterNames.includes(filterName) ? (
+                <span className="icon dot">
+                  <CircleIcon
+                    sx={{
+                      fontSize: '4px',
+                      color: 'red'
+                    }}
+                  />
+                  {'  '}
+                </span>
+              ) : (
+                <div
+                  style={{
+                    width: '10px'
+                  }}
+                />
+              )}
               {filterName}
-            </Anchor>
-          </AnchorBox>
+            </Button>
+          </ButtonBox>
         ))}
       </Box>
     </Window>

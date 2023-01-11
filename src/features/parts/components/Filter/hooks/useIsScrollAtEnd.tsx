@@ -1,15 +1,21 @@
 import { SelectedFiltersElementType } from 'features'
 import { useCallback, useEffect, useState } from 'react'
 
-export const useIsScrollAtEnd = (
+type UseIsScrollAtEndType = {
   selectedFilters: SelectedFiltersElementType[]
-) => {
+  containerSelector: string
+}
+
+export const useIsScrollAtEnd = ({
+  selectedFilters,
+  containerSelector
+}: UseIsScrollAtEndType) => {
   const [isScrollAtEnd, setIsScrollAtEnd] = useState(false)
   const [isScrollAtStart, setIsScrollAtStart] = useState(true)
 
   const handleScroll = useCallback(() => {
     const container = document.querySelector(
-      '.selected-filter-items-box'
+      `.${containerSelector}`
     ) as HTMLElement
     const {
       // Width of the entire element

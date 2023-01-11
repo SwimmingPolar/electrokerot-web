@@ -102,3 +102,18 @@ export const BuildPartsCategories = DefaultCategories.concat([
   'cpuCooler',
   'systemCooler'
 ]) as [BuildPartsCategoriesType]
+
+export const ChangeFilterPopupDimension = {
+  withTargetFilter: {
+    default: {
+      width: 420,
+      height: 580
+    }
+  },
+  withoutTargetFilter: {
+    default: {
+      width: 540,
+      height: 720
+    }
+  }
+}

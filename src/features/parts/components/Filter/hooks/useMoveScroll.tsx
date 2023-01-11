@@ -1,5 +1,4 @@
 import { useCallback, useEffect } from 'react'
-import { SelectedFilterItemsBoxClassName } from '../components/SelectedFiltersList'
 
 let isMouseDown = false
 
@@ -16,50 +15,54 @@ const unregisterEvents = (events: any[]) =>
     window.removeEventListener(event.type, event.handler)
   })
 
-export const useMoveScroll = () => {
-  const handleMouseMove = useCallback((event: MouseEvent) => {
-    const container = document.querySelector(
-      `.${SelectedFilterItemsBoxClassName}`
-    ) as HTMLElement
-    const {
-      // Width of the entire element
-      scrollWidth,
-      // Offset from the left edge (how much scrolled)
-      scrollLeft,
-      // Width of the visible part of the element
-      offsetWidth
-    } = container || {}
+export const useMoveScroll = (containerSelector: string) => {
+  const handleMouseMove = useCallback(
+    (event: MouseEvent) => {
+      const container = document.querySelector(
+        `.${containerSelector}`
+      ) as HTMLElement
+      const {
+        // Width of the entire element
+        scrollWidth,
+        // Offset from the left edge (how much scrolled)
+        scrollLeft,
+        // Width of the visible part of the element
+        offsetWidth
+      } = container || {}
 
-    const isScrollAtEnd = scrollLeft + offsetWidth === scrollWidth
+      const isScrollAtEnd = scrollLeft + offsetWidth === scrollWidth
 
-    // If the mouse is down and moving at the same time
-    // add 'scrolling' class to the container element.
-    // This is to prevent button from being clicked when scrolling.
-    if (isMouseDown) {
-      container.classList.add('scrolling')
-    }
+      // If the mouse is down and moving at the same time
+      // add 'scrolling' class to the container element.
+      // This is to prevent button from being clicked when scrolling.
+      if (isMouseDown) {
+        container.classList.add('scrolling')
+      }
 
-    switch (event.movementX) {
-      // When moving left, scrollLeft should be greater than 0
-      case MoveLeft:
-        if (!isScrollAtEnd) {
-          container.scrollLeft += 1
-        }
-        break
-      // When moving right, scrollLeft should be less than scrollWidth
-      case MoveRight:
-        if (container.scrollLeft > 0) {
-          container.scrollLeft += -1
-        }
-        break
-    }
-  }, [])
+      switch (event.movementX) {
+        // When moving left, scrollLeft should be greater than 0
+        case MoveLeft:
+          if (!isScrollAtEnd) {
+            container.scrollLeft += 1
+          }
+          break
+        // When moving right, scrollLeft should be less than scrollWidth
+        case MoveRight:
+          if (container.scrollLeft > 0) {
+            container.scrollLeft += -1
+          }
+          break
+      }
+    },
+    [containerSelector]
+  )
 
   const handleMousePress = useCallback(
     (event: MouseEvent) => {
       const container = document.querySelector(
-        `.${SelectedFilterItemsBoxClassName}`
+        `.${containerSelector}`
       ) as HTMLElement
+
       // If the click was not occurred within the container, don't bother
       if (!container.contains(event.target as HTMLElement)) {
         return
@@ -70,7 +73,7 @@ export const useMoveScroll = () => {
       // Mark mouse as pressed
       isMouseDown = true
     },
-    [handleMouseMove]
+    [handleMouseMove, containerSelector]
   )
 
   const handleMouseRelease = useCallback(() => {
@@ -84,31 +87,34 @@ export const useMoveScroll = () => {
       // Remove 'scrolling' class when mouse is released
       if (isMouseDown) {
         const container = document.querySelector(
-          `.${SelectedFilterItemsBoxClassName}`
+          `.${containerSelector}`
         ) as HTMLElement
         container.classList.remove('scrolling')
       }
       // Mark mouse as released
       isMouseDown = false
     }, 0)
-  }, [handleMouseMove])
+  }, [handleMouseMove, containerSelector])
 
-  const handleWheel = useCallback((event: WheelEvent) => {
-    const container = document.querySelector(
-      `.${SelectedFilterItemsBoxClassName}`
-    ) as HTMLElement
-    // If the click was not occurred within the container, don't bother
-    if (!container.contains(event.target as HTMLElement)) {
-      return
-    }
+  const handleWheel = useCallback(
+    (event: WheelEvent) => {
+      const container = document.querySelector(
+        `.${containerSelector}`
+      ) as HTMLElement
+      // If the click was not occurred within the container, don't bother
+      if (!container.contains(event.target as HTMLElement)) {
+        return
+      }
 
-    // If the mouse is down, don't scroll
-    if (isMouseDown) {
-      return
-    }
+      // If the mouse is down, don't scroll
+      if (isMouseDown) {
+        return
+      }
 
-    container.scrollLeft += event.deltaY
-  }, [])
+      container.scrollLeft += event.deltaY
+    },
+    [containerSelector]
+  )
 
   useEffect(() => {
     const events = [
