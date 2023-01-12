@@ -42,6 +42,7 @@ export const FiltersList = ({
         <SelectedFilter
           key={index}
           targetFilter={targetFilter}
+          filters={filters}
           filterName={(category || subCategory) as string}
           filterOptions={values}
           selectedFilters={selectedFilters}

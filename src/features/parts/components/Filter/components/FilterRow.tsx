@@ -8,11 +8,12 @@ import {
   setBackupFilterOptionValues,
   setFilterOptions,
   toggleFilterOptions,
-  toggleSubFilter
+  toggleSubFilter,
+  useGetPartsQuery
 } from 'features'
 import { useDeviceDetect } from 'hooks'
 import { useCallback } from 'react'
-import { useParams } from 'react-router-dom'
+import { useParams, useSearchParams } from 'react-router-dom'
 import styled from 'styled-components'
 import { media } from 'styles'
 import { OptionCheckbox } from './OptionCheckbox'
@@ -155,7 +156,8 @@ const ShowMore = ({
 export const FilterRow = ({
   category,
   subCategory,
-  values
+  values,
+  matchingType
 }: FilterValuesType) => {
   const { device } = useDeviceDetect()
   // Name of the current filter
@@ -174,6 +176,12 @@ export const FilterRow = ({
     selectedFilters.find(
       selectedFilter => selectedFilter.filterName === filterName
     )?.filterOptions || []
+
+  const [searchParams] = useSearchParams()
+  const { data, isFetching, isLoading } = useGetPartsQuery({
+    category: partCategory,
+    filters: JSON.stringify(selectedFilters)
+  })
 
   const isSubFilterOpen = useSelector(selectFiltersState)?.[partCategory]
     ?.subFilters?.[filterName] as boolean
@@ -250,6 +258,7 @@ export const FilterRow = ({
       })
     )
   }, [
+    matchingType,
     selectedFilters,
     selectedValues,
     values,
@@ -269,21 +278,23 @@ export const FilterRow = ({
       dispatch(
         toggleFilterOptions({
           category: partCategory,
-          filterOptions: {
-            filterName,
-            filterOptions: [value]
-          }
+          filterName,
+          filterOption: value
         })
       )
     },
     [filterName, partCategory]
   )
 
+  // Disable the handler if the target filter has matchingType of 'min' or 'max'
+  // because it can only select one value
+  const disableSelectAll = matchingType === 'min' || matchingType === 'max'
+
   return (
     <FilterRowBox>
       {/* Filter Name */}
       <FilterNameBox>
-        <button onClick={handleFilterNameClick}>
+        <button onClick={!disableSelectAll ? handleFilterNameClick : undefined}>
           <span>{filterName}</span>
         </button>
       </FilterNameBox>

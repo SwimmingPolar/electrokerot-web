@@ -6,9 +6,9 @@ import styled from 'styled-components'
 import { ElementDepth, media } from 'styles'
 import { ContentLayout as Content } from '../ContentLayout/ContentLayout'
 import { LowerBox } from './components/LowerBox'
-import { UpperBox } from './components/UpperBox'
-import { useLoadFilterJson } from './hooks/useLoadFilterJson'
 import { SelectedFilterItemsBoxClassName } from './components/SelectedFiltersList'
+import { UpperBox } from './components/UpperBox'
+import { useChangeSearchParams, useLoadFilterJson } from './hooks'
 
 const Box = styled(Content)`
   z-index: ${ElementDepth.parts.category};
@@ -46,6 +46,7 @@ export type ToggleChangeFiltersPopupType = (
 export const Filter: FC = () => {
   // Dynamically load filter json file to reduce bundle size
   useLoadFilterJson()
+  useChangeSearchParams()
   // Modal open/close state
   const [open, setOpen] = useState(false)
   // Which filters to change

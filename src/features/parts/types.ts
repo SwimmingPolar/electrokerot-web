@@ -4,6 +4,7 @@ export type FilterValuesType = {
   category?: string
   subCategory?: string
   values: string[]
+  matchingType?: 'exact' | 'contains' | 'range' | 'max' | 'min'
 }
 
 export type FiltersType = {
@@ -65,10 +66,8 @@ export type SetBackupFilterOptionValuesType = {
 export type ToggleFilterOptionsType = {
   payload: {
     category: PartsCategoriesType
-    filterOptions: {
-      filterName: string
-      filterOptions: string[]
-    }
+    filterName: string
+    filterOption: string
   }
 }
 

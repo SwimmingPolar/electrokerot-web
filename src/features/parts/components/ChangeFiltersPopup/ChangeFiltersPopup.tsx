@@ -12,6 +12,7 @@ import { useScrollbarPadding, useScrollbarWidth } from 'hooks'
 import { useCallback, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import styled from 'styled-components'
+import { useLoadFilterJson } from '../Filter/hooks/useLoadFilterJson'
 import { FiltersList, PopupHeader, SideMenu } from './components'
 
 const Box = styled.div<{ targetFilter?: string; scrollbarWidth: number }>`
@@ -71,6 +72,8 @@ export const ChangeFiltersPopup = ({
   const filterNames = filters.map(
     filter => filter.category || filter.subCategory
   ) as string[]
+
+  useLoadFilterJson({ category })
 
   // Handler for the confirm button
   const handleConfirmClick = useCallback(() => {
@@ -182,6 +185,38 @@ export const ChangeFiltersPopup = ({
         )?.filterOptions || []
       )
 
+      // This is to check if the currently selected filter should have unique option or not.
+      // Just like the radio button, it should only have one option selected at a time. (ex, 권장 파워용량)
+      const filterOptionConfig = filters.find(
+        filter =>
+          filter?.category === filterName || filter?.subCategory === filterName
+      )
+      // Check if the filter option should have unique option or not
+      const shouldUniqueOption =
+        filterOptionConfig?.matchingType === 'max' ||
+        filterOptionConfig?.matchingType === 'min'
+      // Check if the filter option has other options already selected (probably only one option already selected at this time)
+      const hasOtherOptions = oldOptions.length >= 1
+      // Check if the filter option that's already selected is not the same as the new filter option
+      // which means that the user is selecting a new option hence, we should remove the old option
+      const isNotSameValue = !oldOptions.every(oldOption =>
+        new RegExp(option, 'i').test(oldOption)
+      )
+      console.log(shouldUniqueOption, hasOtherOptions, isNotSameValue)
+      if (shouldUniqueOption && hasOtherOptions && isNotSameValue) {
+        // Remove all other options if there are any
+        // and add the new option
+        const newSelectedFilters = clonedSelectedFilters.map(selectedFilter => {
+          if (selectedFilter.filterName !== filterName) {
+            return selectedFilter
+          }
+          // Change the filter options to the new and the only option
+          return { filterName, filterOptions: [option] }
+        })
+        setClonedSelectedFilters(newSelectedFilters)
+        return
+      }
+
       let newOptions: string[]
       // If minus filter is selected, remove the option from the selectedFilters. (if statement order matters)
       if (oldOptions.includes(`!!${option}`)) {
@@ -222,7 +257,7 @@ export const ChangeFiltersPopup = ({
         setClonedSelectedFilters(newSelectedFilters)
       }
     },
-    [selectedFilters, clonedSelectedFilters, setClonedSelectedFilters]
+    [filters, selectedFilters, clonedSelectedFilters, setClonedSelectedFilters]
   )
 
   // Handler for when the user change the category

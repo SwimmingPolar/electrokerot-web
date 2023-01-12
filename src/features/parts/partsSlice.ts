@@ -67,10 +67,7 @@ const partsSlice = createSlice({
     toggleFilterOptions: (
       state,
       {
-        payload: {
-          category,
-          filterOptions: { filterName, filterOptions }
-        }
+        payload: { category, filterName, filterOption }
       }: ToggleFilterOptionsType
     ) => {
       // Find an index of a matching filter option
@@ -84,10 +81,11 @@ const partsSlice = createSlice({
           ...(state.selectedFilters[category] || []),
           {
             filterName,
-            filterOptions
+            filterOptions: [filterOption]
           }
         ]
       }
+
       // If a matching filter option is found, update it in the state
       else {
         // Get the current selected options by the index
@@ -95,34 +93,60 @@ const partsSlice = createSlice({
           state.selectedFilters[category]?.[selectedFilterIndex]
             .filterOptions || []
 
-        // Iterate over the filter options that the user selected and
-        // check/uncheck them from the selected options
-        filterOptions.forEach(userSelection => {
-          // If the options that the user selected is already in the selected options,
-          // it means that the user is unchecking it and vice versa
-          // const isChecked = selectedOptions.includes(userSelection)
-          const isChecked = selectedOptions.includes(userSelection)
-          const isMinusChecked = selectedOptions.includes(`!!${userSelection}`)
+        // This is to check if the currently selected filter should have unique option or not.
+        // Just like the radio button, it should only have one option selected at a time. (ex, 권장 파워용량)
+        const filterOptionConfig = state.filters[category]?.find(
+          filter =>
+            filter?.category === filterName ||
+            filter?.subCategory === filterName
+        )
+        // Check if the filter option should have unique option or not
+        const shouldUniqueOption =
+          filterOptionConfig?.matchingType === 'max' ||
+          filterOptionConfig?.matchingType === 'min'
+        // Check if the filter option has other options already selected (probably only one option already selected at this time)
+        const hasOtherOptions = selectedOptions.length >= 1
+        // Check if the filter option that's already selected is not the same as the new filter option
+        // which means that the user is selecting a new option hence, we should remove the old option
+        const isNotSameValue = !selectedOptions.every(selectedOption =>
+          new RegExp(filterOption, 'i').test(selectedOption)
+        )
+        if (shouldUniqueOption && hasOtherOptions && isNotSameValue) {
+          // Remove all other options if there are any
+          // and add the new option
+          selectedOptions.splice(0, selectedOptions.length, filterOption)
+          return
+        }
 
-          // 'userSelection' from action payload only contains original filters values
-          // which means they don't have '!!' in front of them even if minus filter is checked.
-          // But the selected options in the state have '!!' in front of them if minus filter
-          // is checked. So, we need to add '!!' in front of the 'userSelection' to match the
-          // selected options in the state.
-          userSelection = isMinusChecked ? `!!${userSelection}` : userSelection
-          const indexOfSelectedOption = selectedOptions.indexOf(userSelection)
+        // If the options that the user selected is already in the selected options,
+        // it means that the user is unchecking it and vice versa
+        // const isChecked = selectedOptions.includes(userSelection)
+        const isChecked = selectedOptions.includes(filterOption)
+        const isMinusChecked = selectedOptions.includes(`!!${filterOption}`)
 
-          // If it's already checked, uncheck it
-          if (isChecked) {
-            selectedOptions[indexOfSelectedOption] = `!!${userSelection}`
-          } else if (isMinusChecked) {
-            selectedOptions.splice(selectedOptions.indexOf(userSelection), 1)
-          }
-          // If not checked, check it
-          else {
-            selectedOptions.push(userSelection)
-          }
-        })
+        // 'userSelection' from action payload only contains original filters values
+        // which means they don't have '!!' in front of them even if minus filter is checked.
+        // But the selected options in the state have '!!' in front of them if minus filter
+        // is checked. So, we need to add '!!' in front of the 'userSelection' to match the
+        // selected options in the state.
+        const newlySelectedOption = isMinusChecked
+          ? `!!${filterOption}`
+          : filterOption
+        const indexOfSelectedOption =
+          selectedOptions.indexOf(newlySelectedOption)
+
+        // If it's already checked, minus check it
+        if (isChecked) {
+          selectedOptions[indexOfSelectedOption] = `!!${filterOption}`
+        }
+        // If it's already minus checked, uncheck it
+        else if (isMinusChecked) {
+          selectedOptions.splice(selectedOptions.indexOf(filterOption), 1)
+        }
+        // If not checked, check it
+        else {
+          selectedOptions.push(filterOption)
+        }
       }
     },
     // Open/close the filter

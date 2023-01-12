@@ -4,10 +4,17 @@ import { FilterValuesType, selectFilters, setFilters } from 'features'
 import { useEffect } from 'react'
 import { useParams } from 'react-router-dom'
 
-export const useLoadFilterJson = () => {
-  const { category } = useParams() as { category: PartsCategoriesType }
+type UseLoadFilterJsonType = {
+  category?: PartsCategoriesType
+}
+
+export const useLoadFilterJson = (props?: UseLoadFilterJsonType) => {
+  const { category: categoryParam } = useParams() as {
+    category: PartsCategoriesType
+  }
+  const category = props?.category || categoryParam
   const dispatch = useDispatch()
-  const filters = useSelector(selectFilters)[category]
+  const filters = useSelector(selectFilters)[category] || []
 
   useEffect(() => {
     // Filter json file loader
@@ -25,8 +32,8 @@ export const useLoadFilterJson = () => {
       )
     }
 
-    if (!filters) {
+    if (filters.length === 0) {
       getFilters()
     }
-  }, [category])
+  }, [category, categoryParam, props])
 }

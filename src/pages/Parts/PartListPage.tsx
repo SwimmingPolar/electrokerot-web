@@ -1,9 +1,5 @@
 import { PageLayout } from 'components'
-import {
-  BuildSummaryWidth,
-  CategoryNavigationSidebarWidth,
-  Gap
-} from 'constant'
+import { CategoryNavigationSidebarWidth, Gap } from 'constant'
 import {
   BuildSummary,
   CategoryAndSearch,
