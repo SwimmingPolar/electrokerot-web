@@ -1,24 +1,19 @@
 import { Checkbox, FormControlLabel } from '@mui/material'
-import { useCallback, useEffect, useMemo } from 'react'
+import React, { useCallback, useMemo } from 'react'
 import { palette } from 'styles'
 
 export const OptionCheckbox = ({
-  selectedValues,
   value,
+  checkType,
   handleOptionChange
 }: {
-  selectedValues: string[]
   value: string
+  checkType: 'unchecked' | 'checked' | 'minus'
   handleOptionChange: (value: string) => void
 }) => {
-  const checked = useMemo(
-    () => selectedValues.includes(value),
-    [selectedValues]
-  )
-  const minusChecked = useMemo(
-    () => selectedValues.includes(`!!${value}`),
-    [selectedValues]
-  )
+  const checked = useMemo(() => checkType === 'checked', [checkType])
+  const minusChecked = useMemo(() => checkType === 'minus', [checkType])
+
   const handleChange = useCallback(() => {
     handleOptionChange(value)
   }, [handleOptionChange, value])
@@ -50,3 +45,5 @@ export const OptionCheckbox = ({
     </div>
   )
 }
+
+export const MemoizedOptionCheckbox = React.memo(OptionCheckbox)

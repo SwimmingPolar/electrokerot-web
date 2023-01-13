@@ -51,7 +51,10 @@ export type SetFiltersType = {
 export type SetFilterOptionsType = {
   payload: {
     category: PartsCategoriesType
-    filterOptions: SelectedFiltersElementType[]
+    filterOptions: {
+      filterName: string
+      filterOptions: string[]
+    }[]
   }
 }
 

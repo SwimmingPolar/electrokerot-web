@@ -9,7 +9,7 @@ import {
   ToggleChangeFiltersPopupType,
   toggleFilter
 } from 'features'
-import { useCallback } from 'react'
+import React, { useCallback } from 'react'
 import { useParams } from 'react-router-dom'
 import styled from 'styled-components'
 import { media } from 'styles'
@@ -191,3 +191,5 @@ export const UpperBox = ({ toggleChangeFiltersPopup }: UpperBoxType) => {
     </Box>
   )
 }
+
+export const MemoizedUpperBox = React.memo(UpperBox)

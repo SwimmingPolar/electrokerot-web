@@ -28,12 +28,30 @@ const partsSlice = createSlice({
     setFilters: (state, { payload: { category, filters } }: SetFiltersType) => {
       state.filters[category] = filters
     },
-    // Set new filter options for the entire category
+    // Set new filter options for the entire filter name
     setFilterOptions: (
       state,
       { payload: { category, filterOptions } }: SetFilterOptionsType
     ) => {
-      state.selectedFilters[category] = filterOptions
+      // Create an array for the category if it doesn't exist
+      if (state.selectedFilters[category] === undefined) {
+        state.selectedFilters[category] = []
+      }
+
+      // Iterate over the given filter options and update the state
+      filterOptions.forEach(({ filterName, filterOptions }) => {
+        const selectedFilter = state.selectedFilters[category]?.find(
+          selectedFilter => selectedFilter.filterName === filterName
+        )
+        if (selectedFilter === undefined) {
+          state.selectedFilters[category]?.push({
+            filterName,
+            filterOptions
+          })
+        } else {
+          selectedFilter.filterOptions = filterOptions
+        }
+      })
     },
     setBackupFilterOptionValues: (
       state,
@@ -77,13 +95,13 @@ const partsSlice = createSlice({
 
       // If no matching filter option is found, add it to the state
       if (selectedFilterIndex === undefined || selectedFilterIndex === -1) {
-        state.selectedFilters[category] = [
-          ...(state.selectedFilters[category] || []),
-          {
-            filterName,
-            filterOptions: [filterOption]
-          }
-        ]
+        if (state.selectedFilters[category] === undefined) {
+          state.selectedFilters[category] = []
+        }
+        state.selectedFilters[category]?.push({
+          filterName,
+          filterOptions: [filterOption]
+        })
       }
 
       // If a matching filter option is found, update it in the state
@@ -91,7 +109,10 @@ const partsSlice = createSlice({
         // Get the current selected options by the index
         const selectedOptions =
           state.selectedFilters[category]?.[selectedFilterIndex]
-            .filterOptions || []
+            .filterOptions ||
+          // There will always be an array of selected options
+          // This is for typescript to not complain
+          []
 
         // This is to check if the currently selected filter should have unique option or not.
         // Just like the radio button, it should only have one option selected at a time. (ex, 권장 파워용량)
@@ -141,7 +162,10 @@ const partsSlice = createSlice({
         }
         // If it's already minus checked, uncheck it
         else if (isMinusChecked) {
-          selectedOptions.splice(selectedOptions.indexOf(filterOption), 1)
+          selectedOptions.splice(
+            selectedOptions.indexOf(`!!${filterOption}`),
+            1
+          )
         }
         // If not checked, check it
         else {
@@ -149,6 +173,7 @@ const partsSlice = createSlice({
         }
       }
     },
+
     // Open/close the filter
     toggleFilter: (state, { payload: { category } }: ToggleFilterType) => {
       const open = state.filtersState[category]?.open

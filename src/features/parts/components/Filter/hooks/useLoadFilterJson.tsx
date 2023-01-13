@@ -35,5 +35,5 @@ export const useLoadFilterJson = (props?: UseLoadFilterJsonType) => {
     if (filters.length === 0) {
       getFilters()
     }
-  }, [category, categoryParam, props])
+  }, [category])
 }

@@ -53,6 +53,9 @@ export const ChangeFiltersPopup = ({
     category: PartsCategoriesType
   }
   const [category, setCategory] = useState(categoryParam)
+  // Load the filters data in case it is not loaded yet
+  useLoadFilterJson({ category })
+
   // Get filters data
   const filters = useSelector(selectFilters)[category] || []
   // Get selected filters
@@ -72,8 +75,6 @@ export const ChangeFiltersPopup = ({
   const filterNames = filters.map(
     filter => filter.category || filter.subCategory
   ) as string[]
-
-  useLoadFilterJson({ category })
 
   // Handler for the confirm button
   const handleConfirmClick = useCallback(() => {
@@ -202,7 +203,6 @@ export const ChangeFiltersPopup = ({
       const isNotSameValue = !oldOptions.every(oldOption =>
         new RegExp(option, 'i').test(oldOption)
       )
-      console.log(shouldUniqueOption, hasOtherOptions, isNotSameValue)
       if (shouldUniqueOption && hasOtherOptions && isNotSameValue) {
         // Remove all other options if there are any
         // and add the new option

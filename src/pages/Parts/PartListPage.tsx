@@ -4,7 +4,7 @@ import {
   BuildSummary,
   CategoryAndSearch,
   CategoryNavigationSidebar,
-  Filter,
+  MemoizedFilter as Filter,
   PartList
 } from 'features'
 import { useDeviceDetect } from 'hooks'

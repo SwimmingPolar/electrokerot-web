@@ -3,20 +3,19 @@ import { useDispatch, useSelector } from 'app'
 import { PartsCategoriesType, RowCount } from 'constant'
 import {
   FilterValuesType,
+  SelectedFiltersElementType,
   selectFiltersState,
-  selectSelectedFilters,
   setBackupFilterOptionValues,
   setFilterOptions,
   toggleFilterOptions,
-  toggleSubFilter,
-  useGetPartsQuery
+  toggleSubFilter
 } from 'features'
 import { useDeviceDetect } from 'hooks'
-import { useCallback } from 'react'
-import { useParams, useSearchParams } from 'react-router-dom'
+import React, { useCallback, useMemo } from 'react'
+import { useParams } from 'react-router-dom'
 import styled from 'styled-components'
 import { media } from 'styles'
-import { OptionCheckbox } from './OptionCheckbox'
+import { MemoizedOptionCheckbox as OptionCheckbox } from './OptionCheckbox'
 
 const FilterRowBox = styled.div`
   display: flex;
@@ -153,55 +152,52 @@ const ShowMore = ({
   )
 }
 
+type FilterRowType = {
+  filter: FilterValuesType
+  selectedFilters: SelectedFiltersElementType | undefined
+  backupSelectedFilters: SelectedFiltersElementType | undefined
+}
+
 export const FilterRow = ({
-  category,
-  subCategory,
-  values,
-  matchingType
-}: FilterValuesType) => {
+  filter,
+  selectedFilters,
+  backupSelectedFilters
+}: FilterRowType) => {
+  // Extract filter information from props
+  const filterName = (filter?.category || filter?.subCategory) as string
+  const filterValues = filter?.values || []
+  const filterMatchingType = filter?.matchingType
+
+  // Get the current device type
   const { device } = useDeviceDetect()
-  // Name of the current filter
-  const filterName = (category || subCategory) as string
 
   // Decide if the sub filter is open or not
-  const { category: partCategory } = useParams() as {
+  const { category } = useParams() as {
     category: PartsCategoriesType
   }
-
-  const selectedFilters =
-    useSelector(selectSelectedFilters)?.[partCategory] || []
-
-  // Get currently selected values
-  const selectedValues =
-    selectedFilters.find(
-      selectedFilter => selectedFilter.filterName === filterName
-    )?.filterOptions || []
-
-  const [searchParams] = useSearchParams()
-  const { data, isFetching, isLoading } = useGetPartsQuery({
-    category: partCategory,
-    filters: JSON.stringify(selectedFilters)
-  })
-
-  const isSubFilterOpen = useSelector(selectFiltersState)?.[partCategory]
+  const isSubFilterOpen = useSelector(selectFiltersState)?.[category]
     ?.subFilters?.[filterName] as boolean
 
-  // Get backup selected filter values
-  const backupSelectedFilterValues =
-    useSelector(selectSelectedFilters).backup?.[partCategory]?.find(
-      filter => filter.filterName === filterName
-    )?.filterOptions || []
+  // Extract selected values and its backups
+  const selectedValues = useMemo(
+    () => selectedFilters?.filterOptions || [],
+    [selectedFilters]
+  )
+  const backupSelectedValues = useMemo(
+    () => backupSelectedFilters?.filterOptions || [],
+    [backupSelectedFilters]
+  )
 
   const handleFilterNameClick = useCallback(() => {
     const isAllSelected =
       // To know if all the options are selected, check if the length
       // of the selected values is the same as the length of the values
-      selectedValues.length === values.length &&
+      selectedValues.length === filterValues.length &&
       // And make sure none of the values are minus filters.
       selectedValues.every(value => !/^!!.+/.test(value))
 
     const isAllMinusSelected =
-      selectedValues.length === values.length &&
+      selectedValues.length === filterValues.length &&
       selectedValues.every(value => /^!!.+/.test(value))
 
     const isNotSelectedAtAll = selectedValues.length === 0
@@ -209,7 +205,7 @@ export const FilterRow = ({
     let newSelectedValues: string[]
     // If all are selected, turn into all minus selected
     if (isAllSelected) {
-      newSelectedValues = values.map(value => '!!' + value)
+      newSelectedValues = filterValues.map(value => '!!' + value)
     }
     // If all are minus selections, unselect all
     else if (isAllMinusSelected) {
@@ -218,38 +214,26 @@ export const FilterRow = ({
     // If no options are selected, restore from backup
     else if (isNotSelectedAtAll) {
       newSelectedValues =
-        backupSelectedFilterValues.length === 0
-          ? values
-          : backupSelectedFilterValues
+        backupSelectedValues.length === 0 ? filterValues : backupSelectedValues
     }
     // If options are sparsely selected, select all
     // And save currently selected values to backup in the store.
     else {
-      newSelectedValues = values
+      newSelectedValues = filterValues
       dispatch(
         setBackupFilterOptionValues({
-          category: partCategory,
+          category,
           filterName,
           filterOptions: selectedValues
         })
       )
     }
 
-    const filterIndex = selectedFilters.findIndex(
-      filter => filter.filterName === filterName
-    )
-    // Clone the selected filters to avoid mutating the state
-    const clonedSelectedFilters = structuredClone(selectedFilters)
-    if (filterIndex !== -1) {
-      clonedSelectedFilters.splice(filterIndex, 1)
-    }
-
     // Set the new selected values
     dispatch(
       setFilterOptions({
-        category: partCategory,
+        category,
         filterOptions: [
-          ...clonedSelectedFilters,
           {
             filterName,
             filterOptions: newSelectedValues
@@ -257,19 +241,14 @@ export const FilterRow = ({
         ]
       })
     )
-  }, [
-    matchingType,
-    selectedFilters,
-    selectedValues,
-    values,
-    filterName,
-    partCategory,
-    backupSelectedFilterValues
-  ])
+  }, [category, selectedValues, backupSelectedValues])
 
   // Default count of rows to show
   const rowCount = RowCount[device as keyof typeof RowCount]
-  const optionsList = !isSubFilterOpen ? values.slice(0, rowCount) : values
+  const optionsList = useMemo(
+    () => (!isSubFilterOpen ? filterValues.slice(0, rowCount) : filterValues),
+    [isSubFilterOpen, filterValues]
+  )
 
   // Handle checkbox change
   const dispatch = useDispatch()
@@ -277,18 +256,42 @@ export const FilterRow = ({
     (value: string) => {
       dispatch(
         toggleFilterOptions({
-          category: partCategory,
+          category: category,
           filterName,
           filterOption: value
         })
       )
     },
-    [filterName, partCategory]
+    [category, filterName]
   )
 
   // Disable the handler if the target filter has matchingType of 'min' or 'max'
   // because it can only select one value
-  const disableSelectAll = matchingType === 'min' || matchingType === 'max'
+  const disableSelectAll =
+    filterMatchingType === 'min' || filterMatchingType === 'max'
+
+  const OptionCheckboxList = useMemo(
+    () =>
+      optionsList.map((value, index) => {
+        const checked = selectedValues.includes(value)
+        const minusChecked = selectedValues.includes('!!' + value)
+        const checkType = checked
+          ? 'checked'
+          : minusChecked
+          ? 'minus'
+          : 'unchecked'
+
+        return (
+          <OptionCheckbox
+            key={index}
+            value={value}
+            checkType={checkType}
+            handleOptionChange={handleOptionChange}
+          />
+        )
+      }),
+    [selectedValues]
+  )
 
   return (
     <FilterRowBox>
@@ -298,24 +301,16 @@ export const FilterRow = ({
           <span>{filterName}</span>
         </button>
       </FilterNameBox>
-
       {/* Filter Options */}
-      <FormGroup className="filter-options">
-        {optionsList.map((value, index) => (
-          <OptionCheckbox
-            key={index}
-            selectedValues={selectedValues}
-            value={value}
-            handleOptionChange={handleOptionChange}
-          />
-        ))}
-      </FormGroup>
+      <FormGroup className="filter-options">{OptionCheckboxList}</FormGroup>
       <ShowMore
         filterName={filterName}
-        optionsLength={values.length}
+        optionsLength={filterValues.length}
         rowCount={rowCount}
         isOpen={isSubFilterOpen}
       />
     </FilterRowBox>
   )
 }
+
+export const MemoizedFilterRow = React.memo(FilterRow)

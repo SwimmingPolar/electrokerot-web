@@ -1,14 +1,20 @@
 import { Modal } from '@mui/material'
 import { ChangeFiltersPopup } from 'features'
 import { useEmptyRoute } from 'hooks'
-import { FC, KeyboardEvent, MouseEvent, useCallback, useState } from 'react'
+import React, {
+  FC,
+  KeyboardEvent,
+  MouseEvent,
+  useCallback,
+  useState
+} from 'react'
 import styled from 'styled-components'
 import { ElementDepth, media } from 'styles'
 import { ContentLayout as Content } from '../ContentLayout/ContentLayout'
-import { LowerBox } from './components/LowerBox'
+import { MemoizedLowerBox as LowerBox } from './components/LowerBox'
 import { SelectedFilterItemsBoxClassName } from './components/SelectedFiltersList'
-import { UpperBox } from './components/UpperBox'
-import { useChangeSearchParams, useLoadFilterJson } from './hooks'
+import { MemoizedUpperBox as UpperBox } from './components/UpperBox'
+import { useLoadFilterJson } from './hooks'
 
 const Box = styled(Content)`
   z-index: ${ElementDepth.parts.category};
@@ -46,7 +52,7 @@ export type ToggleChangeFiltersPopupType = (
 export const Filter: FC = () => {
   // Dynamically load filter json file to reduce bundle size
   useLoadFilterJson()
-  useChangeSearchParams()
+  // useChangeSearchParams()
   // Modal open/close state
   const [open, setOpen] = useState(false)
   // Which filters to change
@@ -83,7 +89,7 @@ export const Filter: FC = () => {
         }
       }
     },
-    [setTargetFilter, toggleModal, setOpen]
+    [toggleModal]
   )
 
   return (
@@ -101,3 +107,5 @@ export const Filter: FC = () => {
     </Box>
   )
 }
+
+export const MemoizedFilter = React.memo(Filter)

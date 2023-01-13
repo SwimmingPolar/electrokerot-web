@@ -4,13 +4,6 @@ import { selectSelectedFilters } from 'features'
 import { useEffect } from 'react'
 import { useParams, useSearchParams } from 'react-router-dom'
 
-type SearchParamsType = {
-  category: PartsCategoriesType
-  page?: number
-  query?: string
-  filters?: Record<string, string[]>
-}
-
 export const useChangeSearchParams = () => {
   // Get search params from url
   const [searchParams, setSearchParams] = useSearchParams()
