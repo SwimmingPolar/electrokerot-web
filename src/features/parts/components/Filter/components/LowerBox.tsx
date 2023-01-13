@@ -7,7 +7,7 @@ import {
   ToggleChangeFiltersPopupType
 } from 'features'
 import { useDeviceDetect } from 'hooks'
-import React, { useMemo } from 'react'
+import React, { FC, useMemo } from 'react'
 import { useParams } from 'react-router-dom'
 import styled from 'styled-components'
 import { MemoizedFilterRow as FilterRow } from './FilterRow'
@@ -19,11 +19,7 @@ const Box = styled.div`
   gap: 9px;
 `
 
-type UpperBoxType = {
-  toggleChangeFiltersPopup: ToggleChangeFiltersPopupType
-}
-
-export const LowerBox = ({ toggleChangeFiltersPopup }: UpperBoxType) => {
+export const LowerBox: FC = () => {
   const { isMobileFriendly } = useDeviceDetect()
   const { category } = useParams() as { category: PartsCategoriesType }
 

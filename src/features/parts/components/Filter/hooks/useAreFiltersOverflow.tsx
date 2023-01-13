@@ -1,12 +1,12 @@
-import { useEffect, useState } from 'react'
 import { SelectedFiltersElementType } from 'features'
+import { useCallback, useEffect, useState } from 'react'
 
 export const useAreFiltersOverflow = (
   selectedFilters: SelectedFiltersElementType[]
 ) => {
   const [overflow, setOverflow] = useState(false)
 
-  useEffect(() => {
+  const hasOverflow = useCallback(() => {
     // Get outer box width
     const selectedFiltersListBoxWidth = document.querySelector(
       '.selected-filters-list-box'
@@ -31,6 +31,16 @@ export const useAreFiltersOverflow = (
     // When inner box width is less than outer box width, then there is no overflow
     else if (overflow <= 0) {
       setOverflow(false)
+    }
+  }, [])
+
+  // Whenever the selected filters change, check the overflow status
+  useEffect(() => {
+    hasOverflow()
+
+    window.addEventListener('resize', hasOverflow)
+    return () => {
+      window.removeEventListener('resize', hasOverflow)
     }
   }, [selectedFilters])
 

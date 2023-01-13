@@ -2,7 +2,6 @@ import LayersOutlinedIcon from '@mui/icons-material/LayersOutlined'
 import SearchIcon from '@mui/icons-material/Search'
 import { PartsCategoriesKr, PartsCategoriesType } from 'constant'
 import { useDeviceDetect } from 'hooks'
-import { FC } from 'react'
 import { useParams } from 'react-router-dom'
 import styled from 'styled-components'
 import { ElementDepth, media } from 'styles'
@@ -32,6 +31,7 @@ const Category = styled.div`
   font-weight: bold;
   flex-shrink: 0;
   margin-left: 20px;
+  pointer-events: none;
 
   h1 {
     font-size: 24px;
@@ -111,15 +111,24 @@ const IconBox = styled.div`
   display: flex;
   flex-direction: row;
   margin-right: 15px;
-
   gap: 5px;
+
+  button {
+    cursor: pointer;
+  }
 
   .icon {
     font-size: 32px;
   }
 `
 
-export const CategoryAndSearch: FC = () => {
+type CategoryAndSearchType = {
+  handleForceModalOpen: (state?: boolean) => void
+}
+
+export const CategoryAndSearch = ({
+  handleForceModalOpen
+}: CategoryAndSearchType) => {
   const { category } = useParams() as { category: PartsCategoriesType }
   const { isMobileFriendly } = useDeviceDetect()
 
@@ -139,8 +148,15 @@ export const CategoryAndSearch: FC = () => {
         </Search>
       ) : (
         <IconBox>
-          <SearchIcon className="icon search-icon" />
-          <LayersOutlinedIcon className="icon filter-icon" />
+          <button>
+            <SearchIcon className="icon search-icon" />
+          </button>
+          <button>
+            <LayersOutlinedIcon
+              className="icon filter-icon"
+              onClick={() => handleForceModalOpen()}
+            />
+          </button>
         </IconBox>
       )}
     </Box>

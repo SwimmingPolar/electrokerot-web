@@ -8,7 +8,7 @@ import {
   PartList
 } from 'features'
 import { useDeviceDetect } from 'hooks'
-import { FC } from 'react'
+import { FC, useCallback, useState } from 'react'
 import styled from 'styled-components'
 import { media } from 'styles'
 
@@ -62,6 +62,21 @@ export const PartListPage: FC = () => {
     desktopLarge
   }
 
+  // ChangeFiltersPopup modal state
+  const [forceModalOpen, setForceModalOpen] = useState(false)
+  const handleForceModalOpen = useCallback((state?: boolean) => {
+    setForceModalOpen(prev => {
+      // If state is not given, toggle the modal
+      if (state === undefined) {
+        return !prev
+      }
+      // Else, set the modal to the given state
+      else {
+        return state
+      }
+    })
+  }, [])
+
   return (
     // NavbarBox is needed to make the sidebar sticky
     <NavbarBox>
@@ -69,8 +84,11 @@ export const PartListPage: FC = () => {
         {/* PageBox is actual box component */}
         <PageBox>
           <Content>
-            <CategoryAndSearch />
-            <Filter />
+            <CategoryAndSearch handleForceModalOpen={handleForceModalOpen} />
+            <Filter
+              forceModalOpen={forceModalOpen}
+              handleForceModalOpen={handleForceModalOpen}
+            />
             <PartList />
           </Content>
           {/* Show build summary only on desktop */}

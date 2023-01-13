@@ -290,7 +290,7 @@ export const FilterRow = ({
           />
         )
       }),
-    [selectedValues]
+    [selectedValues, optionsList]
   )
 
   return (

@@ -16,7 +16,7 @@ const Box = styled.div<GradientShadowType>`
 
   ${({ hasOverflow, isScrollAtStart, isScrollAtEnd, direction }) => {
     if (!hasOverflow) {
-      return 'none;'
+      return { display: 'none;' }
     }
 
     switch (direction) {
@@ -29,6 +29,7 @@ const Box = styled.div<GradientShadowType>`
           left: 0,
           background: 'linear-gradient(to left, rgba(255, 255, 255, 0), #fff)'
         }
+
       case 'right':
         // If the scroll is at end, do not show the shadow
         if (isScrollAtEnd) {

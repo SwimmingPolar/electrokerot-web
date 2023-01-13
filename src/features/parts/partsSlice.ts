@@ -38,6 +38,13 @@ const partsSlice = createSlice({
         state.selectedFilters[category] = []
       }
 
+      // If the length of the filter options is 0,
+      // it means that the user is unchecking all the filter options
+      if (filterOptions.length === 0) {
+        state.selectedFilters[category] = []
+        return
+      }
+
       // Iterate over the given filter options and update the state
       filterOptions.forEach(({ filterName, filterOptions }) => {
         const selectedFilter = state.selectedFilters[category]?.find(

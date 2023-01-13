@@ -41,6 +41,11 @@ export const useIsScrollAtEnd = ({
   // Whenever the selected filters change, check the scroll state
   useEffect(() => {
     handleScroll()
+
+    window.addEventListener('resize', handleScroll)
+    return () => {
+      window.removeEventListener('resize', handleScroll)
+    }
   }, [selectedFilters])
 
   return {

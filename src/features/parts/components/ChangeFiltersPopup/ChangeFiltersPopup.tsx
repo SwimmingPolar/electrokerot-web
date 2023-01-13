@@ -297,8 +297,8 @@ export const ChangeFiltersPopup = ({
         {} as { [key: string]: string[] }
       )
 
-      setBackupSelectedFilters(backupSelectedFilters)
       setClonedSelectedFilters([])
+      setBackupSelectedFilters(backupSelectedFilters)
     }
 
     // If no filter is on, restore from backup
