@@ -1,10 +1,9 @@
-import { store } from 'app'
 import { Story } from '@storybook/react'
-import { Provider } from 'react-redux'
+import { Provider } from 'provider'
 
 export const withProvider = (Story: Story) => {
   return (
-    <Provider store={store}>
+    <Provider>
       <Story />
     </Provider>
   )

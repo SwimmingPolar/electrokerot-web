@@ -46,10 +46,10 @@ const ModalBox = styled.div`
 // Modal wrapper component
 type ChangeFiltersPopupModalType = {
   open: boolean
-  forceModalOpen: boolean
+  forceModalOpen?: boolean
   targetFilter?: string
   handleModalClose: () => void
-  handleForceModalOpen: (state?: boolean) => void
+  handleForceModalOpen?: (state?: boolean) => void
   toggleChangeFiltersPopup: ToggleChangeFiltersPopupType
 }
 const ChangeFiltersPopupModal = ({
@@ -75,7 +75,7 @@ const ChangeFiltersPopupModal = ({
   useEffect(() => {
     return () => {
       if (open || forceModalOpen) {
-        handleForceModalOpen(false)
+        handleForceModalOpen && handleForceModalOpen(false)
       }
     }
   }, [open, forceModalOpen])
@@ -106,7 +106,7 @@ type FilterType = {
   // This is used to open the ChangeFiltersPopup from outside
   // of the Filter component.
   forceModalOpen: boolean
-  handleForceModalOpen: (state?: boolean) => void
+  handleForceModalOpen?: (state?: boolean) => void
 }
 
 export const Filter = ({

@@ -40,6 +40,7 @@ export const useMotionDecider = () => {
 
     // Delete 'exit' property, so the modal doesn't use 'exit' motion set on initial mount
     delete initialMotion.exit
+    console.log(isDirect)
     // Remove 'initial' property, so the modal doesn't use 'initial' motion set on initial mount
     if (isDirect) {
       delete initialMotion.initial

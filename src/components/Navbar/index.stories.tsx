@@ -1,6 +1,6 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 import { Navbar, navbarProps } from 'components'
-import { withRouter } from 'lib'
+import { withProvider, withRouter } from 'lib'
 import styled from 'styled-components'
 
 const Layout = styled.div`
@@ -24,6 +24,7 @@ export default {
         initialIndex: 0
       }
     }),
+    withProvider,
     Story => (
       <Layout>
         <Story />

@@ -1,4 +1,4 @@
-import { useLayoutEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 
 interface CustomWindow extends Window {
   _isDirectAccess: string
@@ -20,9 +20,17 @@ export const setAccessType = () => {
 export const useIsDirectAccess = () => {
   const [isDirect, setIsDirect] = useState(window._isDirectAccess === undefined)
 
-  useLayoutEffect(() => {
-    setAccessType()
-    setIsDirect(false)
+  useEffect(() => {
+    // @Issue: This is a hack to make sure that the state is updated
+    // 'after' the initial redux-persist rehydration. Without redux-persist,
+    // we don't need this because the state update occurs as it should and as it looks.
+    // But if we use redux-persist, the state update occurs before the
+    // rehydration is done.
+
+    setTimeout(() => {
+      setAccessType()
+      setIsDirect(false)
+    }, 0)
   }, [])
 
   return isDirect
