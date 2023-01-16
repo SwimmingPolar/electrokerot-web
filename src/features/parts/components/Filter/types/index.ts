@@ -82,8 +82,16 @@ export type ToggleSubFilterType = {
   }
 }
 
-export type SetSearchQueryType = {
+export type SetQueryType = {
   payload: {
-    searchQuery: string
+    category: PartsCategoriesType
+    query: string
+  }
+}
+
+export type SetPageType = {
+  payload: {
+    category: PartsCategoriesType
+    page: number
   }
 }

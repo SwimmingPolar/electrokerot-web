@@ -9,6 +9,10 @@ export const sortSelectedFilters = (
   originalFilters: FilterDataType[],
   selectedFilters: SelectedFiltersType[]
 ) => {
+  if (!originalFilters || originalFilters?.length === 0) {
+    return selectedFilters
+  }
+
   // Create an array with a length of the selected filters
   let sorted = Array.from({
     length: selectedFilters?.length || 0

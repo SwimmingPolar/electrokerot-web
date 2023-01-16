@@ -5,10 +5,11 @@ import {
   CategoryAndSearch,
   CategoryNavigationSidebar,
   MemoizedFilter as Filter,
-  PartList
+  PartList,
+  useChangeSearchParams
 } from 'features'
 import { useDeviceDetect } from 'hooks'
-import { FC, useCallback, useState } from 'react'
+import { FC, useCallback, useMemo, useState } from 'react'
 import styled from 'styled-components'
 import { media } from 'styles'
 
@@ -32,7 +33,8 @@ const PageBox = styled.div`
 const Content = styled.div`
   display: flex;
   /* @Important: This is import for the Section component. Without this section,
-                 'div' will not take up all the left space */
+                 'div' wiimport { useChangeSearchParams } from '../../features/parts/components/Filter/hooks/useChangeSearchParams';
+ll not take up all the left space */
   flex: 1;
   flex-direction: column;
 
@@ -77,25 +79,33 @@ export const PartListPage: FC = () => {
     })
   }, [])
 
-  return (
-    // NavbarBox is needed to make the sidebar sticky
-    <NavbarBox>
-      <PageLayout sidebarWidth={sidebarWidth}>
-        {/* PageBox is actual box component */}
-        <PageBox>
-          <Content>
-            <CategoryAndSearch handleForceModalOpen={handleForceModalOpen} />
-            <Filter
-              forceModalOpen={forceModalOpen}
-              handleForceModalOpen={handleForceModalOpen}
-            />
-            <PartList />
-          </Content>
-          {/* Show build summary only on desktop */}
-          {isDesktop ? <BuildSummary /> : <CategoryNavigationSidebar />}
-        </PageBox>
-      </PageLayout>
-      {isDesktop && <CategoryNavigationSidebar />}
-    </NavbarBox>
+  useChangeSearchParams()
+
+  // This is needed to prevent the page from re-rendering when we set the searchParams
+  const render = useMemo(
+    () => (
+      // NavbarBox is needed to make the sidebar sticky
+      <NavbarBox>
+        <PageLayout sidebarWidth={sidebarWidth}>
+          {/* PageBox is actual box component */}
+          <PageBox>
+            <Content>
+              <CategoryAndSearch handleForceModalOpen={handleForceModalOpen} />
+              <Filter
+                forceModalOpen={forceModalOpen}
+                handleForceModalOpen={handleForceModalOpen}
+              />
+              <PartList />
+            </Content>
+            {/* Show build summary only on desktop */}
+            {isDesktop ? <BuildSummary /> : <CategoryNavigationSidebar />}
+          </PageBox>
+        </PageLayout>
+        {isDesktop && <CategoryNavigationSidebar />}
+      </NavbarBox>
+    ),
+    [sidebarWidth, handleForceModalOpen, forceModalOpen, isDesktop]
   )
+
+  return render
 }

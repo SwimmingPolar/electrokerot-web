@@ -82,6 +82,7 @@ export const ChangeFiltersPopup = ({
     dispatch(
       setFilterOptions({ category, filterOptions: clonedSelectedFilters })
     )
+
     // Close the popup
     toggleChangeFiltersPopup(false)('')
   }, [category, clonedSelectedFilters, toggleChangeFiltersPopup])

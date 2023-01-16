@@ -8,6 +8,14 @@ type UseLoadFilterJsonType = {
   category?: PartsCategoriesType
 }
 
+export const loadJson = async (category: PartsCategoriesType) => {
+  const filterData = (await import(`../files/${category}.json`))[
+    'default'
+  ] as FilterDataType[]
+
+  return filterData
+}
+
 export const useLoadFilterJson = (props?: UseLoadFilterJsonType) => {
   const { category: categoryParam } = useParams() as {
     category: PartsCategoriesType
@@ -19,9 +27,7 @@ export const useLoadFilterJson = (props?: UseLoadFilterJsonType) => {
   useEffect(() => {
     // Filter json file loader
     const getFilters = async () => {
-      const filterData = (await import(`../files/${category}.json`))[
-        'default'
-      ] as FilterDataType[]
+      const filterData = await loadJson(category)
 
       // Save loaded filters to redux store
       dispatch(

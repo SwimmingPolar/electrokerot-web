@@ -1,6 +1,7 @@
 import { useDispatch, useSelector } from 'app'
 import { PartsCategoriesType } from 'constant'
 import {
+  loadJson,
   selectFilters,
   selectIsFilterUpdating,
   setFilterOptions
@@ -8,12 +9,23 @@ import {
 import { useEffect, useMemo } from 'react'
 import { useParams, useSearchParams } from 'react-router-dom'
 
-const sortFilters = (
+// This has to be a async function because we need to wait for
+// the filter data if it is not loaded yet.
+const sortFilters = async (
+  category: PartsCategoriesType,
   filterNames: string[],
   filters: {
     [key: string]: string[]
   }[]
 ) => {
+  // If filterNames is empty, load and extract filter names from the filter data
+  if (filterNames.length === 0) {
+    const filterData = await loadJson(category)
+    filterNames = filterData.map(
+      filter => (filter.category || filter?.subCategory) as string
+    )
+  }
+
   const cloned = structuredClone(filters)
     .filter(
       e =>
@@ -29,6 +41,7 @@ const sortFilters = (
         numeric: true
       }).compare(Object.keys(a)[0], Object.keys(b)[0])
     )
+
   // Sort the options by their name
   cloned.forEach(e =>
     Object.values(e)[0].sort(
@@ -51,7 +64,7 @@ export const useChangeSearchParams = () => {
   const [searchParams, setSearchParams] = useSearchParams()
 
   const filter = useSelector(selectFilters)[category]
-  const { query, page, filterData } = filter
+  const { query, page, filterData = [] } = filter || {}
 
   const filterNames = useMemo(
     () =>
@@ -64,9 +77,10 @@ export const useChangeSearchParams = () => {
   // Get the selected filters from the store
   const selectedFilters = filter?.selectedFilters || []
   // Reformat it to the same format as the filters from the url
-  const filtersFromStore = useMemo(
+  const awaitingFiltersFromStore = useMemo(
     () =>
       sortFilters(
+        category,
         filterNames,
         selectedFilters.reduce<{ [key: string]: string[] }[]>(
           (acc, filter) => [
@@ -81,10 +95,10 @@ export const useChangeSearchParams = () => {
 
   // Watch for changes in the order of the filters name and options
   // Sample: filterB=B_AMD,A_AMD&filterA=AMD,인텔
-  const filtersFromUrl = useMemo(() => {
-    const temp = Array.from(searchParams.keys())
+  const awaitingFiltersFromUrl = useMemo(() => {
+    const temp = Array.from(searchParams.entries())
       // Filter out the search params that are not related to filters
-      .filter(key => {
+      .filter(([key]) => {
         if (['query', 'page'].includes(key)) {
           return false
         }
@@ -95,114 +109,110 @@ export const useChangeSearchParams = () => {
         {
           [key in string]: string[]
         }[]
-      >((acc, key) => {
+      >((acc, [key, value]) => {
         key = decodeURI(key)
+
         return [
           ...acc,
           {
             [key]:
-              searchParams
-                .get(key)
+              value
                 ?.split(',')
-                ?.map(e => decodeURI(e)) || []
+                ?.map(e => decodeURI(e))
+                ?.filter(e => e.length !== 0) || []
           }
         ]
       }, [])
+
     // Input: filterB=B_AMD,A_AMD&filterA=AMD,인텔
     // Output: [{filterA: ['AMD', '인텔']}, {filterB: ['A_AMD', 'B_AMD']}]
-    return sortFilters(filterNames, temp)
-  }, [selectedFilters])
+    return sortFilters(category, filterNames, temp)
+  }, [searchParams, selectedFilters])
 
   // Check if the filter is updating
   const isFilterUpdating = useSelector(selectIsFilterUpdating)
 
   useEffect(
     () => {
-      const isEqual =
-        // Since they are both trimmed and sorted, we can compare them by stringifying them.
-        JSON.stringify(filtersFromUrl) === JSON.stringify(filtersFromStore) &&
-        page === Number(searchParams.get('page')) &&
-        query === searchParams.get('query')
+      async function init() {
+        // Await for the filters from the url and the store to be ready
+        // in case they are not ready yet because of the filter data not being loaded yet
+        const filtersFromUrl = await awaitingFiltersFromUrl
+        const filtersFromStore = await awaitingFiltersFromStore
 
-      // Compare parsed filters from url and the selected filters in the redux store
-      // and if it's not same. Update the search params accordingly
-      // Be sure to only update when they are not same
-      // or else, it will cause infinite loop
-      if (isEqual) {
-        return
-      }
+        const isEqual =
+          // Since they are both trimmed and sorted, we can compare them by stringifying them.
+          JSON.stringify(filtersFromUrl) === JSON.stringify(filtersFromStore) &&
+          page === (Number(searchParams.get('page')) || undefined) &&
+          query === (searchParams.get('query') || undefined)
 
-      // If we are the one who's changing the search params by dispatching the actions
-      if (isFilterUpdating) {
-        const newSearchParams = filtersFromStore.reduce<{
-          [key: string]: string
-        }>((acc, filter) => {
-          // Replace the spaces with %20
-          const key = Object.keys(filter)[0].replace(/\s/g, '%20')
-          // Replace the spaces with %20
-          // and join the options with comma
-          const value = filter[key].map(e => e.replace(/\s/g, '%20')).join(',')
-          return {
-            ...acc,
-            [key]: value
-          }
-        }, {})
+        // Compare parsed filters from url and the selected filters in the redux store
+        // and if it's not same. Update the search params accordingly
+        // Be sure to only update when they are not same
+        // or else, it will cause infinite loop
+        // Rendering scenario:
+        // 1st render: Filter state changes
+        // 2nd render: Search params changes
+        // 3rd render: will stop here because the search params are the same as the filter state
+        if (isEqual) {
+          return
+        }
 
-        // Set new search params
-        setSearchParams(new URLSearchParams(newSearchParams), {
-          replace: true
-        })
-      }
-      // If the user is changing the search params through the url
-      else {
-        // Reconstruct the selected filters from the search params
-        const newSelectedFilters = filtersFromUrl.reduce<
-          {
-            filterName: string
-            filterOptions: string[]
-          }[]
-        >((acc, filter) => {
-          const key = Object.keys(filter)[0]
-          const values = filter[key]
-          return [
-            ...acc,
-            {
-              filterName: key,
-              filterOptions: values
+        // If we are the one who's changing the search params by dispatching the actions
+        if (isFilterUpdating) {
+          const newSearchParams = filtersFromStore.reduce<{
+            [key: string]: string
+          }>((acc, filter) => {
+            const key = Object.keys(filter)[0]
+
+            // Replace the spaces with %20
+            const encodedKey = Object.keys(filter)[0].replace(/\s/g, '%20')
+            // Replace the spaces with %20
+            // and join the options with comma
+            const value = filter[key]
+              .map(e => e.replace(/\s/g, '%20'))
+              .join(',')
+            return {
+              ...acc,
+              // Use encoded key and value
+              [encodedKey]: value
             }
-          ]
-        }, [])
+          }, {})
 
-        dispatch(
-          setFilterOptions({ category, filterOptions: newSelectedFilters })
-        )
+          // Set new search params
+          setSearchParams(newSearchParams, {
+            replace: true
+          })
+        }
+        // If the user is changing the search params through the url
+        else {
+          // Reconstruct the selected filters from the search params
+          const newSelectedFilters = filtersFromUrl.reduce<
+            {
+              filterName: string
+              filterOptions: string[]
+            }[]
+          >((acc, filter) => {
+            const key = Object.keys(filter)[0]
+            const values = filter[key]
+            return [
+              ...acc,
+              {
+                filterName: key,
+                filterOptions: values
+              }
+            ]
+          }, [])
+
+          dispatch(
+            setFilterOptions({ category, filterOptions: newSelectedFilters })
+          )
+        }
       }
 
-      const newSelectedFilters = structuredClone(selectedFilters || [])
-        // Remove empty filters with empty options
-        .filter(e => e.filterOptions.length !== 0)
-        // Transform the filter options to valid format
-        .reduce(
-          (acc, { filterName, filterOptions }) => ({
-            ...acc,
-            [filterName]: filterOptions
-          }),
-          {}
-        )
-      // If no options are selected, remove the filter from the search params
-      if (Object.keys(newSelectedFilters).length === 0) {
-        searchParams.delete('filters')
-      } else {
-        searchParams.set(
-          'filters',
-          encodeURIComponent(JSON.stringify(newSelectedFilters))
-        )
-      }
-      setSearchParams(new URLSearchParams(searchParams), {
-        replace: true
-      })
+      init()
     },
     // Every time the filters change, update the search params
-    [category, selectedFilters, searchParams]
+    [selectedFilters]
   )
 }

@@ -5,7 +5,8 @@ import {
   SetBackupFilterOptionValuesType,
   SetFilterOptionsType,
   SetFiltersType,
-  SetSearchQueryType,
+  SetPageType,
+  SetQueryType,
   ToggleFilterOptionsType,
   ToggleFilterType,
   ToggleSubFilterType
@@ -34,10 +35,14 @@ const filterSlice = createSlice({
       }
     },
     // Set new filter options for the entire filter name
+    // @important: This will set _isFilterUpdating to true
     setFilterOptions: (
       state,
       { payload: { category, filterOptions } }: SetFilterOptionsType
     ) => {
+      // Mark the filter as updating
+      state._isFilterUpdating = true
+
       // Create an array for the category if it doesn't exist
       if (state[category] === undefined) {
         state[category] = {} as FilterState[typeof category]
@@ -106,12 +111,16 @@ const filterSlice = createSlice({
       ]
     },
     // Check/uncheck the filter options
+    // @important: This will set _isFilterUpdating to true
     toggleFilterOptions: (
       state,
       {
         payload: { category, filterName, filterOption }
       }: ToggleFilterOptionsType
     ) => {
+      // Mark the filter as updating
+      state._isFilterUpdating = true
+
       if (state[category] === undefined) {
         state[category] = {} as FilterState[typeof category]
       }
@@ -200,7 +209,6 @@ const filterSlice = createSlice({
         }
       }
     },
-
     // Open/close the filter
     toggleFilter: (state, { payload: { category } }: ToggleFilterType) => {
       if (state[category] === undefined) {
@@ -233,11 +241,16 @@ const filterSlice = createSlice({
       state[category].filterState.subFilters[subFilter] = !open
     },
     // It sets
-    setSearchOptions: (
-      state,
-      { payload: { searchQuery } }: SetSearchQueryType
-    ) => {
+    setQuery: (state, { payload: { category, query } }: SetQueryType) => {
+      if (state[category] === undefined) {
+        state[category] = {} as FilterState[typeof category]
+      }
+    },
+    setPage: (state, { payload: { category, page } }: SetPageType) => {
       //
+    },
+    setFilterUpdatingFlag: (state, { payload }: { payload: boolean }) => {
+      state._isFilterUpdating = payload
     }
   }
 })
@@ -248,7 +261,8 @@ export const {
   setBackupFilterOptionValues,
   toggleFilterOptions,
   toggleFilter,
-  toggleSubFilter
+  toggleSubFilter,
+  setFilterUpdatingFlag
 } = filterSlice.actions
 
 const selectFilters = ({ filter }: { filter: FilterState }) =>
