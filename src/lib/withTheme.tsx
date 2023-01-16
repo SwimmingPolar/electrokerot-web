@@ -1,7 +1,9 @@
 import { Story } from '@storybook/react'
-import { ThemeProvider } from 'provider'
+import { CustomThemeProvider } from 'provider'
 import { getTheme } from 'styles'
 
 export const withTheme = (Story: Story) => (
-  <ThemeProvider theme={getTheme('light')}>{<Story />}</ThemeProvider>
+  <CustomThemeProvider theme={getTheme('light')}>
+    {<Story />}
+  </CustomThemeProvider>
 )

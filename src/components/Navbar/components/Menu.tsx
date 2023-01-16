@@ -2,12 +2,7 @@ import MenuIcon from '@mui/icons-material/Menu'
 import { Drawer } from '@mui/material'
 import { ModalNavLink, NavLink } from 'components'
 import { ModalRoutes } from 'constant'
-import {
-  useCallOnMediaChange,
-  useCallOnPopstate,
-  useDeviceDetect,
-  useEmptyRoute
-} from 'hooks'
+import { useCallOnMediaChange, useDeviceDetect, useEmptyRoute } from 'hooks'
 import {
   KeyboardEvent,
   KeyboardEventHandler,

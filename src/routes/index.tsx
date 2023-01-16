@@ -10,6 +10,7 @@ import {
   SignupPage
 } from 'pages'
 import {
+  BrowserRouter,
   Location,
   Navigate,
   Route,
@@ -40,7 +41,7 @@ export const findNonModalLocation = (
   }
 }
 
-export const RoutesProvider = () => {
+export const RootRoutes = () => {
   // record the history of the user's navigation
   useRecordHistory()
 
@@ -110,3 +111,9 @@ export const RoutesProvider = () => {
     </>
   )
 }
+
+export const AppRoutes = () => (
+  <BrowserRouter>
+    <RootRoutes />
+  </BrowserRouter>
+)

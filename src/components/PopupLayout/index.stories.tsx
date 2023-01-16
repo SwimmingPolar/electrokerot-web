@@ -3,8 +3,14 @@ import { PopupLayout } from 'components'
 import styled from 'styled-components'
 
 const Box = styled.div`
+  display: flex;
   width: 420px;
-  height: 4500px;
+`
+
+const Padding = styled.div`
+  height: 720px;
+  width: 100%;
+  background-color: red;
 `
 
 export default {
@@ -21,7 +27,7 @@ export default {
 
 const Template: ComponentStory<typeof PopupLayout> = args => (
   <PopupLayout {...args}>
-    <div style={{ padding: '20px' }}>Some Content</div>
+    <div style={{ padding: '20px', height: '320px' }}>Some Content</div>
   </PopupLayout>
 )
 export const Default = Template.bind({})

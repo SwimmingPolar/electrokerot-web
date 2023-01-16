@@ -1,16 +1,11 @@
-import { DeviceDetectContextProvider } from 'hooks'
 import {
   DefaultTheme,
   ThemeProvider,
   ThemeProviderProps
 } from 'styled-components'
 
-export const customThemeProvider = (
+export const CustomThemeProvider = (
   props: ThemeProviderProps<DefaultTheme>
 ) => {
-  return (
-    <DeviceDetectContextProvider>
-      <ThemeProvider {...props}>{props.children}</ThemeProvider>
-    </DeviceDetectContextProvider>
-  )
+  return <ThemeProvider {...props}>{props.children}</ThemeProvider>
 }
