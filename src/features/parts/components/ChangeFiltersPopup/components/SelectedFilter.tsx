@@ -1,5 +1,5 @@
 import RestartAltIcon from '@mui/icons-material/RestartAlt'
-import { FilterValuesType, SelectedFiltersElementType } from 'features'
+import { FilterDataType, SelectedFiltersType } from 'features'
 import { useMemo } from 'react'
 import styled from 'styled-components'
 
@@ -104,10 +104,10 @@ const SelectedFilterOptionsBox = styled.div`
 
 type SelectedFiltersSectionType = {
   targetFilter: string | undefined
-  filters: FilterValuesType[]
+  filterData: FilterDataType[]
   filterName: string
   filterOptions: string[]
-  selectedFilters: SelectedFiltersElementType[]
+  selectedFilters: SelectedFiltersType[]
   handleFilterOptionClick: (
     filterName: string,
     filterOption: string
@@ -117,14 +117,14 @@ type SelectedFiltersSectionType = {
 
 export const SelectedFilter = ({
   targetFilter,
-  filters,
+  filterData,
   filterName,
   filterOptions,
   selectedFilters,
   handleFilterOptionClick,
   handleFilterNameClick
 }: SelectedFiltersSectionType) => {
-  const filterOptionConfig = filters.find(
+  const filterOptionConfig = filterData?.find(
     filter =>
       filter?.category === filterName || filter?.subCategory === filterName
   )
@@ -132,11 +132,11 @@ export const SelectedFilter = ({
     () =>
       filterOptionConfig?.matchingType === 'max' ||
       filterOptionConfig?.matchingType === 'min',
-    [filters, filterOptionConfig]
+    [filterData, filterOptionConfig]
   )
 
   // Extract the selected options' state (selected, selected minus, or unselected)
-  const selectedFilter = selectedFilters.find(
+  const selectedFilter = selectedFilters?.find(
     selectedFilter => selectedFilter.filterName === filterName
   )
   const getFilterState = (option: string) => {

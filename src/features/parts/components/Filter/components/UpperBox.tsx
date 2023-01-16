@@ -5,7 +5,6 @@ import { useDispatch, useSelector } from 'app'
 import { PartsCategoriesType } from 'constant'
 import {
   selectFilters,
-  selectFiltersState,
   ToggleChangeFiltersPopupType,
   toggleFilter
 } from 'features'
@@ -157,10 +156,10 @@ export const UpperBox = ({ toggleChangeFiltersPopup }: UpperBoxType) => {
   const filters = useSelector(selectFilters)?.[category]
 
   // Decides whether the filter is open or not
-  const isFilterOpen = useSelector(selectFiltersState)[category]?.open
+  const isFilterOpen = filters?.filterState?.open
 
   // Check if there are more than 5 filters
-  const showMore = filters && filters.length > 5
+  const showMore = filters?.filterData?.length > 5
 
   // Show or hide filters on click
   const handleFilterButtonClick = useCallback(() => {

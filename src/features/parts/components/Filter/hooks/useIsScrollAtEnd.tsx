@@ -1,8 +1,8 @@
-import { SelectedFiltersElementType } from 'features'
+import { SelectedFiltersType } from 'features'
 import { useCallback, useEffect, useState } from 'react'
 
 type UseIsScrollAtEndType = {
-  selectedFilters: SelectedFiltersElementType[]
+  selectedFilters: SelectedFiltersType[]
   containerSelector: string
 }
 

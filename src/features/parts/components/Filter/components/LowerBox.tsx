@@ -1,11 +1,6 @@
 import { useSelector } from 'app'
 import { PartsCategoriesType } from 'constant'
-import {
-  selectFilters,
-  selectFiltersState,
-  selectSelectedFilters,
-  ToggleChangeFiltersPopupType
-} from 'features'
+import { selectFilters } from 'features'
 import { useDeviceDetect } from 'hooks'
 import React, { FC, useMemo } from 'react'
 import { useParams } from 'react-router-dom'
@@ -16,7 +11,7 @@ const Box = styled.div`
   display: flex;
   flex: 1;
   flex-direction: column;
-  gap: 9px;
+  gap: 6px;
 `
 
 export const LowerBox: FC = () => {
@@ -27,37 +22,44 @@ export const LowerBox: FC = () => {
   const filters = useSelector(selectFilters)?.[category] || []
 
   // Get selected filters options for the category
-  const selectedFilters = useSelector(selectSelectedFilters)?.[category] || []
+  const selectedFilters = filters?.selectedFilters || []
 
   // Get backup for the selected filters options
-  const backupSelectedFilters =
-    useSelector(selectSelectedFilters).backup?.[category] || []
+  const backupSelectedFilters = filters?.backupSelectedFilters || []
 
   // Decides whether the filter is open or not
-  const isFilterOpen = useSelector(selectFiltersState)[category]?.open
+  const isFilterOpen = filters?.filterState?.open
 
   // Default filters count to show: 5
   const filtersList = useMemo(
-    () => (!isFilterOpen ? filters?.slice(0, 5) : filters),
+    () =>
+      !isFilterOpen
+        ? filters.filterData?.slice(0, 5) || []
+        : filters.filterData,
     [filters, isFilterOpen]
   )
 
   // Render filter row for each filter
   const FiltersList = useMemo(
     () =>
-      filtersList?.map((filter, index) => {
-        const filterName = (filter?.category || filter?.subCategory) as string
+      filtersList?.map((filterData, index) => {
+        // Get the filter name for this row
+        const filterName = (filterData?.category ||
+          filterData?.subCategory) as string
+
         const selectedFiltersForThisFilterName = selectedFilters.find(
           selectedFilter => selectedFilter.filterName === filterName
         )
         const backup = backupSelectedFilters.find(
           backupSelectedFilter => backupSelectedFilter.filterName === filterName
         )
+        const isSubFilterOpen = filters?.filterState?.subFilters?.[filterName]
 
         return (
           <FilterRow
             key={index}
-            filter={filter}
+            filterData={filterData}
+            isSubFilterOpen={!!isSubFilterOpen}
             selectedFilters={selectedFiltersForThisFilterName}
             backupSelectedFilters={backup}
           />

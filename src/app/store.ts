@@ -1,5 +1,11 @@
 import { configureStore } from '@reduxjs/toolkit'
-import { api, AuthReducer, ModalReducer, PartsReducer } from 'features'
+import {
+  api,
+  AuthReducer,
+  ModalReducer,
+  PartReducer,
+  FilterReducer
+} from 'features'
 import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux'
 
 export const store = configureStore({
@@ -7,7 +13,8 @@ export const store = configureStore({
     [api.reducerPath]: api.reducer,
     auth: AuthReducer,
     modal: ModalReducer,
-    parts: PartsReducer
+    part: PartReducer,
+    filter: FilterReducer
   },
   middleware: getDefaultMiddleware =>
     getDefaultMiddleware().concat(api.middleware),

@@ -1,10 +1,9 @@
 import { FormGroup } from '@mui/material'
-import { useDispatch, useSelector } from 'app'
+import { useDispatch } from 'app'
 import { PartsCategoriesType, RowCount } from 'constant'
 import {
-  FilterValuesType,
-  SelectedFiltersElementType,
-  selectFiltersState,
+  FilterDataType,
+  SelectedFiltersType,
   setBackupFilterOptionValues,
   setFilterOptions,
   toggleFilterOptions,
@@ -104,6 +103,8 @@ const FilterNameBox = styled.div`
 
   button {
     cursor: pointer;
+    height: fit-content;
+
     :hover {
       text-decoration: underline;
     }
@@ -153,20 +154,22 @@ const ShowMore = ({
 }
 
 type FilterRowType = {
-  filter: FilterValuesType
-  selectedFilters: SelectedFiltersElementType | undefined
-  backupSelectedFilters: SelectedFiltersElementType | undefined
+  filterData: FilterDataType
+  isSubFilterOpen: boolean
+  selectedFilters: SelectedFiltersType | undefined
+  backupSelectedFilters: SelectedFiltersType | undefined
 }
 
 export const FilterRow = ({
-  filter,
+  filterData,
+  isSubFilterOpen,
   selectedFilters,
   backupSelectedFilters
 }: FilterRowType) => {
   // Extract filter information from props
-  const filterName = (filter?.category || filter?.subCategory) as string
-  const filterValues = filter?.values || []
-  const filterMatchingType = filter?.matchingType
+  const filterName = (filterData?.category || filterData?.subCategory) as string
+  const filterValues = filterData?.values || []
+  const filterMatchingType = filterData?.matchingType
 
   // Get the current device type
   const { device } = useDeviceDetect()
@@ -175,8 +178,6 @@ export const FilterRow = ({
   const { category } = useParams() as {
     category: PartsCategoriesType
   }
-  const isSubFilterOpen = useSelector(selectFiltersState)?.[category]
-    ?.subFilters?.[filterName] as boolean
 
   // Extract selected values and its backups
   const selectedValues = useMemo(

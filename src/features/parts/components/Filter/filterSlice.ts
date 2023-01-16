@@ -1,32 +1,37 @@
 import { createSlice } from '@reduxjs/toolkit'
+import { PartsCategoriesType } from 'constant'
 import {
-  PartsState,
+  FilterState,
   SetBackupFilterOptionValuesType,
   SetFilterOptionsType,
   SetFiltersType,
+  SetSearchQueryType,
   ToggleFilterOptionsType,
   ToggleFilterType,
   ToggleSubFilterType
-} from 'features'
+} from './types'
 
-const initialState: PartsState = {
-  // Filters data
-  filters: {},
-  // Selected filters
-  selectedFilters: {
-    backup: {}
-  },
-  // Open/Close state of filters
-  filtersState: {}
-}
+const initialState: FilterState = {
+  _isFilterUpdating: false
+} as FilterState
 
-const partsSlice = createSlice({
-  name: 'parts',
+const filterSlice = createSlice({
+  name: 'filter',
   initialState,
   reducers: {
     // Save the filters data
-    setFilters: (state, { payload: { category, filters } }: SetFiltersType) => {
-      state.filters[category] = filters
+    setFilters: (
+      state,
+      { payload: { category, filterData } }: SetFiltersType
+    ) => {
+      if (state[category] === undefined) {
+        state[category] = {} as FilterState[typeof category]
+      }
+
+      state[category] = {
+        ...state[category],
+        filterData
+      }
     },
     // Set new filter options for the entire filter name
     setFilterOptions: (
@@ -34,24 +39,27 @@ const partsSlice = createSlice({
       { payload: { category, filterOptions } }: SetFilterOptionsType
     ) => {
       // Create an array for the category if it doesn't exist
-      if (state.selectedFilters[category] === undefined) {
-        state.selectedFilters[category] = []
+      if (state[category] === undefined) {
+        state[category] = {} as FilterState[typeof category]
+      }
+      if (state[category]?.selectedFilters === undefined) {
+        state[category].selectedFilters = []
       }
 
       // If the length of the filter options is 0,
       // it means that the user is unchecking all the filter options
       if (filterOptions.length === 0) {
-        state.selectedFilters[category] = []
+        state[category].selectedFilters = []
         return
       }
 
       // Iterate over the given filter options and update the state
       filterOptions.forEach(({ filterName, filterOptions }) => {
-        const selectedFilter = state.selectedFilters[category]?.find(
+        const selectedFilter = state[category].selectedFilters?.find(
           selectedFilter => selectedFilter.filterName === filterName
         )
         if (selectedFilter === undefined) {
-          state.selectedFilters[category]?.push({
+          state[category].selectedFilters?.push({
             filterName,
             filterOptions
           })
@@ -67,21 +75,30 @@ const partsSlice = createSlice({
       }: SetBackupFilterOptionValuesType
     ) => {
       // Get the index of the filter option
-      const indexOfBackupSelectedFilter = state.selectedFilters.backup?.[
+      if (state[category] === undefined) {
+        state[category] = {} as FilterState[typeof category]
+      }
+      if (state[category].backupSelectedFilters === undefined) {
+        state[category].backupSelectedFilters = []
+      }
+
+      const indexOfBackupSelectedFilter = state[
         category
-      ]?.findIndex(filter => filter.filterName === filterName)
+      ].backupSelectedFilters?.findIndex(
+        filter => filter.filterName === filterName
+      )
 
       // Remove the previous filter option values if any
       if (indexOfBackupSelectedFilter !== undefined) {
-        state.selectedFilters.backup[category]?.splice(
+        state[category].backupSelectedFilters?.splice(
           indexOfBackupSelectedFilter,
           1
         )
       }
 
       // Save the new filter option values
-      state.selectedFilters.backup[category] = [
-        ...(state.selectedFilters.backup?.[category] || []),
+      state[category].backupSelectedFilters = [
+        ...(state[category]?.backupSelectedFilters || []),
         {
           filterName,
           filterOptions
@@ -95,17 +112,21 @@ const partsSlice = createSlice({
         payload: { category, filterName, filterOption }
       }: ToggleFilterOptionsType
     ) => {
+      if (state[category] === undefined) {
+        state[category] = {} as FilterState[typeof category]
+      }
+      if (state[category].selectedFilters === undefined) {
+        state[category].selectedFilters = []
+      }
+
       // Find an index of a matching filter option
-      const selectedFilterIndex = state.selectedFilters[category]?.findIndex(
+      const selectedFilterIndex = state[category].selectedFilters?.findIndex(
         selectedFilter => selectedFilter.filterName === filterName
       )
 
       // If no matching filter option is found, add it to the state
       if (selectedFilterIndex === undefined || selectedFilterIndex === -1) {
-        if (state.selectedFilters[category] === undefined) {
-          state.selectedFilters[category] = []
-        }
-        state.selectedFilters[category]?.push({
+        state[category].selectedFilters?.push({
           filterName,
           filterOptions: [filterOption]
         })
@@ -115,7 +136,7 @@ const partsSlice = createSlice({
       else {
         // Get the current selected options by the index
         const selectedOptions =
-          state.selectedFilters[category]?.[selectedFilterIndex]
+          state[category].selectedFilters?.[selectedFilterIndex]
             .filterOptions ||
           // There will always be an array of selected options
           // This is for typescript to not complain
@@ -123,10 +144,9 @@ const partsSlice = createSlice({
 
         // This is to check if the currently selected filter should have unique option or not.
         // Just like the radio button, it should only have one option selected at a time. (ex, 권장 파워용량)
-        const filterOptionConfig = state.filters[category]?.find(
+        const filterOptionConfig = state[category].filterData.find(
           filter =>
-            filter?.category === filterName ||
-            filter?.subCategory === filterName
+            filter.category === filterName || filter.subCategory === filterName
         )
         // Check if the filter option should have unique option or not
         const shouldUniqueOption =
@@ -183,40 +203,41 @@ const partsSlice = createSlice({
 
     // Open/close the filter
     toggleFilter: (state, { payload: { category } }: ToggleFilterType) => {
-      const open = state.filtersState[category]?.open
-      state.filtersState[category] = Object.assign(
-        // Prepare empty object to avoid mutating the state
-        {},
-        // Copy the current state
-        state.filtersState?.[category],
-        // Change the open state to the opposite
-        {
-          open: !open
+      if (state[category] === undefined) {
+        state[category] = {} as FilterState[typeof category]
+      }
+      if (state[category].filterState === undefined) {
+        state[category].filterState = {
+          subFilters: {}
         }
-      )
+      }
+
+      const open = state[category].filterState?.open
+      state[category].filterState.open = !open
     },
     // Open/close the sub-filter
     toggleSubFilter: (
       state,
       { payload: { category, subFilter } }: ToggleSubFilterType
     ) => {
-      const open = state.filtersState?.[category]?.subFilters?.[subFilter]
-      state.filtersState[category] = Object.assign(
-        // Prepare empty object to avoid mutating the state
-        {},
-        // Copy the current state
-        state.filtersState[category],
-        // Change the open state of the sub-filter to the opposite
-        {
-          subFilters: Object.assign(
-            {},
-            state?.filtersState?.[category]?.subFilters,
-            {
-              [subFilter]: !open
-            }
-          )
+      if (state[category] === undefined) {
+        state[category] = {} as FilterState[typeof category]
+      }
+      if (state[category].filterState === undefined) {
+        state[category].filterState = {
+          subFilters: {}
         }
-      )
+      }
+
+      const open = state[category].filterState?.subFilters?.[subFilter]
+      state[category].filterState.subFilters[subFilter] = !open
+    },
+    // It sets
+    setSearchOptions: (
+      state,
+      { payload: { searchQuery } }: SetSearchQueryType
+    ) => {
+      //
     }
   }
 })
@@ -228,20 +249,25 @@ export const {
   toggleFilterOptions,
   toggleFilter,
   toggleSubFilter
-} = partsSlice.actions
+} = filterSlice.actions
 
-const selectFilters = ({ parts: { filters } }: { parts: PartsState }) => filters
-const selectSelectedFilters = ({
-  parts: { selectedFilters }
-}: {
-  parts: PartsState
-}) => selectedFilters
-const selectFiltersState = ({
-  parts: { filtersState }
-}: {
-  parts: PartsState
-}) => filtersState
+const selectFilters = ({ filter }: { filter: FilterState }) =>
+  Object.entries(filter)
+    // Filter out meta data from the filter state
+    .filter(([key, _]) => !key.startsWith('_'))
+    .reduce(
+      (acc, [key, value]) => ({
+        ...acc,
+        [key]: value
+      }),
+      {} as {
+        [key in PartsCategoriesType]: FilterState[key]
+      }
+    )
 
-export { selectFilters, selectSelectedFilters, selectFiltersState }
+const selectIsFilterUpdating = ({ filter }: { filter: FilterState }) =>
+  filter._isFilterUpdating
 
-export const PartsReducer = partsSlice.reducer
+export { selectFilters, selectIsFilterUpdating }
+
+export const FilterReducer = filterSlice.reducer

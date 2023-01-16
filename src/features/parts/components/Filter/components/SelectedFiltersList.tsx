@@ -1,10 +1,6 @@
 import { useSelector } from 'app'
 import { PartsCategoriesType } from 'constant'
-import {
-  selectFilters,
-  selectSelectedFilters,
-  ToggleChangeFiltersPopupType
-} from 'features'
+import { selectFilters, ToggleChangeFiltersPopupType } from 'features'
 import { useScrollbarWidth } from 'hooks'
 import { useMemo } from 'react'
 import { useParams } from 'react-router-dom'
@@ -123,11 +119,11 @@ export const SelectedFiltersList = ({
   const filters = useSelector(selectFilters)[category] || []
 
   // Get the selected filters
-  const selectedFilters = useSelector(selectSelectedFilters)[category] || []
+  const selectedFilters = filters?.selectedFilters || []
 
   // Sort the selected filters by the order of the filters
   const sortedFilters = useMemo(
-    () => sortSelectedFilters(filters, selectedFilters),
+    () => sortSelectedFilters(filters.filterData, selectedFilters),
     [filters, selectedFilters]
   )
 

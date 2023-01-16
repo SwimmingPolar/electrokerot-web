@@ -1,7 +1,7 @@
 import CircleIcon from '@mui/icons-material/Circle'
 import { FilterSideMenu } from 'constant'
-import { SelectedFiltersElementType } from 'features'
-import { MouseEvent, useCallback, useEffect, useMemo } from 'react'
+import { SelectedFiltersType } from 'features'
+import { MouseEvent, useCallback, useMemo } from 'react'
 import styled from 'styled-components'
 
 const Window = styled.div`
@@ -57,7 +57,7 @@ const Button = styled.button`
 type SideMenuType = {
   targetFilter: string | undefined
   filterNames: string[]
-  selectedFilters: SelectedFiltersElementType[]
+  selectedFilters: SelectedFiltersType[]
 }
 
 export const SideMenu = ({

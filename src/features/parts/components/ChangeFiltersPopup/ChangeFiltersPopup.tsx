@@ -4,7 +4,6 @@ import { PopupLayout } from 'components'
 import { ChangeFilterPopupDimension, PartsCategoriesType } from 'constant'
 import {
   selectFilters,
-  selectSelectedFilters,
   setFilterOptions,
   ToggleChangeFiltersPopupType
 } from 'features'
@@ -56,15 +55,16 @@ export const ChangeFiltersPopup = ({
   // Load the filters data in case it is not loaded yet
   useLoadFilterJson({ category })
 
-  // Get filters data
-  const filters = useSelector(selectFilters)[category] || []
-  // Get selected filters
-  const selectedFiltersWithAllCategory = useSelector(selectSelectedFilters)
-  const selectedFilters = selectedFiltersWithAllCategory[category] || []
+  // Get all filters data
+  const filters = useSelector(selectFilters) || []
+  // Get related filter data
+  const { filterData = [], selectedFilters = [] } = filters[category] || {}
+
   // Clone the selectedFilters to avoid mutating the state
   const [clonedSelectedFilters, setClonedSelectedFilters] = useState(
     structuredClone(selectedFilters)
   )
+
   // Temporary backup state for the selected filters to be able to handle the changes
   // without altering the selected filters data in the store
   const [backupSelectedFilters, setBackupSelectedFilters] = useState<{
@@ -72,7 +72,7 @@ export const ChangeFiltersPopup = ({
   }>({})
 
   // Extract filter names for the side menu
-  const filterNames = filters.map(
+  const filterNames = filterData.map(
     filter => filter.category || filter.subCategory
   ) as string[]
 
@@ -97,7 +97,7 @@ export const ChangeFiltersPopup = ({
     (filterName: string) => {
       // Extract original data for the filter
       const values =
-        filters?.find(
+        filterData?.find(
           filter =>
             filter.category === filterName || filter.subCategory === filterName
         )?.values || []
@@ -188,7 +188,7 @@ export const ChangeFiltersPopup = ({
 
       // This is to check if the currently selected filter should have unique option or not.
       // Just like the radio button, it should only have one option selected at a time. (ex, 권장 파워용량)
-      const filterOptionConfig = filters.find(
+      const filterOptionConfig = filterData.find(
         filter =>
           filter?.category === filterName || filter?.subCategory === filterName
       )
@@ -269,17 +269,17 @@ export const ChangeFiltersPopup = ({
         setFilterOptions({ category, filterOptions: clonedSelectedFilters })
       )
 
-      // Reset process
+      // Reset all filters
       setClonedSelectedFilters(
         // Set the value of cloned selected filters to the selected filters of the new category
-        structuredClone(selectedFiltersWithAllCategory[newCategory] || [])
+        structuredClone(filters[newCategory]?.selectedFilters || [])
       )
       setBackupSelectedFilters({})
 
       // Change the category
       setCategory(event.target.value as PartsCategoriesType)
     },
-    [category, clonedSelectedFilters, selectedFiltersWithAllCategory]
+    [category, clonedSelectedFilters, filters]
   )
 
   // Handler for when the user clicks on the reset whole filters button
@@ -332,7 +332,7 @@ export const ChangeFiltersPopup = ({
         />
         <FiltersList
           targetFilter={targetFilter}
-          filters={filters}
+          filterData={filterData}
           selectedFilters={clonedSelectedFilters}
           handleFilterNameClick={handleFilterNameClick}
           handleFilterOptionClick={handleFilterOptionClick}

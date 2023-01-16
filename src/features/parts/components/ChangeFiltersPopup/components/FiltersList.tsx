@@ -1,4 +1,4 @@
-import { FilterValuesType, SelectedFiltersElementType } from 'features'
+import { FilterDataType, SelectedFiltersType } from 'features'
 import { useMemo } from 'react'
 import styled from 'styled-components'
 import { SelectedFilter } from './SelectedFilter'
@@ -9,8 +9,8 @@ const Box = styled.div`
 
 type FiltersListType = {
   targetFilter: string | undefined
-  filters: FilterValuesType[]
-  selectedFilters: SelectedFiltersElementType[]
+  filterData: FilterDataType[]
+  selectedFilters: SelectedFiltersType[]
   handleFilterOptionClick: (
     filterName: string,
     filterOption: string
@@ -20,7 +20,7 @@ type FiltersListType = {
 
 export const FiltersList = ({
   targetFilter,
-  filters,
+  filterData,
   selectedFilters,
   handleFilterOptionClick,
   handleFilterNameClick
@@ -29,11 +29,11 @@ export const FiltersList = ({
   // Otherwise, show all the filters
   const filtersToShow = useMemo(
     () =>
-      [...filters].filter(({ category, subCategory }) => {
+      [...filterData].filter(({ category, subCategory }) => {
         const filterName = category || subCategory
         return targetFilter ? filterName === targetFilter : true
       }),
-    [filters]
+    [filterData]
   )
 
   return (
@@ -42,7 +42,7 @@ export const FiltersList = ({
         <SelectedFilter
           key={index}
           targetFilter={targetFilter}
-          filters={filters}
+          filterData={filterData}
           filterName={(category || subCategory) as string}
           filterOptions={values}
           selectedFilters={selectedFilters}

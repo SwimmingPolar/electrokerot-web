@@ -1,8 +1,8 @@
-import { SelectedFiltersElementType } from 'features'
+import { SelectedFiltersType } from 'features'
 import { useCallback, useEffect, useState } from 'react'
 
 export const useAreFiltersOverflow = (
-  selectedFilters: SelectedFiltersElementType[]
+  selectedFilters: SelectedFiltersType[]
 ) => {
   const [overflow, setOverflow] = useState(false)
 

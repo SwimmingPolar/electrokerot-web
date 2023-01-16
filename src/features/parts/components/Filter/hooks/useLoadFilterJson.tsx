@@ -1,6 +1,6 @@
 import { useDispatch, useSelector } from 'app'
 import { PartsCategoriesType } from 'constant'
-import { FilterValuesType, selectFilters, setFilters } from 'features'
+import { FilterDataType, selectFilters, setFilters } from 'features'
 import { useEffect } from 'react'
 import { useParams } from 'react-router-dom'
 
@@ -14,25 +14,25 @@ export const useLoadFilterJson = (props?: UseLoadFilterJsonType) => {
   }
   const category = props?.category || categoryParam
   const dispatch = useDispatch()
-  const filters = useSelector(selectFilters)[category] || []
+  const filterData = useSelector(selectFilters)[category]?.['filterData'] || []
 
   useEffect(() => {
     // Filter json file loader
     const getFilters = async () => {
-      const filters = (await import(`../files/${category}.json`))[
+      const filterData = (await import(`../files/${category}.json`))[
         'default'
-      ] as FilterValuesType[]
+      ] as FilterDataType[]
 
       // Save loaded filters to redux store
       dispatch(
         setFilters({
           category: category as PartsCategoriesType,
-          filters
+          filterData
         })
       )
     }
 
-    if (filters.length === 0) {
+    if (filterData.length === 0) {
       getFilters()
     }
   }, [category])

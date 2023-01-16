@@ -1,50 +1,45 @@
 import { PartsCategoriesType } from 'constant'
 
-export type FilterValuesType = {
+// Filter state
+export type FilterState = {
+  [key in PartsCategoriesType]: {
+    filterData: FilterDataType[]
+    filterState: FiltersStateType
+    selectedFilters: SelectedFiltersType[]
+    backupSelectedFilters: SelectedFiltersType[]
+    query?: string
+    page?: number
+  }
+} & {
+  _isFilterUpdating: boolean
+}
+
+export type FilterDataType = {
   category?: string
   subCategory?: string
   values: string[]
-  matchingType?: 'exact' | 'contains' | 'range' | 'max' | 'min'
+  matchingType?: FilterMatchingType
 }
 
-export type FiltersType = {
-  [key in PartsCategoriesType]?: FilterValuesType[]
-}
+export type FilterMatchingType = 'exact' | 'contains' | 'range' | 'max' | 'min'
 
-export type SelectedFiltersElementType = {
+export type SelectedFiltersType = {
   filterName: string
   filterOptions: string[]
 }
 
-export type SelectedFiltersType = {
-  [key in PartsCategoriesType]?: SelectedFiltersElementType[]
-} & {
-  backup: {
-    [key in PartsCategoriesType]?: SelectedFiltersElementType[]
-  }
-}
-
 export type FiltersStateType = {
-  [key in PartsCategoriesType]?: {
-    open: boolean
-    subFilters: {
-      [key: string]: boolean
-    }
+  open?: boolean
+  subFilters: {
+    [key in string]?: boolean
   }
-}
-
-// State type
-export type PartsState = {
-  filters: FiltersType
-  filtersState: FiltersStateType
-  selectedFilters: SelectedFiltersType
 }
 
 // Reducer argument types
 export type SetFiltersType = {
   payload: {
     category: PartsCategoriesType
-    filters: FilterValuesType[]
+    filterData: FilterDataType[]
   }
 }
 
@@ -84,5 +79,11 @@ export type ToggleSubFilterType = {
   payload: {
     category: PartsCategoriesType
     subFilter: string
+  }
+}
+
+export type SetSearchQueryType = {
+  payload: {
+    searchQuery: string
   }
 }

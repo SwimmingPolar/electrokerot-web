@@ -18,7 +18,7 @@ import { useLoadFilterJson } from './hooks'
 
 const Box = styled(Content)`
   z-index: ${ElementDepth.parts.category};
-  padding: 20px;
+  padding: 20px 20px 9px 20px;
   gap: 20px;
 
   /* On mobile, second component which is Filter has drop-shadow
@@ -115,7 +115,6 @@ export const Filter = ({
 }: FilterType) => {
   // Dynamically load filter json file to reduce bundle size
   useLoadFilterJson()
-  // useChangeSearchParams()
   // Modal open/close state
   const [open, setOpen] = useState(false)
   // Which filters to change
