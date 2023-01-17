@@ -15,6 +15,7 @@ export const setAccessType = () => {
 
 // Should use this hook only once at the very root of the app
 // On initial render, isDirect will be 'true', then it will be 'false'
+// when the last child component is rendered.
 // If the function should be called only once then do not put
 // 'isDirect' in the dependency array
 export const useIsDirectAccess = () => {

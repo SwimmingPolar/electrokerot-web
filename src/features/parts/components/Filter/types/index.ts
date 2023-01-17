@@ -10,8 +10,6 @@ export type FilterState = {
     query?: string
     page?: number
   }
-} & {
-  _isFilterUpdating: boolean
 }
 
 export type FilterDataType = {

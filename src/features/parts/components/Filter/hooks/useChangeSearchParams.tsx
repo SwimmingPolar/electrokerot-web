@@ -1,11 +1,7 @@
 import { useDispatch, useSelector } from 'app'
 import { PartsCategoriesType } from 'constant'
-import {
-  loadJson,
-  selectFilters,
-  selectIsFilterUpdating,
-  setFilterOptions
-} from 'features'
+import { loadJson, selectFilters, setFilterOptions } from 'features'
+import { useIsDirectAccess } from 'hooks'
 import { useEffect, useMemo } from 'react'
 import { useParams, useSearchParams } from 'react-router-dom'
 
@@ -129,8 +125,11 @@ export const useChangeSearchParams = () => {
     return sortFilters(category, filterNames, temp)
   }, [searchParams, selectedFilters])
 
-  // Check if the filter is updating
-  const isFilterUpdating = useSelector(selectIsFilterUpdating)
+  // If the user changes the search params through url, then the browser
+  // will be reloaded. (Meaning, the result from this hook will be true as well).
+  // And we take that as the user wants to change the filters. So we do not bring selected filters
+  // from the store. We just use the filters from the url.
+  const isDirectAccess = useIsDirectAccess()
 
   useEffect(
     () => {
@@ -146,20 +145,29 @@ export const useChangeSearchParams = () => {
           page === (Number(searchParams.get('page')) || undefined) &&
           query === (searchParams.get('query') || undefined)
 
-        // Compare parsed filters from url and the selected filters in the redux store
-        // and if it's not same. Update the search params accordingly
-        // Be sure to only update when they are not same
-        // or else, it will cause infinite loop
+        // @Important:
+        // Compare parsed filters from url and the selected filters in the redux store.
+        // Only attempt to change the search params if they are not same.
+        // Or else, it will cause infinite loop
+
         // Rendering scenario:
+        // with this condition check
         // 1st render: Filter state changes
         // 2nd render: Search params changes
         // 3rd render: will stop here because the search params are the same as the filter state
+
+        // without this condition check
+        // 1st render: Filter state changes
+        // 2nd render: Search params changes
+        // 3rd render: Search params changes again because it's the new reference
+        // 4th render: Search params changes again because it's the new reference
+        // ...
         if (isEqual) {
           return
         }
 
         // If we are the one who's changing the search params by dispatching the actions
-        if (isFilterUpdating) {
+        if (!isDirectAccess) {
           const newSearchParams = filtersFromStore.reduce<{
             [key: string]: string
           }>((acc, filter) => {
@@ -213,6 +221,8 @@ export const useChangeSearchParams = () => {
       init()
     },
     // Every time the filters change, update the search params
-    [selectedFilters]
+    // We need searchParams and setSearchParams because every time we set new search params,
+    // the reference will be changed. So we need to update the reference as well.
+    [selectedFilters, searchParams, setSearchParams]
   )
 }

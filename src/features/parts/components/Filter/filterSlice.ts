@@ -12,9 +12,7 @@ import {
   ToggleSubFilterType
 } from './types'
 
-const initialState: FilterState = {
-  _isFilterUpdating: false
-} as FilterState
+const initialState: FilterState = {} as FilterState
 
 const filterSlice = createSlice({
   name: 'filter',
@@ -40,9 +38,6 @@ const filterSlice = createSlice({
       state,
       { payload: { category, filterOptions } }: SetFilterOptionsType
     ) => {
-      // Mark the filter as updating
-      state._isFilterUpdating = true
-
       // Create an array for the category if it doesn't exist
       if (state[category] === undefined) {
         state[category] = {} as FilterState[typeof category]
@@ -118,9 +113,6 @@ const filterSlice = createSlice({
         payload: { category, filterName, filterOption }
       }: ToggleFilterOptionsType
     ) => {
-      // Mark the filter as updating
-      state._isFilterUpdating = true
-
       if (state[category] === undefined) {
         state[category] = {} as FilterState[typeof category]
       }
@@ -248,9 +240,6 @@ const filterSlice = createSlice({
     },
     setPage: (state, { payload: { category, page } }: SetPageType) => {
       //
-    },
-    setFilterUpdatingFlag: (state, { payload }: { payload: boolean }) => {
-      state._isFilterUpdating = payload
     }
   }
 })
@@ -261,8 +250,7 @@ export const {
   setBackupFilterOptionValues,
   toggleFilterOptions,
   toggleFilter,
-  toggleSubFilter,
-  setFilterUpdatingFlag
+  toggleSubFilter
 } = filterSlice.actions
 
 const selectFilters = ({ filter }: { filter: FilterState }) =>
@@ -279,9 +267,6 @@ const selectFilters = ({ filter }: { filter: FilterState }) =>
       }
     )
 
-const selectIsFilterUpdating = ({ filter }: { filter: FilterState }) =>
-  filter._isFilterUpdating
-
-export { selectFilters, selectIsFilterUpdating }
+export { selectFilters }
 
 export const FilterReducer = filterSlice.reducer
