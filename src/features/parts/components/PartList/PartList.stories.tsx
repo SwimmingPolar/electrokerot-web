@@ -38,6 +38,7 @@ FakeData.parameters = {
       url: 'http://localhost:6006/v1/parts/search',
       method: 'POST',
       status: 200,
+      delay: 5000,
       response: parts.map(part => part._id)
     }
   ]

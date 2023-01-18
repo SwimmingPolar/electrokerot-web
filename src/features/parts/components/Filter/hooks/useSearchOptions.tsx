@@ -19,7 +19,7 @@ export const useSearchOptions = () => {
   const { category } = useParams() as { category: PartsCategoriesType }
 
   // Get the related filters meta information
-  const filters = useSelector(selectFilters)[category]
+  const filters = useSelector(state => selectFilters(state)?.[category])
 
   // Reconstruct the search options out of the filters meta information
   const searchOptions = useMemo<SearchOptionsType>(

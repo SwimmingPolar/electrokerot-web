@@ -1,3 +1,4 @@
+import { Suspense } from 'react'
 import { getTheme } from 'styles'
 import { DeviceProvider } from './DeviceProvider'
 import { StoreProvider } from './StoreProvider'
@@ -8,11 +9,13 @@ type ProviderType = {
 }
 
 export const Provider = ({ children }: ProviderType) => (
-  <StoreProvider>
-    <DeviceProvider>
-      <CustomThemeProvider theme={getTheme('light')}>
-        {children}
-      </CustomThemeProvider>
-    </DeviceProvider>
-  </StoreProvider>
+  <Suspense fallback={<div>Suspense: Loading...</div>}>
+    <StoreProvider>
+      <DeviceProvider>
+        <CustomThemeProvider theme={getTheme('light')}>
+          {children}
+        </CustomThemeProvider>
+      </DeviceProvider>
+    </StoreProvider>
+  </Suspense>
 )

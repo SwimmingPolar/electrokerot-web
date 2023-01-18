@@ -33,7 +33,6 @@ const filterSlice = createSlice({
       }
     },
     // Set new filter options for the entire filter name
-    // @important: This will set _isFilterUpdating to true
     setFilterOptions: (
       state,
       { payload: { category, filterOptions } }: SetFilterOptionsType
@@ -55,6 +54,18 @@ const filterSlice = createSlice({
 
       // Iterate over the given filter options and update the state
       filterOptions.forEach(({ filterName, filterOptions }) => {
+        // If the user want to uncheck all the filter options by this filter name.
+        if (filterOptions.length === 0) {
+          const selectedFilterIndex = state[
+            category
+          ].selectedFilters?.findIndex(
+            selectedFilter => selectedFilter.filterName === filterName
+          )
+          state[category].selectedFilters?.splice(selectedFilterIndex, 1)
+          return
+        }
+
+        // Else, update the filter options
         const selectedFilter = state[category].selectedFilters?.find(
           selectedFilter => selectedFilter.filterName === filterName
         )
@@ -106,7 +117,6 @@ const filterSlice = createSlice({
       ]
     },
     // Check/uncheck the filter options
-    // @important: This will set _isFilterUpdating to true
     toggleFilterOptions: (
       state,
       {
