@@ -16,22 +16,12 @@ const Box = styled.div`
 
 export const LowerBox: FC = () => {
   const { isMobileFriendly } = useDeviceDetect()
-  const { category } = useParams() as { category: PartsCategoriesType }
+  const { category } = useParams() as {
+    category: PartsCategoriesType
+  }
 
   // Get filters list for the category
   const filters = useSelector(selectFilters)?.[category] || []
-
-  // Get selected filters options for the category
-  const selectedFilters = useMemo(
-    () => filters?.selectedFilters || [],
-    [filters]
-  )
-
-  // Get backup for the selected filters options
-  const backupSelectedFilters = useMemo(
-    () => filters?.backupSelectedFilters || [],
-    [filters]
-  )
 
   // Decides whether the filter is open or not
   const isFilterOpen = filters?.filterState?.open
@@ -45,37 +35,25 @@ export const LowerBox: FC = () => {
     [filters, isFilterOpen]
   )
 
-  const FiltersList = useMemo(
-    () =>
-      filtersList?.map((filterData, index) => {
-        // Get the filter name for this row
-        const filterName = (filterData?.category ||
-          filterData?.subCategory) as string
-
-        const selectedFiltersForThisFilterName = selectedFilters.find(
-          selectedFilter => selectedFilter.filterName === filterName
-        )
-        const backup = backupSelectedFilters.find(
-          backupSelectedFilter => backupSelectedFilter.filterName === filterName
-        )
-        const isSubFilterOpen = filters?.filterState?.subFilters?.[filterName]
-
-        return (
-          <FilterRow
-            key={index}
-            filterData={filterData}
-            isSubFilterOpen={!!isSubFilterOpen}
-            selectedFilters={selectedFiltersForThisFilterName}
-            backupSelectedFilters={backup}
-          />
-        )
-      }) || null,
-    [filters, selectedFilters, backupSelectedFilters, filtersList, isFilterOpen]
-  )
-
   return (
     // Do not render on mobile and foldable devices
-    !isMobileFriendly ? <Box>{FiltersList}</Box> : null
+    !isMobileFriendly ? (
+      <Box>
+        {filtersList?.map((filterData, index) => {
+          // Get the filter name for this row
+          const filterName = (filterData?.category ||
+            filterData?.subCategory) as string
+
+          return (
+            <FilterRow
+              key={index}
+              category={category}
+              filterName={filterName}
+            />
+          )
+        }) || null}
+      </Box>
+    ) : null
   )
 }
 

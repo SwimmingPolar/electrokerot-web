@@ -1,9 +1,8 @@
 import { FormGroup } from '@mui/material'
-import { useDispatch } from 'app'
+import { useDispatch, useSelector } from 'app'
 import { PartsCategoriesType, RowCount } from 'constant'
 import {
-  FilterDataType,
-  SelectedFiltersType,
+  selectFilters,
   setBackupFilterOptionValues,
   setFilterOptions,
   toggleFilterOptions,
@@ -154,30 +153,35 @@ const ShowMore = ({
 }
 
 type FilterRowType = {
-  filterData: FilterDataType
-  isSubFilterOpen: boolean
-  selectedFilters: SelectedFiltersType | undefined
-  backupSelectedFilters: SelectedFiltersType | undefined
+  category: PartsCategoriesType
+  filterName: string
 }
 
-export const FilterRow = ({
-  filterData,
-  isSubFilterOpen,
-  selectedFilters,
-  backupSelectedFilters
-}: FilterRowType) => {
-  // Extract filter information from props
-  const filterName = (filterData?.category || filterData?.subCategory) as string
-  const filterValues = filterData?.values || []
-  const filterMatchingType = filterData?.matchingType
+export const FilterRow = ({ category, filterName }: FilterRowType) => {
+  // Extract row data from redux store by filter name
+  const filterRowData = useSelector(state =>
+    selectFilters(state)?.[category]?.filterData?.find(
+      filter =>
+        filter.category === filterName || filter.subCategory === filterName
+    )
+  )
+  const selectedFilters = useSelector(state =>
+    selectFilters(state)?.[category]?.selectedFilters?.find(
+      filter => filter.filterName === filterName
+    )
+  )
+  const backupSelectedFilters = useSelector(state =>
+    selectFilters(state)?.[category]?.backupSelectedFilters?.find(
+      filter => filter.filterName === filterName
+    )
+  )
+  const isSubFilterOpen = useSelector(
+    state =>
+      selectFilters(state)?.[category]?.filterState?.subFilters?.[filterName]
+  )
 
-  // Get the current device type
-  const { device } = useDeviceDetect()
-
-  // Decide if the sub filter is open or not
-  const { category } = useParams() as {
-    category: PartsCategoriesType
-  }
+  const { matchingType: filterMatchingType, values: filterValues = [] } =
+    filterRowData || {}
 
   // Extract selected values and its backups
   const selectedValues = useMemo(
@@ -244,6 +248,8 @@ export const FilterRow = ({
     )
   }, [category, selectedValues, backupSelectedValues])
 
+  // Get the current device type
+  const { device } = useDeviceDetect()
   // Default count of rows to show
   const rowCount = RowCount[device as keyof typeof RowCount]
   const optionsList = useMemo(
@@ -308,7 +314,7 @@ export const FilterRow = ({
         filterName={filterName}
         optionsLength={filterValues.length}
         rowCount={rowCount}
-        isOpen={isSubFilterOpen}
+        isOpen={!!isSubFilterOpen}
       />
     </FilterRowBox>
   )
