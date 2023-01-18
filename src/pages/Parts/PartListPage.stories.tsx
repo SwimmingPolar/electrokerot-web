@@ -1,11 +1,12 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 import { persistor, useDispatch } from 'app'
 import { PartsCategoriesType } from 'constant'
-import { setFilterOptions } from 'features'
+import { api, setFilterOptions } from 'features'
 import { withRouter } from 'lib'
 import { PartListPage } from 'pages'
 import { useParams } from 'react-router-dom'
 import styled from 'styled-components'
+import { parts } from '../../../cypress/fixtures'
 
 const Box = styled.div`
   position: relative;
@@ -83,11 +84,41 @@ export default {
   ]
 } as ComponentMeta<typeof PartListPage>
 
-const Template: ComponentStory<typeof PartListPage> = args => (
-  <Box>
-    <PartListPage {...args} />
-    <PurgeButton />
-  </Box>
-)
+const Template: ComponentStory<typeof PartListPage> = args => {
+  // Reset cached api
+  const dispatch = useDispatch()
+  dispatch(api.util.resetApiState())
 
-export const Default = Template.bind({})
+  return (
+    <Box>
+      <PartListPage {...args} />
+      <PurgeButton />
+    </Box>
+  )
+}
+
+export const LiveData = Template.bind({})
+
+export const FakeData = Template.bind({})
+FakeData.parameters = {
+  mockData: [
+    {
+      url: 'http://localhost:6006/v1/parts/search',
+      method: 'POST',
+      status: 200,
+      response: parts.map(part => part._id)
+    }
+  ]
+}
+
+export const NoData = Template.bind({})
+NoData.parameters = {
+  mockData: [
+    {
+      url: 'http://localhost:6006/v1/parts/search',
+      method: 'POST',
+      status: 200,
+      response: []
+    }
+  ]
+}

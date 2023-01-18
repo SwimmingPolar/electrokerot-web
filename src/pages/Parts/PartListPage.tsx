@@ -5,7 +5,7 @@ import {
   CategoryAndSearch,
   CategoryNavigationSidebar,
   MemoizedFilter as Filter,
-  PartList,
+  MemoizedPartList as PartList,
   useChangeSearchParams
 } from 'features'
 import { useDeviceDetect } from 'hooks'
@@ -59,10 +59,13 @@ export const PartListPage: FC = () => {
   const { isDesktop } = useDeviceDetect()
 
   const { desktopSmall, desktopLarge } = CategoryNavigationSidebarWidth
-  const sidebarWidth = {
-    desktopSmall,
-    desktopLarge
-  }
+  const sidebarWidth = useMemo(
+    () => ({
+      desktopSmall,
+      desktopLarge
+    }),
+    [desktopSmall, desktopLarge]
+  )
 
   // ChangeFiltersPopup modal state
   const [forceModalOpen, setForceModalOpen] = useState(false)
@@ -79,6 +82,7 @@ export const PartListPage: FC = () => {
     })
   }, [])
 
+  // This hook changes the searchParams when the user changes the filters
   useChangeSearchParams()
 
   // This is needed to prevent the page from re-rendering when we set the searchParams

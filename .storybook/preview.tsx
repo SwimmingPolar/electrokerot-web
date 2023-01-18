@@ -1,6 +1,6 @@
-import { withProvider, withTheme } from '../src/lib'
+import { withProvider } from '../src/lib'
 
-export const decorators = [withProvider, withTheme]
+export const decorators = [withProvider]
 
 export const parameters = {
   actions: { argTypesRegex: '^on[A-Z].*' },

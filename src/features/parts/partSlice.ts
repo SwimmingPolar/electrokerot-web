@@ -1,10 +1,14 @@
-import { createSlice } from '@reduxjs/toolkit'
+import { createEntityAdapter, createSlice } from '@reduxjs/toolkit'
+import { Part } from 'features'
 
-const initialState = {}
+const partsAdapter = createEntityAdapter<Part>({
+  selectId: part => part._id
+  // We do not provide a sortComparer.
+})
 
 const partSlice = createSlice({
   name: 'part',
-  initialState,
+  initialState: partsAdapter.getInitialState(),
   reducers: {}
 })
 

@@ -1,5 +1,4 @@
 export * from './withHooks'
 export * from './withProvider'
 export * from './withRouter'
-export * from './withTheme'
 export * from './withModal'

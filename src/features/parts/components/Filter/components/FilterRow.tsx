@@ -248,7 +248,7 @@ export const FilterRow = ({
   const rowCount = RowCount[device as keyof typeof RowCount]
   const optionsList = useMemo(
     () => (!isSubFilterOpen ? filterValues.slice(0, rowCount) : filterValues),
-    [isSubFilterOpen, filterValues]
+    [isSubFilterOpen, filterValues, rowCount]
   )
 
   // Handle checkbox change

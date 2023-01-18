@@ -22,10 +22,16 @@ export const LowerBox: FC = () => {
   const filters = useSelector(selectFilters)?.[category] || []
 
   // Get selected filters options for the category
-  const selectedFilters = filters?.selectedFilters || []
+  const selectedFilters = useMemo(
+    () => filters?.selectedFilters || [],
+    [filters]
+  )
 
   // Get backup for the selected filters options
-  const backupSelectedFilters = filters?.backupSelectedFilters || []
+  const backupSelectedFilters = useMemo(
+    () => filters?.backupSelectedFilters || [],
+    [filters]
+  )
 
   // Decides whether the filter is open or not
   const isFilterOpen = filters?.filterState?.open
@@ -39,7 +45,6 @@ export const LowerBox: FC = () => {
     [filters, isFilterOpen]
   )
 
-  // Render filter row for each filter
   const FiltersList = useMemo(
     () =>
       filtersList?.map((filterData, index) => {
@@ -65,7 +70,7 @@ export const LowerBox: FC = () => {
           />
         )
       }) || null,
-    [filters, selectedFilters, filtersList]
+    [filters, selectedFilters, backupSelectedFilters, filtersList, isFilterOpen]
   )
 
   return (

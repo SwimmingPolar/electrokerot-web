@@ -1,4 +1,5 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
+import { SearchOptionsType } from 'features'
 
 export const api = createApi({
   reducerPath: 'api',
@@ -6,12 +7,12 @@ export const api = createApi({
     baseUrl: '/v1'
   }),
   endpoints: builder => ({
-    getParts: builder.query({
+    getParts: builder.query<string[], SearchOptionsType>({
       query: searchParams => {
         return {
           method: 'post',
           url: 'parts/search',
-          body: searchParams
+          body: JSON.stringify(searchParams)
         }
       }
     })

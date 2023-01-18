@@ -2,7 +2,7 @@ import { ComponentMeta, ComponentStory } from '@storybook/react'
 import { persistor, useDispatch } from 'app'
 import { PartsCategoriesType } from 'constant'
 import { Filter, setFilterOptions } from 'features'
-import { withRouter } from 'lib'
+import { withProvider, withRouter } from 'lib'
 import { useParams } from 'react-router-dom'
 import styled from 'styled-components'
 

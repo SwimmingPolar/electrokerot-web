@@ -13,6 +13,8 @@ export * from './useScrollbarPadding'
 export * from './useEmptyRoute'
 // export all hooks from ModalLayout
 export * from '../components/ModalLayout/hooks'
+// debounce value
+export * from './useDebouncedValue'
 
 /*
  * list of hooks to apply globally
