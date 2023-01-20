@@ -16,10 +16,6 @@ export const PartList: FC = () => {
   const { isLoading, isError, isSuccess, data } =
     useGetPartsQuery(searchOptions)
 
-  useEffect(() => {
-    console.log(data)
-  }, [data, isSuccess])
-
   return (
     <Box>
       {isLoading && <div>Loading...</div>}

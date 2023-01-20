@@ -15,7 +15,9 @@ export * from './useEmptyRoute'
 export * from '../components/ModalLayout/hooks'
 // debounce value
 export * from './useDebouncedValue'
+export * from './useDeferredLocation'
 
+import { fromPairs } from 'lodash'
 /*
  * list of hooks to apply globally
  */

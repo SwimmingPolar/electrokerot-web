@@ -1,27 +1,19 @@
 import { useDispatch, useSelector } from 'app'
 import { PartsCategoriesType } from 'constant'
-import { loadJson, selectFilters, setFilterOptions } from 'features'
+import { selectFilters, setFilterOptions } from 'features'
 import { useIsDirectAccess } from 'hooks'
 import { useEffect, useMemo } from 'react'
 import { useParams, useSearchParams } from 'react-router-dom'
 
 // This has to be a async function because we need to wait for
 // the filter data if it is not loaded yet.
-const sortFilters = async (
+const sortFilters = (
   category: PartsCategoriesType,
   filterNames: string[],
   filters: {
     [key: string]: string[]
   }[]
 ) => {
-  // If filterNames is empty, load and extract filter names from the filter data
-  if (filterNames.length === 0) {
-    const filterData = await loadJson(category)
-    filterNames = filterData.map(
-      filter => (filter.category || filter?.subCategory) as string
-    )
-  }
-
   const cloned = structuredClone(filters)
     .filter(
       e =>
@@ -73,7 +65,7 @@ export const useChangeSearchParams = () => {
   // Get the selected filters from the store
   const selectedFilters = filter?.selectedFilters || []
   // Reformat it to the same format as the filters from the url
-  const awaitingFiltersFromStore = useMemo(
+  const filtersFromStore = useMemo(
     () =>
       sortFilters(
         category,
@@ -91,7 +83,7 @@ export const useChangeSearchParams = () => {
 
   // Watch for changes in the order of the filters name and options
   // Sample: filterB=B_AMD,A_AMD&filterA=AMD,인텔
-  const awaitingFiltersFromUrl = useMemo(() => {
+  const filtersFromUrl = useMemo(() => {
     const temp = Array.from(searchParams.entries())
       // Filter out the search params that are not related to filters
       .filter(([key]) => {
@@ -134,11 +126,6 @@ export const useChangeSearchParams = () => {
   useEffect(
     () => {
       async function init() {
-        // Await for the filters from the url and the store to be ready
-        // in case they are not ready yet because of the filter data not being loaded yet
-        const filtersFromUrl = await awaitingFiltersFromUrl
-        const filtersFromStore = await awaitingFiltersFromStore
-
         const isEqual =
           // Since they are both trimmed and sorted, we can compare them by stringifying them.
           JSON.stringify(filtersFromUrl) === JSON.stringify(filtersFromStore) &&

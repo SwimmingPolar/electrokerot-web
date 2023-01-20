@@ -9,7 +9,13 @@ type ProviderType = {
 }
 
 export const Provider = ({ children }: ProviderType) => (
-  <Suspense fallback={<div>Suspense: Loading...</div>}>
+  <Suspense
+    fallback={
+      <div>
+        <h1>Loading...</h1>
+      </div>
+    }
+  >
     <StoreProvider>
       <DeviceProvider>
         <CustomThemeProvider theme={getTheme('light')}>

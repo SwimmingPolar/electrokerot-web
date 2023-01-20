@@ -1,7 +1,7 @@
 import { DummyDiv, ModalBackdrop } from 'components'
 import { ModalRoutes } from 'constant'
 import { AnimatePresence, motion } from 'framer-motion'
-import { useDeviceDetect, useRecordHistory } from 'hooks'
+import { useDeferredLocation, useDeviceDetect, useRecordHistory } from 'hooks'
 import {
   BuildPage,
   LoginPage,
@@ -9,6 +9,7 @@ import {
   PartsMenuPage,
   SignupPage
 } from 'pages'
+import { useEffect } from 'react'
 import {
   BrowserRouter,
   Location,
@@ -48,7 +49,14 @@ export const RootRoutes = () => {
   // Remove modal backdrop styles based on device
   const { isMobileFriendly } = useDeviceDetect()
 
-  const location = useLocation()
+  // const location = useLocation()
+  const { location, isPending } = useDeferredLocation()
+  useEffect(() => {
+    console.log('isPending', isPending)
+  }, [isPending])
+  if (location.pathname === '/') {
+    location.pathname = '/parts'
+  }
   const { state, pathname, key } = location || {}
   let { backgroundLocation } = state || {}
 

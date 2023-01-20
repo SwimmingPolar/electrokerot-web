@@ -1,6 +1,6 @@
 import { PageLayout } from 'components'
 import { PartsMenu, WelcomeSidebar } from 'features'
-import { FC } from 'react'
+import { FC, useEffect } from 'react'
 import styled from 'styled-components'
 import { WelcomeSidebarWidth as SidebarWidth } from 'constant'
 
