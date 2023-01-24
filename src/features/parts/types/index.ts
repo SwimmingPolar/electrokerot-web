@@ -11,18 +11,19 @@ export type Details = Record<
 export type Vendor = {
   vendorName: string
   vendorCode?: string
-  vendorUrl: string
-  shippingCost: number
-  price: number
+  url: string
+  price: string
+  shippingCost: string
+  card: string
 }
 
 export type MarketType = 'openMarket' | 'mall' | 'credit' | 'cash'
 
-export type Vendors = Record<MarketType, Vendor>
+export type Vendors = Record<MarketType, Vendor[]>
 
 export type Price = {
-  timestamp: Date
-  price: number
+  timestamp: string
+  value: string
 }
 
 export type Part = {
@@ -32,11 +33,11 @@ export type Part = {
     tag?: string
   }
   category: PartsCategoriesType
-  variants: Part[]
+  variants: string[]
   sortOrder: number
   stock: boolean
   details: Details
   vendors: Vendors
   prices: Price[]
-  updatedAt: Date
+  updatedAt: string
 }

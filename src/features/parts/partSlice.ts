@@ -6,14 +6,32 @@ const partsAdapter = createEntityAdapter<Part>({
   // We do not provide a sortComparer.
 })
 
-const partSlice = createSlice({
-  name: 'part',
-  initialState: partsAdapter.getInitialState(),
-  reducers: {}
+const initialState = partsAdapter.getInitialState({
+  selectedParts: [] as string[]
 })
 
-// export const {} = partsSlice.actions
+type PartState = typeof initialState
 
-// export {}
+const partSlice = createSlice({
+  name: 'part',
+  initialState,
+  reducers: {
+    addPartToCompare: (state, action) => {
+      state.selectedParts.push(action.payload)
+    },
+    removePartToCompare: (state, action) => {
+      state.selectedParts = state.selectedParts.filter(
+        partId => partId !== action.payload
+      )
+    }
+  }
+})
+
+const selectPartsToCompare = ({ part }: { part: PartState }) =>
+  part.selectedParts
+
+export { selectPartsToCompare }
+
+export const { addPartToCompare, removePartToCompare } = partSlice.actions
 
 export const PartReducer = partSlice.reducer

@@ -49,11 +49,7 @@ export const RootRoutes = () => {
   // Remove modal backdrop styles based on device
   const { isMobileFriendly } = useDeviceDetect()
 
-  // const location = useLocation()
-  const { location, isPending } = useDeferredLocation()
-  useEffect(() => {
-    console.log('isPending', isPending)
-  }, [isPending])
+  const location = useLocation()
   if (location.pathname === '/') {
     location.pathname = '/parts'
   }

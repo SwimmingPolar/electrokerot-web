@@ -21,7 +21,7 @@ export const LowerBox: FC = () => {
   }
 
   // Get filters list for the category
-  const filters = useSelector(selectFilters)?.[category] || []
+  const filters = useSelector(state => selectFilters(state)[category]) || []
 
   // Decides whether the filter is open or not
   const isFilterOpen = filters?.filterState?.open

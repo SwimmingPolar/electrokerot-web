@@ -153,7 +153,7 @@ export const UpperBox = ({ toggleChangeFiltersPopup }: UpperBoxType) => {
   const { category } = useParams() as { category: PartsCategoriesType }
 
   // Get filters list for the category
-  const filters = useSelector(selectFilters)?.[category]
+  const filters = useSelector(state => selectFilters(state)[category]) || {}
 
   // Decides whether the filter is open or not
   const isFilterOpen = filters?.filterState?.open

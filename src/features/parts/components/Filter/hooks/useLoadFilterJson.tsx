@@ -1,23 +1,17 @@
 import { useDispatch, useSelector } from 'app'
 import { PartsCategoriesType } from 'constant'
 import { FilterDataType, selectFilters, setFilters } from 'features'
-import { promiseGuard } from 'lib'
+import { useEffect } from 'react'
 import { useParams } from 'react-router-dom'
 
 type UseLoadFilterJsonType = {
   category?: PartsCategoriesType
 }
 
-const asyncSleep = (ms: number) => {
-  return new Promise(resolve => setTimeout(resolve, ms))
-}
-
 const loadJson = async (category: PartsCategoriesType) => {
   const filterData = (await import(`../files/${category}.json`))[
     'default'
   ] as FilterDataType[]
-
-  await asyncSleep(3000)
 
   return filterData
 }
@@ -28,23 +22,59 @@ export const useLoadFilterJson = (props?: UseLoadFilterJsonType) => {
   }
   const category = props?.category || categoryParam
   const dispatch = useDispatch()
-  const filterData = useSelector(selectFilters)[category]?.['filterData'] || []
+  const filterData =
+    useSelector(state => selectFilters(state)[category]?.filterData) || []
 
-  if (filterData.length === 0) {
-    // PromiseGuard will throw promise if it is not resolved yet.
-    // This enables us to make use of React Suspense
-    const data = promiseGuard(
-      `useLoadFilterJson-${category}`,
-      loadJson(category)
-    ) as FilterDataType[]
+  useEffect(() => {
+    // Filter json file loader
+    const getFilters = async () => {
+      const filterData = await loadJson(category)
 
-    dispatch(
-      setFilters({
-        category: category as PartsCategoriesType,
-        filterData: data
-      })
-    )
-  }
+      // Save loaded filters to redux store
+      dispatch(
+        setFilters({
+          category: category as PartsCategoriesType,
+          filterData
+        })
+      )
+    }
 
-  return filterData
+    if (filterData.length === 0) {
+      getFilters()
+    }
+  }, [category])
 }
+
+// export const useLoadFilterJson = (props?: UseLoadFilterJsonType) => {
+//   const { category: categoryParam } = useParams() as {
+//     category: PartsCategoriesType
+//   }
+//   const category = props?.category || categoryParam
+//   const dispatch = useDispatch()
+//   const filterData = useSelector(selectFilters)[category]?.['filterData'] || []
+
+//   useEffect(() => {
+//     let data: FilterDataType[] = []
+//     // @Important: Throwing promise to be caught by React Suspense
+//     // should be synchronous. Otherwise, React Suspense will not work.
+//     // In a nutshell, thrown promise will be caught inside another call stack
+//     // that is not part of the current call stack.
+//     if (filterData.length === 0) {
+//       // PromiseGuard will throw promise if it is not resolved yet.
+//       // This enables us to make use of React Suspense
+//       data = promiseGuard(
+//         `useLoadFilterJson-${category}`,
+//         loadJson(category)
+//       ) as FilterDataType[]
+
+//       dispatch(
+//         setFilters({
+//           category: category as PartsCategoriesType,
+//           filterData: data
+//         })
+//       )
+//     }
+//   }, [category, filterData])
+
+//   return filterData
+// }

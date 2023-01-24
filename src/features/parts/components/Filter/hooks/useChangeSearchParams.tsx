@@ -51,7 +51,7 @@ export const useChangeSearchParams = () => {
   // Get search params from url
   const [searchParams, setSearchParams] = useSearchParams()
 
-  const filter = useSelector(selectFilters)[category]
+  const filter = useSelector(state => selectFilters(state)[category])
   const { query, page, filterData = [] } = filter || {}
 
   const filterNames = useMemo(
