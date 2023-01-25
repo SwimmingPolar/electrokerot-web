@@ -4,7 +4,8 @@ import {
   AuthReducer,
   FilterReducer,
   ModalReducer,
-  PartReducer
+  PartReducer,
+  BuildReducer
 } from 'features'
 import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux'
 import {
@@ -35,7 +36,8 @@ export const store = configureStore({
       auth: AuthReducer,
       modal: ModalReducer,
       part: PartReducer,
-      filter: FilterReducer
+      filter: FilterReducer,
+      build: BuildReducer
     })
   ),
   middleware: getDefaultMiddleware =>

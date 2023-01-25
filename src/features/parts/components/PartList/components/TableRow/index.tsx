@@ -30,6 +30,18 @@ const Box = styled.div`
     span {
       font-weight: 800;
     }
+
+    button {
+      color: ${({ theme }) => theme.colors.primary};
+      border: 1px solid ${({ theme }) => theme.colors.primary};
+      transition: background-color 0.125s ease-in-out;
+      font-family: ${({ theme }) => theme.fonts.secondary};
+      font-weight: 800;
+
+      :hover {
+        background-color: ${({ theme }) => theme.colors.primary100};
+      }
+    }
   }
 `
 

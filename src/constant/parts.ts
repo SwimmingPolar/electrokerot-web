@@ -77,7 +77,8 @@ export const PartsCategoriesKr = {
   cooler: '쿨러'
 }
 
-const DefaultCategories = [
+// @Todo: deal with this typing later
+export const PartsCategories = [
   'cpu',
   'motherboard',
   'memory',
@@ -85,23 +86,45 @@ const DefaultCategories = [
   'ssd',
   'hdd',
   'case',
-  'power'
-]
+  'power',
+  'cooler'
+] as PartsCategoriesType[]
+export type PartsCategoriesType =
+  | 'cpu'
+  | 'motherboard'
+  | 'memory'
+  | 'graphics'
+  | 'ssd'
+  | 'hdd'
+  | 'case'
+  | 'power'
+  | 'cooler'
 
-export type PartsCategoriesType = keyof typeof PartsCategoriesKr
-export const PartsCategories = Object.keys(PartsCategoriesKr) as [
-  PartsCategoriesType
-]
-
+export const BuildPartsCategories = [
+  'cpu',
+  'motherboard',
+  'memory',
+  'graphics',
+  'ssd',
+  'hdd',
+  'case',
+  'power',
+  'cpuCooler',
+  'systemCooler',
+  'reserved'
+] as BuildPartsCategoriesType[]
 export type BuildPartsCategoriesType =
-  | Omit<PartsCategoriesType, 'cooler'>
+  | 'cpu'
+  | 'motherboard'
+  | 'memory'
+  | 'graphics'
+  | 'ssd'
+  | 'hdd'
+  | 'case'
+  | 'power'
   | 'cpuCooler'
   | 'systemCooler'
-
-export const BuildPartsCategories = DefaultCategories.concat([
-  'cpuCooler',
-  'systemCooler'
-]) as [BuildPartsCategoriesType]
+  | 'reserved'
 
 export const ChangeFilterPopupDimension = {
   withTargetFilter: {

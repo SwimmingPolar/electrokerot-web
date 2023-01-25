@@ -27,11 +27,11 @@ const partSlice = createSlice({
   }
 })
 
+export const { addPartToCompare, removePartToCompare } = partSlice.actions
+
 const selectPartsToCompare = ({ part }: { part: PartState }) =>
   part.selectedParts
 
 export { selectPartsToCompare }
-
-export const { addPartToCompare, removePartToCompare } = partSlice.actions
 
 export const PartReducer = partSlice.reducer

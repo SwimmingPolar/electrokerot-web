@@ -1,8 +1,15 @@
-import { BuildSummaryWidth, NavbarHeight } from 'constant'
+import { BuildPartsCategories, BuildSummaryWidth, NavbarHeight } from 'constant'
+import {
+  BuildPart,
+  BuildSummaryCard,
+  BuildSummaryCardPartsCategoriesType,
+  BuildSummaryLayout
+} from 'features'
 import { useScrollbarWidth } from 'hooks'
 import { FC } from 'react'
 import styled from 'styled-components'
 import { ElementDepth, media } from 'styles'
+import { build } from '../../../../../cypress/fixtures'
 
 const Box = styled.aside<{ scrollbarWidth: number }>`
   display: none;
@@ -71,14 +78,42 @@ const ContentBox = styled.div<{ scrollbarWidth: number }>`
   }
 `
 
-const Content = styled.div`
-  display: flex;
-  width: 100%;
-  height: 2000px;
-`
-
 export const BuildSummary: FC = () => {
   const scrollbarWidth = useScrollbarWidth()
+  // Reformat the selected parts to be used in the BuildSummaryCard.
+  // We need to group ssd/hdd and system/cpuCooler together to show them in one card.
+  // At the same time, format into something we can easily use when rendering the BuildSummaryCard.
+  const selectedParts = BuildPartsCategories.reduce((acc, partCategory) => {
+    // Convert the partCategory to BuildSummaryCardPartsCategoriesType
+    // So we can use it as a key in the accumulator.
+    const category = partCategory as BuildSummaryCardPartsCategoriesType
+
+    // @Todo: change this data to be received from the store.
+    const part = build.parts[partCategory]
+
+    let key: BuildSummaryCardPartsCategoriesType
+    switch (partCategory) {
+      case 'ssd':
+      case 'hdd':
+        key = 'storage'
+        break
+      case 'systemCooler':
+      case 'cpuCooler':
+        key = 'cooler'
+        break
+      default:
+        key = partCategory
+    }
+    // If the array value in the accumulator doesn't exist, create it.
+    if (!Array.isArray(acc[key])) {
+      acc[key] = []
+    }
+
+    // If the value is not undefined, push it to the array.
+    part && acc[key].push(part)
+
+    return acc
+  }, {} as Record<BuildSummaryCardPartsCategoriesType, BuildPart[]>)
 
   return (
     <>
@@ -86,13 +121,24 @@ export const BuildSummary: FC = () => {
       <Box scrollbarWidth={scrollbarWidth} className="scrollbar-padding">
         <ContentBox
           scrollbarWidth={scrollbarWidth}
-          className="scrollbar-padding"
+          className="scrollbar-padding build-summary"
         >
-          <Content>
-            {Array.from({ length: 100 }).map((_, index) => (
-              <div key={index}>{index}</div>
-            ))}
-          </Content>
+          <BuildSummaryLayout>
+            <>
+              {Object.entries(selectedParts).map(
+                ([partCategory, parts], index) => (
+                  <BuildSummaryCard
+                    key={index}
+                    partCategory={
+                      // Conversion needed because key extracted from the object is a string.
+                      partCategory as BuildSummaryCardPartsCategoriesType
+                    }
+                    parts={parts}
+                  />
+                )
+              )}
+            </>
+          </BuildSummaryLayout>
         </ContentBox>
       </Box>
     </>
