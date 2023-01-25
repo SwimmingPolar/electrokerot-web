@@ -7,12 +7,6 @@ const Box = styled.div`
   width: 420px;
 `
 
-const Padding = styled.div`
-  height: 720px;
-  width: 100%;
-  background-color: red;
-`
-
 export default {
   title: 'Features/Common/PopupLayout',
   component: PopupLayout,

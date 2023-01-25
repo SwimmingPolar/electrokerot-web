@@ -5,10 +5,11 @@ import {
   selectPartsToCompare,
   useLoadFilterJson
 } from 'features'
+import { useDeviceDetect } from 'hooks'
 import React, { FC, useMemo } from 'react'
 import { useParams } from 'react-router-dom'
 import styled from 'styled-components'
-import { ElementDepth } from 'styles'
+import { ElementDepth, media } from 'styles'
 import { parts } from '../../../../../cypress/fixtures'
 import { ContentLayout as Content } from '../ContentLayout/ContentLayout'
 import {
@@ -29,24 +30,33 @@ const TableContent = styled.div``
 
 const TableSection = styled.section`
   padding: 0 20px;
+
+  ${media.desktopSmall`
+    padding: 0 10px;
+  `}
 `
 
 export const PartList: FC = () => {
+  const { isDesktop } = useDeviceDetect()
   const { category } = useParams() as { category: PartsCategoriesType }
 
   const filtersData = useSelector(
     state => selectFilters(state)[category]?.filterData || []
   )
 
+  // Number of columns to show
+  // On desktop, show 4 columns
+  // Elsewhere, show 3 columns
+  const columnCount = isDesktop ? 4 : 3
   // Get the first 5 filter names
   const headerNames = useMemo(() => {
     let headerNames = filtersData
-      .slice(0, 4)
+      .slice(0, columnCount)
       .map(filter => filter.category || filter.subCategory) as string[]
     // Put the name of the part as the first header
     headerNames = ['부품명', ...headerNames, '가격']
     return headerNames
-  }, [filtersData])
+  }, [filtersData, isDesktop])
 
   // Get selected parts to compare
   const partsToCompare = useSelector(state => selectPartsToCompare(state))

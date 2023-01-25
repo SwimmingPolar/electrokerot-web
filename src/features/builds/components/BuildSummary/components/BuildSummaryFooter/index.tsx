@@ -1,5 +1,6 @@
 import { Button } from '@mui/material'
 import styled from 'styled-components'
+import { media } from 'styles'
 
 const FooterBox = styled.div`
   display: flex;
@@ -12,6 +13,12 @@ const FooterBox = styled.div`
     flex: 1;
     height: 65px;
   }
+
+  span {
+    font-size: 28px;
+    font-family: ${({ theme }) => theme.fonts.primary};
+  }
+
   .total-price {
     display: flex;
     justify-content: center;
@@ -24,18 +31,27 @@ const FooterBox = styled.div`
     }
   }
   .go-to-build {
+    display: flex;
+    justify-content: center;
+    align-items: center;
     background-color: ${({ theme }) => theme.colors.info};
     border-top: 1px solid ${({ theme }) => theme.colors.info};
     span {
       font-weight: 800;
       color: ${({ theme }) => theme.colors.white};
     }
+
+    button {
+      width: 100%;
+      height: 100%;
+    }
   }
 
-  span {
-    font-size: 28px;
-    font-family: ${({ theme }) => theme.fonts.primary};
-  }
+  ${media.desktopSmall`
+    span {
+      font-size: 24px;
+    }
+  `}
 `
 
 export const BuildSummaryFooter = () => {

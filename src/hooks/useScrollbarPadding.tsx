@@ -1,6 +1,6 @@
 import { useIsPresent } from 'framer-motion'
 import { useDeviceDetect } from 'hooks'
-import { useLayoutEffect, useState } from 'react'
+import { useEffect, useLayoutEffect, useState } from 'react'
 
 export const getScrollbarWidth = () => {
   const hiddenElement = document.createElement('div')
@@ -22,7 +22,24 @@ export const getScrollbarWidth = () => {
 }
 
 export const useScrollbarWidth = () => {
-  return getScrollbarWidth()
+  const [scrollbarWidth, setScrollbarWidth] = useState(0)
+  // Initial scrollbar width
+  useLayoutEffect(() => {
+    const scrollbarWidth = getScrollbarWidth()
+    setScrollbarWidth(scrollbarWidth)
+  }, [])
+  // Get scrollbar width on window resize
+  useEffect(() => {
+    const handleResize = () => {
+      const scrollbarWidth = getScrollbarWidth()
+      setScrollbarWidth(scrollbarWidth)
+    }
+    window.addEventListener('resize', handleResize)
+    return () => {
+      window.removeEventListener('resize', handleResize)
+    }
+  }, [])
+  return scrollbarWidth
 }
 
 type UseScrollbarPaddingProps = {

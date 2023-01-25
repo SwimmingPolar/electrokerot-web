@@ -104,6 +104,8 @@ export const palette = {
   },
   dark: {}
 }
+type Palette = typeof palette
+
 export const theme = {
   fonts: {
     logo: 'Black Han Sans, sans-serif',
@@ -111,7 +113,14 @@ export const theme = {
     secondary: 'Nanum Gothic, sans-serif'
   }
 }
-export const getTheme = (mode: 'light' | 'dark') => ({
-  ...theme,
-  colors: mode === 'light' ? palette.light : palette.dark
-})
+type DefaultTheme = typeof theme
+
+export type Theme = DefaultTheme & {
+  colors: Palette['light'] | Palette['dark']
+}
+
+export const getTheme = (mode: 'light' | 'dark') =>
+  ({
+    ...theme,
+    colors: mode === 'light' ? palette.light : palette.dark
+  } as Theme)

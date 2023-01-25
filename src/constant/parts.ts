@@ -55,7 +55,7 @@ export const CategoryNavigationSidebarWidth = {
 } as SidebarWidth
 
 export const BuildSummaryWidth = {
-  desktopSmall: 280,
+  desktopSmall: 320,
   desktopLarge: 420,
   // Build summary is not shown on mobile devices
   // but values are required for the padding to maintain the layout.

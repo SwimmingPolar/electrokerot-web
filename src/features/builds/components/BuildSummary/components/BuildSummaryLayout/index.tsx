@@ -4,12 +4,17 @@ import FilterNoneOutlinedIcon from '@mui/icons-material/FilterNoneOutlined'
 import IconButton from '@mui/material/IconButton'
 import Tooltip from '@mui/material/Tooltip'
 import styled from 'styled-components'
+import { media } from 'styles'
 
 const Box = styled.div`
   display: flex;
   width: 100%;
   padding: 0 25px 25px 25px;
   position: relative;
+
+  ${media.desktopSmall`
+    padding: 0 15px 15px 15px;
+  `}
 `
 
 const Header = styled.div`

@@ -5,8 +5,8 @@ import {
   PartsCategories,
   PartsCategoriesKr
 } from 'constant'
-import { useScrollbarWidth } from 'hooks'
-import { FC, useEffect } from 'react'
+import { useDeviceDetect, useScrollbarWidth } from 'hooks'
+import { FC } from 'react'
 import styled from 'styled-components'
 import { ElementDepth, media } from 'styles'
 
@@ -95,7 +95,6 @@ const BoxPadding = styled.div`
 const CategoriesBox = styled.div<{ scrollbarWidth: number }>`
   display: flex;
   flex-direction: column;
-  align-items: center;
   background-color: ${({ theme }) => theme.colors.white};
   overscroll-behavior: contain;
   height: 100%;
@@ -111,6 +110,8 @@ const CategoriesBox = styled.div<{ scrollbarWidth: number }>`
     gap: 5px;
     overflow-y: scroll;
     margin-right: ${({ scrollbarWidth }: any) => -scrollbarWidth + 'px'};
+    padding-top: 150px;
+    padding-bottom: 50px;
 
     &.scrollbar-padding--enabled {
       margin-right: ${({ scrollbarWidth }: any) => -scrollbarWidth * 2 + 'px'};
@@ -160,46 +161,21 @@ const LinkBox = styled.div`
     height: 50px;
     border: 1px solid ${({ theme }) => theme.colors.primary200};
     margin-top: -1px;
-
+    
     :hover {
       color: ${({ theme }) => theme.colors.blue300};
-      border: 1px solid ${({ theme }) => theme.colors.blue300};
-      border-width: 1px 1px 1px 2px;
-      z-index: 99999;
-      margin-left: -1px;
-
-      :nth-of-type(1) {
-        border-width: 2px 1px 1px 2px;
-      }
-    }
-
-    :has(a.active) {
-      color: ${({ theme }) => theme.colors.blue300};
-      border: 1px solid ${({ theme }) => theme.colors.blue300};
-      border-width: 1px 1px 1px 2px;
-      z-index: 99999;
-      margin-left: -1px;
-
-      :nth-of-type(1) {
-        border-width: 2px 1px 1px 2px;
-      }
     }
 
     a {
       font-size: 12px;
+      font-weight: 600;
+      font-family: ${({ theme }) => theme.fonts.primary};
     }
 
     a.active {
-      margin-left: -1px;
+      font-weight: 700;
+      color: ${({ theme }) => theme.colors.blue300};
     }
-
-    a.active:nth-of-type(1) {
-      margin-top: -1px;
-    }
-    a:hover:nth-of-type(1) {
-      margin-top: -1px;
-    }
-
   `}
 
   ${media.tablet`
@@ -268,8 +244,8 @@ const MenuIcon = styled.div<{ url: string }>`
   `}
 
   ${media.tablet`
-    width: 54px;
-    height: 54px;
+    width: 48px;
+    height: 48px;
     &.active {
       background-color: ${({ theme }) => theme.colors.blue300};
     }

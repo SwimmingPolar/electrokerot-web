@@ -3,10 +3,10 @@ import { IconButton, MenuItem, Select, SelectChangeEvent } from '@mui/material'
 import classnames from 'classnames'
 import { PartsCategoriesKr, PartsCategoriesType } from 'constant'
 import { BuildPart, BuildSummaryCardPartsCategoriesType } from 'features'
-import { useScrollbarPadding } from 'hooks'
 import React, { useEffect, useMemo } from 'react'
 import { useParams } from 'react-router-dom'
 import styled from 'styled-components'
+import { media } from 'styles'
 
 // Check if the user can adjust the count of the parts in the build
 const isCountAdjustable = (
@@ -66,6 +66,10 @@ const HeaderBox = styled.div`
   padding: 6px 14px;
   background-color: ${({ theme }) => theme.colors.primary200};
 
+  ${media.desktopSmall`
+    height: 28px;
+  `}
+
   h3 {
     font-family: ${({ theme }) => theme.fonts.primary};
     font-weight: 600;
@@ -86,7 +90,7 @@ const HeaderBox = styled.div`
 const ContentBox = styled.div`
   display: flex;
   flex-direction: column;
-  height: 72px;
+  height: 68px;
   background-color: ${({ theme }) => theme.colors.white};
   padding: 11px 0 0 13px;
 
@@ -117,6 +121,12 @@ const ContentUpperBox = styled.div`
     font-family: ${({ theme }) => theme.fonts.primary};
     font-size: 16px;
   }
+
+  ${media.desktopSmall`
+    span {
+      font-size: 15px;
+    }
+  `}
 `
 const ContentLowerBox = styled.div`
   display: flex;
@@ -125,6 +135,21 @@ const ContentLowerBox = styled.div`
   align-items: center;
   flex: 1;
 
+  > div {
+    flex: 1;
+  }
+
+  /* Width for input and select box */
+  > div:nth-child(2) {
+    max-width: 54px;
+  }
+  /* Align close button */
+  > div:last-child {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+  }
+
   span {
     font-family: ${({ theme }) => theme.fonts.primary};
     font-size: 16px;
@@ -132,7 +157,15 @@ const ContentLowerBox = styled.div`
     color: ${({ theme }) => theme.colors.primary300};
   }
 
+  ${media.desktopSmall`
+    span {
+      font-size: 15px;
+    }
+  `}
+
   button.remove-button {
+    width: 40px;
+    height: 40px;
     cursor: pointer;
     margin-right: 15px;
     color: ${({ theme }) => theme.colors.primary300};
@@ -140,18 +173,35 @@ const ContentLowerBox = styled.div`
     :hover {
       color: ${({ theme }) => theme.colors.primary};
     }
-    width: 40px;
-    height: 40px;
   }
 
+  /* Text input */
   input.count-input {
     border: 1px solid ${({ theme }) => theme.colors.primary200};
     border-radius: 4px;
     font-size: 16px;
     height: 28px;
     width: 54px;
-    padding-left: 21px;
+    text-align: center;
+    flex-grow: 0;
+
+    ${media.desktopSmall`
+      width: 48px;
+    `}
   }
+  /* Select box */
+  .MuiSelect-select {
+    padding: 4px 12px !important;
+    margin-left: 20px !important;
+  }
+
+  ${media.desktopSmall`
+    height: 64px;
+
+    .MuiSelect-select {
+      padding: 2px 10px !important; 
+    }
+  `}
 `
 
 type CountInputProps = {
@@ -160,17 +210,6 @@ type CountInputProps = {
   value: string
 }
 const CountInput = ({ partCategory, handleChange, value }: CountInputProps) => {
-  const { addPaddingForScrollbar, removePaddingForScrollbar } =
-    useScrollbarPadding({
-      ignoreInitialPadding: true
-    })
-
-  useEffect(() => {
-    return () => {
-      removePaddingForScrollbar()
-    }
-  })
-
   // If the user can change the count value by select box, return the array of options
   // else, return true to show the text input
   const result = isTextOrSelect(partCategory)
@@ -186,18 +225,9 @@ const CountInput = ({ partCategory, handleChange, value }: CountInputProps) => {
   } else if (Array.isArray(result)) {
     return (
       <Select
-        // autoWidth
         onChange={handleChange}
-        onOpen={addPaddingForScrollbar}
-        onClose={removePaddingForScrollbar}
         MenuProps={{
           disableScrollLock: true
-        }}
-        SelectDisplayProps={{
-          style: {
-            padding: '4px 12px',
-            marginLeft: '20px'
-          }
         }}
         value={value}
       >
@@ -293,12 +323,22 @@ export const BuildSummaryCard = ({
                 <span>{part.name}</span>
               </ContentUpperBox>
               <ContentLowerBox>
-                <span>{part.price}</span>
-                {/* Get appropriate input element (select or text) */}
-                {CountInput({ partCategory, handleChange, value: part.count })}
-                <IconButton className="remove-button" centerRipple={false}>
-                  <ClearOutlinedIcon />
-                </IconButton>
+                <div>
+                  <span>{part.price}</span>
+                </div>
+                <div>
+                  {/* Get appropriate input element (select or text) */}
+                  {CountInput({
+                    partCategory,
+                    handleChange,
+                    value: part.count
+                  })}
+                </div>
+                <div>
+                  <IconButton className="remove-button" centerRipple={false}>
+                    <ClearOutlinedIcon />
+                  </IconButton>
+                </div>
               </ContentLowerBox>
             </ContentBox>
           )

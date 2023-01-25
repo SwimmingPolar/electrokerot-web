@@ -1,5 +1,6 @@
 import { ReactNode } from 'react'
 import styled from 'styled-components'
+import { media } from 'styles'
 
 export const TableRowBox = styled.div`
   display: flex;
@@ -7,26 +8,25 @@ export const TableRowBox = styled.div`
 `
 
 export const TableElementBox = styled.div`
-  flex: 1;
   display: flex;
   flex-direction: row;
   align-items: center;
-  flex-shrink: 1;
-  flex-grow: 1;
+  flex: 1;
 
   &.element {
     height: 64px;
   }
 
   &:first-of-type {
-    flex-shrink: 0;
-    flex: 25%;
-  }
+    flex: 20% 1 0;
+    min-width: 240px;
 
+    ${media.desktop`
+      flex: 25%;
+    `}
+  }
   &:last-of-type {
-    flex-shrink: 0;
-    flex: 5%;
-    justify-content: space-around;
+    flex: 18% 1 0;
   }
 
   > span {

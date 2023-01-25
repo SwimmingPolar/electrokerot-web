@@ -99,7 +99,8 @@ body,
 
 /* Clip overflow text */
 p,
-span {
+span,
+a {
   text-overflow: ellipsis;
   white-space: nowrap;
   overflow: hidden;

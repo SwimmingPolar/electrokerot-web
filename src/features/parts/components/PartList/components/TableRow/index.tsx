@@ -3,6 +3,7 @@ import { useDispatch } from 'app'
 import { addPartToCompare, Part, removePartToCompare } from 'features'
 import React, { useCallback, useMemo } from 'react'
 import styled from 'styled-components'
+import { media } from 'styles'
 import { TableRowBox, TableRowElement } from '..'
 
 const Box = styled.div`
@@ -17,6 +18,11 @@ const Box = styled.div`
       background-color: transparent;
     }
   }
+  .MuiCheckbox-root {
+    ${media.tablet`
+      padding: 5px;
+    `}
+  }
 
   .content {
     display: flex;
@@ -27,6 +33,18 @@ const Box = styled.div`
   .price {
     display: flex;
     flex-direction: row;
+    padding-left: 30px;
+    justify-content: space-between;
+
+    ${media.tablet`
+      padding-left: 0;
+      justify-content: space-around;  
+    `}
+    ${media.desktop`
+      padding-left: 0;
+      justify-content: space-around;
+    `}
+
     span {
       font-weight: 800;
     }
@@ -37,6 +55,13 @@ const Box = styled.div`
       transition: background-color 0.125s ease-in-out;
       font-family: ${({ theme }) => theme.fonts.secondary};
       font-weight: 800;
+      width: 42px;
+      font-size: 12px;
+
+      ${media.desktop`
+        width: 64px;
+        font-size: 14px;
+      `}
 
       :hover {
         background-color: ${({ theme }) => theme.colors.primary100};

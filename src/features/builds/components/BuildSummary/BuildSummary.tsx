@@ -85,10 +85,6 @@ export const BuildSummary: FC = () => {
   // We need to group ssd/hdd and system/cpuCooler together to show them in one card.
   // At the same time, format into something we can easily use when rendering the BuildSummaryCard.
   const selectedParts = BuildPartsCategories.reduce((acc, partCategory) => {
-    // Convert the partCategory to BuildSummaryCardPartsCategoriesType
-    // So we can use it as a key in the accumulator.
-    const category = partCategory as BuildSummaryCardPartsCategoriesType
-
     // @Todo: change this data to be received from the store.
     const part = build.parts[partCategory]
 
