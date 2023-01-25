@@ -3,6 +3,13 @@ import { useDeviceDetect } from 'hooks'
 import { useEffect, useLayoutEffect, useState } from 'react'
 
 export const getScrollbarWidth = () => {
+  // First calculate the width of the scrollbar from the browser
+  // If the scrollbar exists, the width will be greater than 0
+  let scrollbarWidth = window.innerWidth - document.documentElement.clientWidth
+  if (scrollbarWidth > 0) {
+    return scrollbarWidth
+  }
+
   const hiddenElement = document.createElement('div')
   hiddenElement.style.height = 'calc(100vh + 1px)'
   hiddenElement.style.visibility = 'hidden'
@@ -12,7 +19,7 @@ export const getScrollbarWidth = () => {
 
   document.body.appendChild(hiddenElement)
 
-  const scrollbarWidth = window.innerWidth - hiddenElement.clientWidth
+  scrollbarWidth = window.innerWidth - hiddenElement.clientWidth
 
   document.body.removeChild(hiddenElement)
 
