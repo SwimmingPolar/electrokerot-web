@@ -104,6 +104,8 @@ a {
   text-overflow: ellipsis;
   white-space: nowrap;
   overflow: hidden;
+  word-break: break-word;
+  word-wrap: wrap;
 }
 
 /* default header styles */

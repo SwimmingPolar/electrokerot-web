@@ -5,7 +5,7 @@ import {
   PartsCategories,
   PartsCategoriesKr
 } from 'constant'
-import { useDeviceDetect, useScrollbarWidth } from 'hooks'
+import { useScrollbarWidth } from 'hooks'
 import { FC } from 'react'
 import styled from 'styled-components'
 import { ElementDepth, media } from 'styles'
@@ -95,6 +95,7 @@ const BoxPadding = styled.div`
 const CategoriesBox = styled.div<{ scrollbarWidth: number }>`
   display: flex;
   flex-direction: column;
+  align-items: center;
   background-color: ${({ theme }) => theme.colors.white};
   overscroll-behavior: contain;
   height: 100%;
@@ -110,7 +111,7 @@ const CategoriesBox = styled.div<{ scrollbarWidth: number }>`
     gap: 5px;
     overflow-y: scroll;
     margin-right: ${({ scrollbarWidth }: any) => -scrollbarWidth + 'px'};
-    padding-top: 150px;
+    padding-top: 75px;
     padding-bottom: 50px;
 
     &.scrollbar-padding--enabled {

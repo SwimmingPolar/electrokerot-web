@@ -18,24 +18,42 @@ const Box = styled.div`
       background-color: transparent;
     }
   }
-  .MuiCheckbox-root {
-    ${media.tablet`
-      padding: 5px;
+
+  .name {
+    ${media.mobile`
+      a {
+        white-space: normal;
+        line-height: 1.5;
+      }
     `}
   }
 
   .content {
     display: flex;
     flex-direction: row;
-    justify-content: center;
+    justify-content: space-around;
+
+    ${media.mobile`
+      justify-content: space-between;
+
+      > div:last-of-type {
+        display: flex;
+        flex-direction: row;
+        justify-content: flex-end;
+      }
+    `}
   }
 
   .price {
     display: flex;
     flex-direction: row;
-    padding-left: 30px;
     justify-content: space-between;
 
+    ${media.mobile`
+      span {
+        font-size: 14px;
+      }
+    `}
     ${media.tablet`
       padding-left: 0;
       justify-content: space-around;  
@@ -68,7 +86,38 @@ const Box = styled.div`
       }
     }
   }
+
+  ${media.mobile`
+    padding: 10px 20px 15px 20px;
+
+    .MuiCheckbox-root {
+      padding: 5px 5px 5px 0;
+      margin-left: -1px;
+    }
+  `}
+  ${media.foldable`
+    padding: 15px 25px;
+  `}
+
+  ${media.tablet`
+    .MuiCheckbox-root {
+      padding: 5px;
+    }
+  `}
 `
+
+const TableContentGroup = styled.div`
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  width: 100%;
+
+  > div {
+    flex: 1;
+  }
+`
+
+const ContentBox = styled.div``
 
 type TableRowProps = {
   headerNames: string[]
@@ -114,7 +163,7 @@ export const TableRow = ({
   const NameElement = useMemo(() => {
     const nameOfThePart = part.name.fullName
     return (
-      <TableRowElement>
+      <TableRowElement className="name">
         <span>
           {MemoizedCheckbox}
           <a
@@ -128,6 +177,26 @@ export const TableRow = ({
       </TableRowElement>
     )
   }, [MemoizedCheckbox, part.name.fullName])
+
+  const ContentElement = useMemo(
+    () => (
+      <ContentBox className="content">
+        {headerNames.map((headerName, index) => {
+          // Ignore the name and price
+          // They are handled separately
+          if (['부품명', '가격'].includes(headerName)) return null
+
+          const value = part.details[headerName]?.value || null
+          return (
+            <TableRowElement key={index} className="content">
+              <span>{value}</span>
+            </TableRowElement>
+          )
+        })}
+      </ContentBox>
+    ),
+    [headerNames, part]
+  )
 
   const PriceElement = useMemo(() => {
     // Get the latest price
@@ -145,30 +214,19 @@ export const TableRow = ({
         ) : null}
       </TableRowElement>
     )
-  }, [])
+  }, [part])
 
   const render = useMemo(
     () => (
       <Box>
         <TableRowBox>
           {NameElement}
-          {headerNames.map((headerName, index) => {
-            // Ignore the name and price
-            // They are handled separately
-            if (['부품명', '가격'].includes(headerName)) return null
-
-            const value = part.details[headerName]?.value || null
-            return (
-              <TableRowElement key={index} className="content">
-                <span>{value}</span>
-              </TableRowElement>
-            )
-          })}
+          <TableContentGroup>{ContentElement}</TableContentGroup>
           {PriceElement}
         </TableRowBox>
       </Box>
     ),
-    [NameElement, headerNames, part]
+    [NameElement, ContentElement, PriceElement]
   )
 
   return render

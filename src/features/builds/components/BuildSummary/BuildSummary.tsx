@@ -7,6 +7,7 @@ import {
   BuildSummaryLayout
 } from 'features'
 import { useScrollbarWidth } from 'hooks'
+// import { useScrollbarWidth } from 'react-use'
 import { FC } from 'react'
 import styled from 'styled-components'
 import { ElementDepth, media } from 'styles'
@@ -80,7 +81,7 @@ const ContentBox = styled.div<{ scrollbarWidth: number }>`
 `
 
 export const BuildSummary: FC = () => {
-  const scrollbarWidth = useScrollbarWidth()
+  const scrollbarWidth = useScrollbarWidth() || 0
   // Reformat the selected parts to be used in the BuildSummaryCard.
   // We need to group ssd/hdd and system/cpuCooler together to show them in one card.
   // At the same time, format into something we can easily use when rendering the BuildSummaryCard.

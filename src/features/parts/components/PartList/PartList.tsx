@@ -31,6 +31,9 @@ const TableContent = styled.div``
 const TableSection = styled.section`
   padding: 0 20px;
 
+  ${media.mobile`
+    padding: 0;
+  `}
   ${media.desktopSmall`
     padding: 0 10px;
   `}

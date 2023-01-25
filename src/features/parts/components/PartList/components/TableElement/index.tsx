@@ -5,6 +5,26 @@ import { media } from 'styles'
 export const TableRowBox = styled.div`
   display: flex;
   flex-direction: row;
+
+  /* Part list style for mobile */
+  ${media.mobile`
+  flex-direction: column;
+    flex-wrap: wrap;
+  `}
+
+  .name {
+    min-width: 240px;
+    flex-shrink: 0;
+    flex-grow: 1;
+  }
+  .price {
+    flex: 1 0 18%;
+  }
+  ${media.desktop`
+    .name {
+      min-width: 280px;
+    }
+  `}
 `
 
 export const TableElementBox = styled.div`
@@ -17,19 +37,7 @@ export const TableElementBox = styled.div`
     height: 64px;
   }
 
-  &:first-of-type {
-    flex: 20% 1 0;
-    min-width: 240px;
-
-    ${media.desktop`
-      flex: 25%;
-    `}
-  }
-  &:last-of-type {
-    flex: 18% 1 0;
-  }
-
-  > span {
+  span {
     display: flex;
     justify-content: center;
     align-items: center;
