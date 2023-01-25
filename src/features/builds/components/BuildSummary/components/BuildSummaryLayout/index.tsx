@@ -9,6 +9,7 @@ const Box = styled.div`
   display: flex;
   width: 100%;
   padding: 0 25px 25px 25px;
+  position: relative;
 `
 
 const Header = styled.div`
@@ -16,7 +17,7 @@ const Header = styled.div`
   flex-direction: row;
   align-items: center;
   height: 68px;
-  gap: 24px;
+  gap: 18px;
 `
 
 const BuildTitleBox = styled.div`
@@ -43,6 +44,10 @@ const ButtonsBox = styled.div`
 
     :hover {
       color: ${({ theme }) => theme.colors.primary};
+    }
+
+    &:not(:first-of-type) {
+      margin-left: -7px;
     }
   }
 `

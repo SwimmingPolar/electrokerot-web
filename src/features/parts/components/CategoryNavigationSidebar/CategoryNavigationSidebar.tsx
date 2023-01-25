@@ -6,7 +6,7 @@ import {
   PartsCategoriesKr
 } from 'constant'
 import { useScrollbarWidth } from 'hooks'
-import { FC } from 'react'
+import { FC, useEffect } from 'react'
 import styled from 'styled-components'
 import { ElementDepth, media } from 'styles'
 

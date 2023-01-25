@@ -3,6 +3,7 @@ import { IconButton, MenuItem, Select, SelectChangeEvent } from '@mui/material'
 import classnames from 'classnames'
 import { PartsCategoriesKr, PartsCategoriesType } from 'constant'
 import { BuildPart, BuildSummaryCardPartsCategoriesType } from 'features'
+import { useScrollbarPadding } from 'hooks'
 import React, { useEffect, useMemo } from 'react'
 import { useParams } from 'react-router-dom'
 import styled from 'styled-components'
@@ -11,7 +12,7 @@ import styled from 'styled-components'
 const isCountAdjustable = (
   partCategory: BuildSummaryCardPartsCategoriesType
 ) => {
-  const countAdjustablePartCategories = ['memory', 'ssd', 'hdd', 'cooler']
+  const countAdjustablePartCategories = ['memory', 'storage', 'cooler']
   return countAdjustablePartCategories.includes(partCategory)
 }
 // Decide if the user can change the count value by select box or text input
@@ -142,6 +143,15 @@ const ContentLowerBox = styled.div`
     width: 40px;
     height: 40px;
   }
+
+  input.count-input {
+    border: 1px solid ${({ theme }) => theme.colors.primary200};
+    border-radius: 4px;
+    font-size: 16px;
+    height: 28px;
+    width: 54px;
+    padding-left: 21px;
+  }
 `
 
 type CountInputProps = {
@@ -150,16 +160,36 @@ type CountInputProps = {
   value: string
 }
 const CountInput = ({ partCategory, handleChange, value }: CountInputProps) => {
+  const { addPaddingForScrollbar, removePaddingForScrollbar } =
+    useScrollbarPadding({
+      ignoreInitialPadding: true
+    })
+
+  useEffect(() => {
+    return () => {
+      removePaddingForScrollbar()
+    }
+  })
+
   // If the user can change the count value by select box, return the array of options
   // else, return true to show the text input
   const result = isTextOrSelect(partCategory)
   if (result === true) {
-    return <input type="text" onChange={handleChange} value={value} />
+    return (
+      <input
+        type="text"
+        onChange={handleChange}
+        value={value}
+        className="count-input"
+      />
+    )
   } else if (Array.isArray(result)) {
     return (
       <Select
         // autoWidth
         onChange={handleChange}
+        onOpen={addPaddingForScrollbar}
+        onClose={removePaddingForScrollbar}
         MenuProps={{
           disableScrollLock: true
         }}
@@ -181,7 +211,7 @@ const CountInput = ({ partCategory, handleChange, value }: CountInputProps) => {
       </Select>
     )
   } else {
-    return null
+    return <></>
   }
 }
 
@@ -214,14 +244,32 @@ export const BuildSummaryCard = ({
 
   useEffect(() => {
     if (isActive) {
-      const element = document.querySelector(`.card-${partCategory}`)
-      element?.scrollIntoView({
-        behavior: 'smooth',
-        block: 'nearest'
-      })
+      const buildSummary = document.querySelector('.build-summary')
+      const buildSummaryHeight = buildSummary?.clientHeight || 0
+      const scrollTop = buildSummary?.scrollTop || 0
+      const currentScrollTop = buildSummary?.scrollTop || 0
+      const element = document.querySelector(
+        `.card-${partCategory}`
+      ) as HTMLDivElement
+
+      const isVisible =
+        // Compare start
+        scrollTop < element.offsetTop &&
+        // Compare end
+        scrollTop + buildSummaryHeight >
+          element.offsetTop + element.clientHeight + 65
+
+      // If the element is not in the viewport, scroll to it
+      if (!isVisible) {
+        buildSummary?.scrollBy({
+          top: element.offsetTop - currentScrollTop - 20,
+          behavior: 'smooth'
+        })
+      }
     }
   }, [category])
 
+  // Do not render reserved slot, it's useless
   if (partCategory === 'reserved') {
     return null
   }

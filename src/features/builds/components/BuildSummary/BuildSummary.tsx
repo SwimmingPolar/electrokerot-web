@@ -3,6 +3,7 @@ import {
   BuildPart,
   BuildSummaryCard,
   BuildSummaryCardPartsCategoriesType,
+  BuildSummaryFooter,
   BuildSummaryLayout
 } from 'features'
 import { useScrollbarWidth } from 'hooks'
@@ -139,6 +140,7 @@ export const BuildSummary: FC = () => {
               )}
             </>
           </BuildSummaryLayout>
+          <BuildSummaryFooter />
         </ContentBox>
       </Box>
     </>

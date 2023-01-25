@@ -19,7 +19,7 @@ export const palette = {
     closeButton: '#AAAAAA',
     confirmButton: '#0498EC',
     warning: '#BB0038',
-    info: 'rgba(68, 146, 212, 1)',
+    info: '#4492D4',
     success: 'rgba(0, 187, 131, 1)',
     orange: 'rgba(244, 130, 37, 1)',
     yellow: 'rgba(251, 243, 213, 1)',
