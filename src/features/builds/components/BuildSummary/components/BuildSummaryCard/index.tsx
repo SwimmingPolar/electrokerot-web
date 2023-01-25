@@ -180,28 +180,33 @@ const ContentLowerBox = styled.div`
     border: 1px solid ${({ theme }) => theme.colors.primary200};
     border-radius: 4px;
     font-size: 16px;
-    height: 28px;
     width: 54px;
+    height: 28px;
     text-align: center;
     flex-grow: 0;
-
-    ${media.desktopSmall`
-      width: 48px;
-    `}
   }
   /* Select box */
+  .MuiInputBase-root {
+    width: 54px !important;
+    height: 28px !important;
+  }
   .MuiSelect-select {
-    padding: 4px 12px !important;
-    margin-left: 20px !important;
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 0 !important;
+
+    span {
+      margin: 0;
+      padding-left: 15px;
+    }
   }
 
-  ${media.desktopSmall`
-    height: 64px;
-
-    .MuiSelect-select {
-      padding: 2px 10px !important; 
-    }
-  `}
+  .MuiInputBase-input {
+    width: 54px !important;
+    height: 28px !important;
+  }
 `
 
 type CountInputProps = {
@@ -234,7 +239,7 @@ const CountInput = ({ partCategory, handleChange, value }: CountInputProps) => {
         {result.map((option, index) => {
           return (
             <MenuItem key={index} value={option}>
-              {option}
+              <span>{option}</span>
             </MenuItem>
           )
         })}

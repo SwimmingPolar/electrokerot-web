@@ -16,22 +16,13 @@ const unregisterEvents = (events: any[]) =>
   })
 
 export const useMoveScroll = (containerSelector: string) => {
+  let oldMouseX: number
+
   const handleMouseMove = useCallback(
     (event: MouseEvent) => {
       const container = document.querySelector(
         `.${containerSelector}`
       ) as HTMLElement
-      const {
-        // Width of the entire element
-        scrollWidth,
-        // Offset from the left edge (how much scrolled)
-        scrollLeft,
-        // Width of the visible part of the element
-        offsetWidth
-      } = container || {}
-
-      const isScrollAtEnd = scrollLeft + offsetWidth === scrollWidth
-
       // If the mouse is down and moving at the same time
       // add 'scrolling' class to the container element.
       // This is to prevent button from being clicked when scrolling.
@@ -39,20 +30,11 @@ export const useMoveScroll = (containerSelector: string) => {
         container.classList.add('scrolling')
       }
 
-      switch (event.movementX) {
-        // When moving left, scrollLeft should be greater than 0
-        case MoveLeft:
-          if (!isScrollAtEnd) {
-            container.scrollLeft += 1
-          }
-          break
-        // When moving right, scrollLeft should be less than scrollWidth
-        case MoveRight:
-          if (container.scrollLeft > 0) {
-            container.scrollLeft += -1
-          }
-          break
-      }
+      const deltaX = oldMouseX - event.clientX
+
+      container.scrollLeft += deltaX
+
+      oldMouseX = event.clientX
     },
     [containerSelector]
   )
@@ -72,6 +54,7 @@ export const useMoveScroll = (containerSelector: string) => {
       window.addEventListener('mousemove', handleMouseMove)
       // Mark mouse as pressed
       isMouseDown = true
+      oldMouseX = event.clientX
     },
     [handleMouseMove, containerSelector]
   )
