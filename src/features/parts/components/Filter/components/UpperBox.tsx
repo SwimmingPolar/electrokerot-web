@@ -12,7 +12,7 @@ import React, { useCallback } from 'react'
 import { useParams } from 'react-router-dom'
 import styled from 'styled-components'
 import { media } from 'styles'
-import { SelectedFiltersList } from './SelectedFiltersList'
+import { MemoizedSelectedFiltersList as SelectedFiltersList } from './SelectedFiltersList'
 
 const Box = styled.div`
   display: flex;
@@ -152,14 +152,17 @@ export const UpperBox = ({ toggleChangeFiltersPopup }: UpperBoxType) => {
   const dispatch = useDispatch()
   const { category } = useParams() as { category: PartsCategoriesType }
 
-  // Get filters list for the category
-  const filters = useSelector(state => selectFilters(state)[category]) || {}
+  // Get filter data for the category
+  const filter = useSelector(state => selectFilters(state)[category]) || {}
+
+  // Get selected filters for the category
+  const selectedFilters = filter?.selectedFilters || []
 
   // Decides whether the filter is open or not
-  const isFilterOpen = filters?.filterState?.open
+  const isFilterOpen = filter?.filterState?.open
 
   // Check if there are more than 5 filters
-  const showMore = filters?.filterData?.length > 5
+  const showMore = filter?.filterData?.length > 5
 
   // Show or hide filters on click
   const handleFilterButtonClick = useCallback(() => {
@@ -178,6 +181,8 @@ export const UpperBox = ({ toggleChangeFiltersPopup }: UpperBoxType) => {
         </button>
       </FilterButtonBox>
       <SelectedFiltersList
+        filter={filter}
+        selectedFilters={selectedFilters}
         toggleChangeFiltersPopupType={toggleChangeFiltersPopup}
       />
       <ChangeSelectedFiltersBox>

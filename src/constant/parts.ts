@@ -76,6 +76,7 @@ export const PartsCategoriesKr = {
   case: '케이스',
   cooler: '쿨러'
 }
+export type PartsCategoriesKrType = typeof PartsCategoriesKr
 
 // @Todo: deal with this typing later
 export const PartsCategories = [

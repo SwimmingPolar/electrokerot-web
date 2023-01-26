@@ -5,6 +5,7 @@ import { useDeviceDetect } from 'hooks'
 import React, { FC, useMemo } from 'react'
 import { useParams } from 'react-router-dom'
 import styled from 'styled-components'
+import { media } from 'styles'
 import { MemoizedFilterRow as FilterRow } from './FilterRow'
 
 const Box = styled.div`
@@ -12,6 +13,13 @@ const Box = styled.div`
   flex: 1;
   flex-direction: column;
   gap: 6px;
+
+  ${media.tablet`
+    gap: 4px;
+  `}
+  ${media.desktopSmall`
+    gap: 4px;
+  `}
 `
 
 export const LowerBox: FC = () => {

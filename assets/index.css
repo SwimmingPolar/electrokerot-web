@@ -104,8 +104,8 @@ a {
   text-overflow: ellipsis;
   white-space: nowrap;
   overflow: hidden;
-  word-break: break-word;
-  word-wrap: wrap;
+  word-break: normal;
+  word-wrap: break-word;
 }
 
 /* default header styles */
@@ -146,5 +146,6 @@ a {
 
 /* add outline to nav links */
 .route-link:focus-visible {
-  outline: 2px solid black;
+  outline: 1px solid black;
+  z-index: 10000000;
 }

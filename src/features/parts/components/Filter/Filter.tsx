@@ -18,7 +18,7 @@ import { MemoizedUpperBox as UpperBox } from './components/UpperBox'
 import { useLoadFilterJson } from './hooks'
 
 const Box = styled(Content)`
-  z-index: ${ElementDepth.parts.category};
+  z-index: ${ElementDepth.parts.content};
   padding: 20px 20px 9px 20px;
   gap: 20px;
 
@@ -26,8 +26,7 @@ const Box = styled(Content)`
      if all the card components have the same z-index, this shadow will be hidden
      thus, increase the z-index of Filter component */
   ${media.mobile`
-    z-index: ${ElementDepth.parts.category + 1};
-    padding: 0 12px 12px 12px;
+    padding: 0 10px 10px 10px;
   `}
 `
 
@@ -108,11 +107,16 @@ type FilterType = {
   // of the Filter component.
   forceModalOpen: boolean
   handleForceModalOpen?: (state?: boolean) => void
-}
+  // If there's no filters selected, hide filter on mobile
+  // but need to render because of the modal
+  hideFilter: boolean
+} & React.HTMLAttributes<HTMLDivElement>
 
 export const Filter = ({
   forceModalOpen,
-  handleForceModalOpen
+  handleForceModalOpen,
+  hideFilter,
+  ...rest
 }: FilterType) => {
   // Dynamically load filter json file to reduce bundle size
   useLoadFilterJson()
@@ -123,7 +127,6 @@ export const Filter = ({
   // Toggle modal open/close state
   const { toggleModal } = useEmptyRoute({ setOpen })
   // Toggle handler
-
   const toggleChangeFiltersPopup = useCallback(
     (
       state: boolean
@@ -162,10 +165,8 @@ export const Filter = ({
     [toggleModal]
   )
 
-  return (
-    <Box>
-      <UpperBox toggleChangeFiltersPopup={toggleChangeFiltersPopup} />
-      <LowerBox />
+  const ChangeFiltersPopupModal = useMemo(
+    () => (
       <MemoizedChangeFiltersPopupModal
         open={open}
         forceModalOpen={forceModalOpen}
@@ -174,7 +175,27 @@ export const Filter = ({
         handleForceModalOpen={handleForceModalOpen}
         toggleChangeFiltersPopup={toggleChangeFiltersPopup}
       />
-    </Box>
+    ),
+    [
+      open,
+      forceModalOpen,
+      targetFilter,
+      handleModalClose,
+      handleForceModalOpen,
+      toggleChangeFiltersPopup
+    ]
+  )
+
+  return (
+    <>
+      {hideFilter ? null : (
+        <Box {...rest}>
+          <UpperBox toggleChangeFiltersPopup={toggleChangeFiltersPopup} />
+          <LowerBox />
+        </Box>
+      )}
+      {ChangeFiltersPopupModal}
+    </>
   )
 }
 

@@ -2,14 +2,16 @@ import { PartsCategoriesType } from 'constant'
 
 // Filter state
 export type FilterState = {
-  [key in PartsCategoriesType]: {
-    filterData: FilterDataType[]
-    filterState: FiltersStateType
-    selectedFilters: SelectedFiltersType[]
-    backupSelectedFilters: SelectedFiltersType[]
-    query?: string
-    page?: number
-  }
+  [key in PartsCategoriesType]: FilterType
+}
+
+export type FilterType = {
+  filterData: FilterDataType[]
+  filterState: FiltersStateType
+  selectedFilters: SelectedFiltersType[]
+  backupSelectedFilters: SelectedFiltersType[]
+  query?: string
+  page?: number
 }
 
 export type FilterDataType = {

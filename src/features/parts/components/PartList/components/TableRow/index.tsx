@@ -21,9 +21,14 @@ const Box = styled.div`
 
   .name {
     ${media.mobile`
+    
       a {
         white-space: normal;
         line-height: 1.5;
+        font-weight: 800;
+        font-size: 14px;
+        margin-top: -2px;
+        color: ${({ theme }) => theme.colors.primary};
       }
     `}
   }
@@ -32,6 +37,7 @@ const Box = styled.div`
     display: flex;
     flex-direction: row;
     justify-content: space-around;
+    padding-left: 3px;
 
     ${media.mobile`
       justify-content: space-between;
@@ -48,6 +54,8 @@ const Box = styled.div`
     display: flex;
     flex-direction: row;
     justify-content: space-between;
+    padding-left: 5px;
+    font-weight: 800;
 
     ${media.mobile`
       span {
@@ -63,15 +71,11 @@ const Box = styled.div`
       justify-content: space-around;
     `}
 
-    span {
-      font-weight: 800;
-    }
-
     button {
       color: ${({ theme }) => theme.colors.primary};
       border: 1px solid ${({ theme }) => theme.colors.primary};
       transition: background-color 0.125s ease-in-out;
-      font-family: ${({ theme }) => theme.fonts.secondary};
+      font-family: ${({ theme }) => theme.fonts.primary};
       font-weight: 800;
       width: 42px;
       font-size: 12px;
@@ -91,8 +95,12 @@ const Box = styled.div`
     padding: 10px 20px 15px 20px;
 
     .MuiCheckbox-root {
-      padding: 5px 5px 5px 0;
-      margin-left: -1px;
+      padding: 5px;
+      margin-left: 0px;
+    }
+
+    .price span {
+      font-weight: 600;
     }
   `}
   ${media.foldable`
@@ -140,6 +148,18 @@ export const TableRow = ({
     }
   }, [isChecked])
 
+  const checkboxStyle = useMemo(
+    () => ({
+      '&.MuiCheckbox-root': {
+        flexShrink: 0
+      },
+      '& .MuiSvgIcon-root': {
+        fontSize: '20px'
+      }
+    }),
+    []
+  )
+
   const MemoizedCheckbox = useMemo(
     () => (
       <Checkbox
@@ -147,14 +167,7 @@ export const TableRow = ({
         checked={isChecked}
         disabled={!isChecked && isDisabled}
         onClick={handleCheckboxClick}
-        sx={{
-          '&.MuiCheckbox-root': {
-            flexShrink: 0
-          },
-          '& .MuiSvgIcon-root': {
-            fontSize: '20px'
-          }
-        }}
+        sx={checkboxStyle}
       />
     ),
     [isChecked, isDisabled]

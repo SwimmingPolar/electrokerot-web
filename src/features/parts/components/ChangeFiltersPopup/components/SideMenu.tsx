@@ -104,6 +104,14 @@ export const SideMenu = ({
     }
   }, [])
 
+  const circleIconStyle = useMemo(
+    () => ({
+      fontSize: '4px',
+      color: 'red'
+    }),
+    []
+  )
+
   return (
     <Window>
       <Box className="filter-box">
@@ -112,12 +120,7 @@ export const SideMenu = ({
             <Button data-filter-name={filterName} onClick={handleClick}>
               {selectedFilterNames.includes(filterName) ? (
                 <span className="icon dot">
-                  <CircleIcon
-                    sx={{
-                      fontSize: '4px',
-                      color: 'red'
-                    }}
-                  />
+                  <CircleIcon sx={circleIconStyle} />
                   {'  '}
                 </span>
               ) : (

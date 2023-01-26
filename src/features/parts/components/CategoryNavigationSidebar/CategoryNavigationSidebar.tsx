@@ -5,16 +5,16 @@ import {
   PartsCategories,
   PartsCategoriesKr
 } from 'constant'
-import { useScrollbarWidth } from 'hooks'
-import { FC } from 'react'
+import { BuildSummaryFooter } from 'features'
+import { useDeviceDetect, useScrollbarWidth } from 'hooks'
+import { FC, useEffect } from 'react'
 import styled from 'styled-components'
 import { ElementDepth, media } from 'styles'
 
-const Box = styled.div<{ scrollbarWidth: number }>`
+const CategoriesWrapper = styled.div<{ scrollbarWidth: number }>`
   display: flex;
   flex-direction: column;
   background-color: ${({ theme }) => theme.colors.white};
-  border-left: 1px solid ${({ theme }) => theme.colors.primary200};
   box-shadow: 0px 0px 4px 1px rgba(0, 0, 0, 0.25);
   /* Default depth to build summary as it will replace build summary on mobile view */
   z-index: ${ElementDepth.parts.buildSummary};
@@ -30,6 +30,7 @@ const Box = styled.div<{ scrollbarWidth: number }>`
     bottom: 0;
     top: ${NavbarHeight + 'px'};
     height: 100%;
+    border-left: none;
   `}
   ${media.tablet`
     width: ${CategoryNavigationSidebarWidth.tablet + 'px'};
@@ -69,7 +70,7 @@ const Box = styled.div<{ scrollbarWidth: number }>`
   `}
 `
 
-const BoxPadding = styled.div`
+const Padding = styled.div`
   overflow-y: scroll;
 
   ${media.mobile`
@@ -104,14 +105,19 @@ const CategoriesBox = styled.div<{ scrollbarWidth: number }>`
     gap: 0;
     overflow-y: scroll;
     /* To account for 'Box' component's border-left  */
-    margin-left: -1px;
     margin-right: ${({ scrollbarWidth }: any) => -scrollbarWidth + 'px'};
+
+    > :last-child {
+      flex: 1;
+      width: 100%;
+      border-left: 1px solid ${({ theme }) => theme.colors.primary200};
+    }
   `}
   ${media.tablet`
     gap: 5px;
     overflow-y: scroll;
     margin-right: ${({ scrollbarWidth }: any) => -scrollbarWidth + 'px'};
-    padding-top: 75px;
+    padding-top: 55px;
     padding-bottom: 50px;
 
     &.scrollbar-padding--enabled {
@@ -283,18 +289,25 @@ const Categories = () => (
 
 export const CategoryNavigationSidebar: FC = () => {
   const scrollbarWidth = useScrollbarWidth()
+  const { isMobileFriendly, isTablet } = useDeviceDetect()
 
   return (
     <>
-      <BoxPadding className="scrollbar-padding" />
-      <Box scrollbarWidth={scrollbarWidth} className="scrollbar-padding">
+      <Padding className="scrollbar-padding" />
+      <CategoriesWrapper
+        scrollbarWidth={scrollbarWidth}
+        className="scrollbar-padding"
+      >
         <CategoriesBox
           scrollbarWidth={scrollbarWidth}
           className="scrollbar-padding"
         >
           <Categories />
+          {/* Render dummy div on mobile to fill the border-left */}
+          {isMobileFriendly ? <div /> : null}
         </CategoriesBox>
-      </Box>
+        {isMobileFriendly || isTablet ? <BuildSummaryFooter /> : null}
+      </CategoriesWrapper>
     </>
   )
 }

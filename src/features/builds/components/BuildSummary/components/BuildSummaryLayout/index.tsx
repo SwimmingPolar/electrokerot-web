@@ -3,6 +3,7 @@ import DeleteForeverOutlinedIcon from '@mui/icons-material/DeleteForeverOutlined
 import FilterNoneOutlinedIcon from '@mui/icons-material/FilterNoneOutlined'
 import IconButton from '@mui/material/IconButton'
 import Tooltip from '@mui/material/Tooltip'
+import { useMemo } from 'react'
 import styled from 'styled-components'
 import { media } from 'styles'
 
@@ -66,6 +67,20 @@ type BuildSummaryLayoutProps = {
 }
 
 export const BuildSummaryLayout = ({ children }: BuildSummaryLayoutProps) => {
+  const styles = useMemo(
+    () => ({
+      edit: {
+        fontSize: '28px'
+      },
+      delete: {
+        fontSize: '28px'
+      },
+      change: {
+        fontSize: '24px'
+      }
+    }),
+    []
+  )
   return (
     <Box>
       <Header>
@@ -77,29 +92,17 @@ export const BuildSummaryLayout = ({ children }: BuildSummaryLayoutProps) => {
         <ButtonsBox>
           <Tooltip title="이름 수정" arrow>
             <IconButton>
-              <CreateOutlinedIcon
-                sx={{
-                  fontSize: '28px'
-                }}
-              />
+              <CreateOutlinedIcon sx={styles.edit} />
             </IconButton>
           </Tooltip>
           <Tooltip title="견적 삭제" arrow>
             <IconButton>
-              <DeleteForeverOutlinedIcon
-                sx={{
-                  fontSize: '28px'
-                }}
-              />
+              <DeleteForeverOutlinedIcon sx={styles.delete} />
             </IconButton>
           </Tooltip>
           <Tooltip title="견적 변경" arrow>
             <IconButton>
-              <FilterNoneOutlinedIcon
-                sx={{
-                  fontSize: '24px'
-                }}
-              />
+              <FilterNoneOutlinedIcon sx={styles.change} />
             </IconButton>
           </Tooltip>
         </ButtonsBox>

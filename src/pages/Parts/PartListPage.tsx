@@ -1,15 +1,22 @@
+import { useSelector } from 'app'
 import { PageLayout } from 'components'
-import { CategoryNavigationSidebarWidth, Gap } from 'constant'
+import {
+  CategoryNavigationSidebarWidth,
+  Gap,
+  PartsCategoriesType
+} from 'constant'
 import {
   BuildSummary,
   CategoryAndSearch,
   CategoryNavigationSidebar,
   MemoizedFilter as Filter,
   MemoizedPartList as PartList,
+  selectFilters,
   useChangeSearchParams
 } from 'features'
 import { useDeviceDetect } from 'hooks'
 import { FC, useCallback, useMemo, useState } from 'react'
+import { useParams } from 'react-router-dom'
 import styled from 'styled-components'
 import { media } from 'styles'
 
@@ -82,6 +89,20 @@ export const PartListPage: FC = () => {
     })
   }, [])
 
+  // If no filters are selected, hide filters list on mobile.
+  const { isMobileFriendly } = useDeviceDetect()
+  // This decides where to show the layout shadow
+  // If there's no filters selected, filter(lower box) will be hidden
+  // thus, upper box should have shadow.
+  const { category } = useParams() as { category: PartsCategoriesType }
+  const hasSelectedFilters = useSelector(
+    state => selectFilters(state)?.[category]?.selectedFilters?.length !== 0
+  )
+  const hideFilter = useMemo(
+    () => isMobileFriendly && !hasSelectedFilters,
+    [isMobileFriendly, hasSelectedFilters]
+  )
+
   // This hook changes the searchParams when the user changes the filters
   useChangeSearchParams()
 
@@ -94,10 +115,15 @@ export const PartListPage: FC = () => {
           {/* PageBox is actual box component */}
           <PageBox>
             <Content>
-              <CategoryAndSearch handleForceModalOpen={handleForceModalOpen} />
+              <CategoryAndSearch
+                handleForceModalOpen={handleForceModalOpen}
+                className={hasSelectedFilters ? '' : 'shadow'}
+              />
               <Filter
                 forceModalOpen={forceModalOpen}
                 handleForceModalOpen={handleForceModalOpen}
+                className={hasSelectedFilters ? 'shadow' : ''}
+                hideFilter={hideFilter}
               />
               <PartList />
             </Content>
@@ -108,7 +134,7 @@ export const PartListPage: FC = () => {
         {isDesktop && <CategoryNavigationSidebar />}
       </NavbarBox>
     ),
-    [sidebarWidth, handleForceModalOpen, forceModalOpen, isDesktop]
+    [sidebarWidth, handleForceModalOpen, forceModalOpen, isDesktop, hideFilter]
   )
 
   return render

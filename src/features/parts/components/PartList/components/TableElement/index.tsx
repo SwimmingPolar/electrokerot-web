@@ -42,7 +42,7 @@ export const TableElementBox = styled.div`
     justify-content: center;
     align-items: center;
     font-size: 13px;
-    font-family: ${({ theme }) => theme.fonts.secondary};
+    font-family: ${({ theme }) => theme.fonts.primary};
   }
 `
 

@@ -1,6 +1,6 @@
 import { Gap } from 'constant'
 import styled from 'styled-components'
-import { media } from 'styles'
+import { ElementDepth, media } from 'styles'
 
 export const ContentLayout = styled.div`
   border: 1px solid ${({ theme }) => theme.colors.primary100};
@@ -12,7 +12,6 @@ export const ContentLayout = styled.div`
   ${media.mobile`
     border: none;
     border-radius: 0;
-    box-shadow: none;
   `}
 
   :first-of-type {
@@ -30,12 +29,6 @@ export const ContentLayout = styled.div`
       margin-top: ${Gap.tablet + 'px'};
     `}
   }
-  :nth-of-type(2) {
-    ${media.mobile`
-      border: none;
-      box-shadow: rgba(0, 0, 0, 0.15) 0px 3px 3px 0px;
-    `}
-  }
   :last-of-type {
     border-bottom-left-radius: 7px;
     border-bottom-right-radius: 7px;
@@ -44,6 +37,14 @@ export const ContentLayout = styled.div`
     `}
     ${media.tablet`
       margin-bottom: ${Gap.tablet + 'px'};
+    `}
+  }
+
+  &.shadow {
+    ${media.mobile`
+      border: none;
+      box-shadow: rgba(0, 0, 0, 0.15) 0px 3px 3px 0px;
+      z-index: ${ElementDepth.parts.content + 1};
     `}
   }
 

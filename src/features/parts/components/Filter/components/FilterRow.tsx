@@ -113,8 +113,8 @@ const FilterNameBox = styled.div`
     display: flex;
     align-items: center;
     font-size: 14px;
-    font-family: ${({ theme }) => theme.fonts.secondary};
-    font-weight: 800;
+    font-family: ${({ theme }) => theme.fonts.primary};
+    font-weight: 900;
     height: 24px;
     color: ${({ theme }) => theme.colors.primary};
   }

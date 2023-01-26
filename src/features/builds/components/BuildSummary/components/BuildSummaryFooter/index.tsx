@@ -1,8 +1,10 @@
 import { Button } from '@mui/material'
+import { Link as NavLink } from 'components'
+import { CategoryNavigationSidebarWidth, NavbarHeight } from 'constant'
 import styled from 'styled-components'
 import { media } from 'styles'
 
-const FooterBox = styled.div`
+const Box = styled.div`
   display: flex;
   flex-direction: row;
   width: 100%;
@@ -36,9 +38,15 @@ const FooterBox = styled.div`
     align-items: center;
     background-color: ${({ theme }) => theme.colors.info};
     border-top: 1px solid ${({ theme }) => theme.colors.info};
+
     span {
       font-weight: 800;
       color: ${({ theme }) => theme.colors.white};
+    }
+
+    a {
+      width: 100%;
+      height: 100%;
     }
 
     button {
@@ -52,19 +60,92 @@ const FooterBox = styled.div`
       font-size: 24px;
     }
   `}
+
+  /* From here, styles for sidebar on tablet and mobile  */
+
+  /* For MOBILE */
+  ${media.mobile`
+    width: ${CategoryNavigationSidebarWidth.mobile + 'px'};
+
+    > div {
+      height: 50px;
+    }
+
+    .total-price {
+      span {
+        font-size: 12px;
+      }
+    }
+    .go-to-build {
+      span {
+        font-size: 16px;
+        font-weight: 900;
+      }
+    }
+    
+
+    /*  On mobile, the sidebar is pushed from the top
+        to make room for the navbar. This will push the sticky element down
+        as much as the height of the navbar. So, we need to push the footer
+        up by the same amount.
+    */
+    bottom: ${NavbarHeight + 'px'};
+  `}
+  
+  /* For TABLET */
+  ${media.tablet`
+    width: ${CategoryNavigationSidebarWidth.tablet + 'px'};
+
+    > div {
+      height: 62px;
+    }
+
+    .total-price {
+      span {
+        font-size: 14px;
+      }
+    }
+
+    .go-to-build {
+      span {
+        font-size: 20px;
+      }
+    }
+      
+  `}
+
+  /* For common styles */
+  ${media.device('mobile', 'tablet')`
+    flex-direction: column;
+    
+    > div {
+      flex: none;
+    }
+
+    .total-price {
+      order: 2;
+      background-color: ${({ theme }) => theme.colors.primary200};
+    }
+    
+    .go-to-build {
+      order: 1;
+    }
+  `}
 `
 
 export const BuildSummaryFooter = () => {
   return (
-    <FooterBox>
+    <Box>
       <div className="total-price">
         <span>1,234,567원</span>
       </div>
       <div className="go-to-build">
-        <Button variant="text">
-          <span>견적서</span>
-        </Button>
+        <NavLink to="/builds">
+          <Button variant="text">
+            <span>견적서</span>
+          </Button>
+        </NavLink>
       </div>
-    </FooterBox>
+    </Box>
   )
 }

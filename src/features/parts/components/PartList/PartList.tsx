@@ -19,7 +19,7 @@ import {
 } from './components'
 
 const Box = styled(Content)`
-  z-index: ${ElementDepth.parts.category};
+  z-index: ${ElementDepth.parts.content};
 `
 
 const Table = styled.div`

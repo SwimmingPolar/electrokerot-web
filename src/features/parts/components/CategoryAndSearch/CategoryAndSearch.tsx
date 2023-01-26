@@ -10,7 +10,7 @@ import { ContentLayout as Content } from '../ContentLayout/ContentLayout'
 const Box = styled(Content)`
   display: flex;
   flex-direction: row;
-  z-index: ${ElementDepth.parts.category};
+  z-index: ${ElementDepth.parts.content};
   font-family: ${({ theme }) => theme.fonts.primary};
   height: 72px;
   color: ${({ theme }) => theme.colors.primary};
@@ -21,7 +21,7 @@ const Box = styled(Content)`
     height: 64px;
   `}
   ${media.mobile`
-    height: 48px;
+    height: 54px;
   `}
 `
 
@@ -124,16 +124,17 @@ const IconBox = styled.div`
 
 type CategoryAndSearchType = {
   handleForceModalOpen: (state?: boolean) => void
-}
+} & React.HTMLAttributes<HTMLDivElement>
 
 export const CategoryAndSearch = ({
-  handleForceModalOpen
+  handleForceModalOpen,
+  ...rest
 }: CategoryAndSearchType) => {
   const { category } = useParams() as { category: PartsCategoriesType }
   const { isMobileFriendly } = useDeviceDetect()
 
   return (
-    <Box>
+    <Box {...rest}>
       <Category>
         <h1>{PartsCategoriesKr[category].toUpperCase()}</h1>
       </Category>

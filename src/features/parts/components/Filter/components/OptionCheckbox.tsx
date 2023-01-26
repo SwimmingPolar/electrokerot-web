@@ -18,6 +18,20 @@ export const OptionCheckbox = ({
     handleOptionChange(value)
   }, [handleOptionChange, value])
 
+  const checkboxStyle = useMemo(
+    () => ({
+      '& .MuiSvgIcon-root': {
+        fontSize: 18,
+        color: checked
+          ? palette.light.blue
+          : minusChecked
+          ? palette.light.red
+          : ''
+      }
+    }),
+    []
+  )
+
   return (
     <div className={`label-box ${checked ? 'checked' : ''}`} key={value}>
       <FormControlLabel
@@ -27,16 +41,7 @@ export const OptionCheckbox = ({
           <Checkbox
             checked={checked}
             onChange={handleChange}
-            sx={{
-              '& .MuiSvgIcon-root': {
-                fontSize: 18,
-                color: checked
-                  ? palette.light.blue
-                  : minusChecked
-                  ? palette.light.red
-                  : ''
-              }
-            }}
+            sx={checkboxStyle}
             indeterminate={minusChecked}
           />
         }

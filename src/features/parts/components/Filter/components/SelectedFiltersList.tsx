@@ -1,9 +1,10 @@
-import { useSelector } from 'app'
-import { PartsCategoriesType } from 'constant'
-import { selectFilters, ToggleChangeFiltersPopupType } from 'features'
+import {
+  FilterType,
+  SelectedFiltersType,
+  ToggleChangeFiltersPopupType
+} from 'features'
 import { useScrollbarWidth } from 'hooks'
-import { useMemo } from 'react'
-import { useParams } from 'react-router-dom'
+import React, { useMemo } from 'react'
 import styled from 'styled-components'
 import { media } from 'styles'
 import { useAreFiltersOverflow } from '../hooks/useAreFiltersOverflow'
@@ -56,6 +57,7 @@ const SelectedFilterItemsBox = styled.div<{ scrollbarWidth: number }>`
 
     ${media.device('foldable', 'mobile')`
       font-size: 14px;
+      padding: 10px;
     `}
   }
 
@@ -107,24 +109,20 @@ const SelectedFilterItem = ({
 }
 
 type SelectedFiltersListType = {
+  filter: FilterType
+  selectedFilters: SelectedFiltersType[]
   toggleChangeFiltersPopupType: ToggleChangeFiltersPopupType
 }
 
 export const SelectedFiltersList = ({
+  filter,
+  selectedFilters,
   toggleChangeFiltersPopupType
 }: SelectedFiltersListType) => {
-  const { category } = useParams() as { category: PartsCategoriesType }
-
-  // Needed to get the filter names to sort the selected filters
-  const filters = useSelector(selectFilters)[category] || []
-
-  // Get the selected filters
-  const selectedFilters = filters?.selectedFilters || []
-
   // Sort the selected filters by the order of the filters
   const sortedFilters = useMemo(
-    () => sortSelectedFilters(filters.filterData, selectedFilters),
-    [filters, selectedFilters]
+    () => sortSelectedFilters(filter.filterData, selectedFilters),
+    [filter, selectedFilters]
   )
 
   // Get scrollbar width

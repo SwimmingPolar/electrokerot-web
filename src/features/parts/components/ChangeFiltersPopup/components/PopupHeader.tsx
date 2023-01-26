@@ -9,6 +9,7 @@ import {
   PartsCategoriesKr,
   PartsCategoriesType
 } from 'constant'
+import { useMemo } from 'react'
 import styled from 'styled-components'
 
 const Box = styled.div`
@@ -91,26 +92,35 @@ export const PopupHeader = ({
     return null
   }
 
+  const styles = useMemo(
+    () => ({
+      formControl: {
+        minWidth: '150px'
+      },
+      select: {
+        padding: '0 30px'
+      },
+      menuItem: {
+        fontSize: '13px'
+      }
+    }),
+    []
+  )
+
   return (
     <Box>
       <SelectBox>
-        <FormControl sx={{ minWidth: '150px' }} size="small">
+        <FormControl sx={styles.formControl} size="small">
           <InputLabel>Category</InputLabel>
           <Select
             value={category}
             onChange={handleChangeCategory}
             label="category"
-            sx={{ padding: '0 30px' }}
+            sx={styles.select}
             className="select-box"
           >
             {PartsCategories.map((category, index) => (
-              <MenuItem
-                key={index}
-                value={category}
-                sx={{
-                  fontSize: '13px'
-                }}
-              >
+              <MenuItem key={index} value={category} sx={styles.menuItem}>
                 {PartsCategoriesKr[category]}
               </MenuItem>
             ))}

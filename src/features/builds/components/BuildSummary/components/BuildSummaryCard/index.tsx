@@ -1,49 +1,17 @@
 import ClearOutlinedIcon from '@mui/icons-material/ClearOutlined'
 import { IconButton, MenuItem, Select, SelectChangeEvent } from '@mui/material'
 import classnames from 'classnames'
+import { Link as NavLink } from 'components'
 import { PartsCategoriesKr, PartsCategoriesType } from 'constant'
-import { BuildPart, BuildSummaryCardPartsCategoriesType } from 'features'
-import React, { useEffect, useMemo } from 'react'
+import {
+  BuildPart,
+  BuildSummaryCardPartsCategoriesType,
+  useScrollToCard
+} from 'features'
+import React, { useMemo } from 'react'
 import { useParams } from 'react-router-dom'
 import styled from 'styled-components'
 import { media } from 'styles'
-
-// Check if the user can adjust the count of the parts in the build
-const isCountAdjustable = (
-  partCategory: BuildSummaryCardPartsCategoriesType
-) => {
-  const countAdjustablePartCategories = ['memory', 'storage', 'cooler']
-  return countAdjustablePartCategories.includes(partCategory)
-}
-// Decide if the user can change the count value by select box or text input
-// If the user can change the count value by select box, return the array of options
-// else, return true to show the text input
-const isTextOrSelect = (partCategory: BuildSummaryCardPartsCategoriesType) => {
-  if (!isCountAdjustable(partCategory)) {
-    return null
-  }
-
-  switch (partCategory) {
-    case 'memory':
-      return [1, 2, 4, 8]
-    case 'storage':
-      return [1, 2, 4]
-    case 'cooler':
-      return true
-    default:
-      return false
-  }
-}
-
-// Get the appropriate header name for the part category
-const getHeaderName = (partCategory: string) => {
-  switch (partCategory) {
-    case 'storage':
-      return 'SSD/HDD'
-    default:
-      return PartsCategoriesKr[partCategory as PartsCategoriesType]
-  }
-}
 
 const Box = styled.div`
   border-radius: 4px;
@@ -70,7 +38,7 @@ const HeaderBox = styled.div`
     height: 28px;
   `}
 
-  h3 {
+  h3, span {
     font-family: ${({ theme }) => theme.fonts.primary};
     font-weight: 600;
     font-size: 18px;
@@ -81,9 +49,16 @@ const HeaderBox = styled.div`
   &.active {
     background-color: ${({ theme }) => theme.colors.primary};
 
-    h3 {
+    h3,
+    span {
       color: ${({ theme }) => theme.colors.white};
     }
+  }
+
+  /* To position "/" right besides the headerNames */
+  > div {
+    display: flex;
+    flex-direction: row;
   }
 `
 
@@ -211,10 +186,14 @@ const ContentLowerBox = styled.div`
 
 type CountInputProps = {
   partCategory: BuildSummaryCardPartsCategoriesType
-  handleChange: (event: SelectChangeEvent) => void
+  handleCountChange: (event: SelectChangeEvent) => void
   value: string
 }
-const CountInput = ({ partCategory, handleChange, value }: CountInputProps) => {
+const CountInput = ({
+  partCategory,
+  handleCountChange,
+  value
+}: CountInputProps) => {
   // If the user can change the count value by select box, return the array of options
   // else, return true to show the text input
   const result = isTextOrSelect(partCategory)
@@ -222,7 +201,7 @@ const CountInput = ({ partCategory, handleChange, value }: CountInputProps) => {
     return (
       <input
         type="text"
-        onChange={handleChange}
+        onChange={handleCountChange}
         value={value}
         className="count-input"
       />
@@ -230,7 +209,7 @@ const CountInput = ({ partCategory, handleChange, value }: CountInputProps) => {
   } else if (Array.isArray(result)) {
     return (
       <Select
-        onChange={handleChange}
+        onChange={handleCountChange}
         MenuProps={{
           disableScrollLock: true
         }}
@@ -259,8 +238,14 @@ export const BuildSummaryCard = ({
   partCategory,
   parts
 }: BuildSummaryCardProps) => {
+  // Do not render reserved slot, it's useless
+  if (partCategory === 'reserved') {
+    return null
+  }
+
   // Get if the current card should be active or not
   const { category } = useParams() as { category: string }
+  // See if the current card should be active or not
   const isActive = useMemo(() => {
     switch (partCategory) {
       case 'storage':
@@ -270,51 +255,42 @@ export const BuildSummaryCard = ({
     }
   }, [category, partCategory])
   const activeClassName = useMemo(() => (isActive ? 'active' : ''), [isActive])
+  // See if the current card should have any parts
+  const hasParts = useMemo(() => parts && parts.length > 0, [parts])
 
-  const handleChange = () => {
+  // Header name for the card
+  const headerName = getHeaderName(partCategory)
+  // Extract categories from the header name
+  // to render the navlinks to the parts
+  const categories = getCategories(headerName)
+
+  // Handler for the when the user changes the count value
+  const handleCountChange = () => {
     //
   }
 
-  const hasParts = useMemo(() => parts && parts.length > 0, [parts])
-
-  useEffect(() => {
-    if (isActive) {
-      const buildSummary = document.querySelector('.build-summary')
-      const buildSummaryHeight = buildSummary?.clientHeight || 0
-      const scrollTop = buildSummary?.scrollTop || 0
-      const currentScrollTop = buildSummary?.scrollTop || 0
-      const element = document.querySelector(
-        `.card-${partCategory}`
-      ) as HTMLDivElement
-
-      const isVisible =
-        // Compare start
-        scrollTop < element.offsetTop &&
-        // Compare end
-        scrollTop + buildSummaryHeight >
-          element.offsetTop + element.clientHeight + 65
-
-      // If the element is not in the viewport, scroll to it
-      if (!isVisible) {
-        buildSummary?.scrollBy({
-          top: element.offsetTop - currentScrollTop - 20,
-          behavior: 'smooth'
-        })
-      }
-    }
-  }, [category])
-
-  // Do not render reserved slot, it's useless
-  if (partCategory === 'reserved') {
-    return null
-  }
+  // Scroll to the card when the category changes and
+  // the card is not visible within the viewport
+  useScrollToCard({
+    category,
+    partCategory,
+    isActive
+  })
 
   return (
     <Box className={classnames(activeClassName, `card-${partCategory}`)}>
       <HeaderBox className={isActive ? 'active' : ''}>
-        <div>
-          <h3>{getHeaderName(partCategory)}</h3>
-        </div>
+        {categories.map((category, index) => {
+          return (
+            <div key={index}>
+              <NavLink to={`/parts/${category}`}>
+                <h3>{PartsCategoriesKr[category as PartsCategoriesType]}</h3>
+              </NavLink>
+              {/* If it's not the last link, it will render "/" in between the two links */}
+              {index !== categories.length - 1 && <span>/</span>}
+            </div>
+          )
+        })}
       </HeaderBox>
       {/* If the select part exists */}
       {hasParts ? (
@@ -335,7 +311,7 @@ export const BuildSummaryCard = ({
                   {/* Get appropriate input element (select or text) */}
                   {CountInput({
                     partCategory,
-                    handleChange,
+                    handleCountChange,
                     value: part.count
                   })}
                 </div>
@@ -360,3 +336,60 @@ export const BuildSummaryCard = ({
 }
 
 export const MemoizedBuildSummaryCard = React.memo(BuildSummaryCard)
+
+/**
+ *
+ * Miscellaneous functions
+ *
+ */
+// Check if the user can adjust the count of the parts in the build
+const isCountAdjustable = (
+  partCategory: BuildSummaryCardPartsCategoriesType
+) => {
+  const countAdjustablePartCategories = ['memory', 'storage', 'cooler']
+  return countAdjustablePartCategories.includes(partCategory)
+}
+// Decide if the user can change the count value by select box or text input
+// If the user can change the count value by select box, return the array of options
+// else, return true to show the text input
+const isTextOrSelect = (partCategory: BuildSummaryCardPartsCategoriesType) => {
+  if (!isCountAdjustable(partCategory)) {
+    return null
+  }
+
+  switch (partCategory) {
+    case 'memory':
+      return [1, 2, 4, 8]
+    case 'storage':
+      return [1, 2, 4]
+    case 'cooler':
+      return true
+    default:
+      return false
+  }
+}
+
+// Get the appropriate header name for the part category
+const getHeaderName = (partCategory: BuildSummaryCardPartsCategoriesType) => {
+  switch (partCategory) {
+    case 'storage':
+      return 'SSD/HDD'
+    default:
+      return PartsCategoriesKr[partCategory as PartsCategoriesType]
+  }
+}
+
+// Get the category from the header names
+const getCategories = (headerName: string) => {
+  const headerNames = headerName.toUpperCase().split('/')
+  const categories = headerNames.map(headerName => {
+    return Object.entries(PartsCategoriesKr)
+      .map(([key, value]) => {
+        if (value === headerName) {
+          return key
+        }
+      })
+      .filter(e => e)[0] as string
+  })
+  return categories
+}

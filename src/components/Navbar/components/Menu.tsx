@@ -10,6 +10,7 @@ import {
   MouseEventHandler,
   useCallback,
   useEffect,
+  useMemo,
   useState
 } from 'react'
 import styled from 'styled-components'
@@ -167,6 +168,13 @@ const Menu = ({ menuList }: MenuProps) => {
   // hide menu if not on mobile device
   useCallOnMediaChange(handleResize)
 
+  const drawerStyle = useMemo(
+    () => ({
+      zIndex: 99999
+    }),
+    []
+  )
+
   // Menu list component for both desktop and mobile
   const MenuListComponent = useCallback(
     ({ isMobile }: { isMobile?: boolean }) => (
@@ -202,9 +210,7 @@ const Menu = ({ menuList }: MenuProps) => {
             anchor="right"
             open={open}
             onClose={toggleDrawer(false)}
-            sx={{
-              zIndex: 99999
-            }}
+            sx={drawerStyle}
             transitionDuration={150}
             tabIndex={-1}
             data-cy="mobile-menu-drawer"
