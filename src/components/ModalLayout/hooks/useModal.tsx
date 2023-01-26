@@ -45,9 +45,9 @@ export const useModal = (page: ModalRoutesType) => {
   const modalKey = useMemo(() => uuid(), [])
 
   // State of the modal page
-  const isModalOpened = useSelector(selectModalStates)[page]
+  const isModalOpened = useSelector(state => selectModalStates(state)[page])
   // State of the individual modal component marked by the modalKey
-  const isModalKeySet = useSelector(selectModalKey(modalKey))
+  const isModalKeySet = useSelector(state => selectModalKey(modalKey)(state))
   // State of the modal
   const open = useMemo(
     () => isModalKeySet && isModalOpened,

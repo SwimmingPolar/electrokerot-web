@@ -49,11 +49,8 @@ const Box = styled.aside<{ scrollbarWidth: number }>`
 const BoxPadding = styled.div`
   overflow-y: scroll;
 
-  ${media.mobile`
+  ${media.device('mobile', 'foldable')`
     width: ${BuildSummaryWidth.mobile + 'px'};
-  `}
-  ${media.foldable`
-    width: ${BuildSummaryWidth.foldable + 'px'};
   `}
   ${media.tablet`
     width: ${BuildSummaryWidth.tablet + 'px'};

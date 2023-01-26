@@ -64,7 +64,7 @@ const Box = styled.div`
   /* From here, styles for sidebar on tablet and mobile  */
 
   /* For MOBILE */
-  ${media.mobile`
+  ${media.device('mobile', 'foldable')`
     width: ${CategoryNavigationSidebarWidth.mobile + 'px'};
 
     > div {
@@ -115,7 +115,7 @@ const Box = styled.div`
   `}
 
   /* For common styles */
-  ${media.device('mobile', 'tablet')`
+  ${media.device('mobile', 'foldable', 'tablet')`
     flex-direction: column;
     
     > div {

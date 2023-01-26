@@ -10,7 +10,7 @@ import React, {
   useState
 } from 'react'
 import styled from 'styled-components'
-import { ElementDepth, media } from 'styles'
+import { media } from 'styles'
 import { ContentLayout as Content } from '../ContentLayout/ContentLayout'
 import { MemoizedLowerBox as LowerBox } from './components/LowerBox'
 import { SelectedFilterItemsBoxClassName } from './components/SelectedFiltersList'
@@ -18,14 +18,13 @@ import { MemoizedUpperBox as UpperBox } from './components/UpperBox'
 import { useLoadFilterJson } from './hooks'
 
 const Box = styled(Content)`
-  z-index: ${ElementDepth.parts.content};
   padding: 20px 20px 9px 20px;
   gap: 20px;
 
   /* On mobile, second component which is Filter has drop-shadow
      if all the card components have the same z-index, this shadow will be hidden
      thus, increase the z-index of Filter component */
-  ${media.mobile`
+  ${media.device('mobile', 'foldable')`
     padding: 0 10px 10px 10px;
   `}
 `

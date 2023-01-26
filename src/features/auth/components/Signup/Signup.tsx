@@ -74,17 +74,6 @@ export const FormBox = styled.div`
 
   input[type='submit'] {
     margin-top: 5px;
-    color: ${({ theme }) => theme.colors.black};
-    border: 2px solid ${({ theme }) => theme.colors.primary400};
-    background-color: ${({ theme }) => theme.colors.white};
-
-    :hover,
-    :focus-visible {
-      transition: 0.5s;
-      border: 2px solid transparent;
-      color: ${({ theme }) => theme.colors.white};
-      background-color: ${({ theme }) => theme.colors.black};
-    }
   }
 `
 

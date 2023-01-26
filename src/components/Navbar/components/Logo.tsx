@@ -14,7 +14,7 @@ const LogoBox = styled.div`
     font-family: ${({ theme }) => theme.fonts.logo};
   }
 
-  ${media.mobile`
+  ${media.device('mobile', 'foldable')`
     margin-left: 10px;
 
     h1 {

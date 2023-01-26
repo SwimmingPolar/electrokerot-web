@@ -38,16 +38,16 @@ const StyledSubmit = styled.input`
   font-weight: 700;
   font-size: 20px;
   text-align: center;
-  box-shadow: 0px 0px 2px 2px rgba(63, 75, 90, 0.07),
-    0px 0px 5px 2px rgba(63, 75, 90, 0.07),
-    1px 3px 7px 2px rgba(63, 75, 90, 0.07);
+  box-shadow: 0px 0px 6px 4px rgba(63, 75, 90, 0.11),
+    0px 0px 6px 3px rgba(63, 75, 90, 0.12),
+    0px 0px 7px 2px rgba(63, 75, 90, 0.12);
   cursor: pointer;
   transition: 0.3s;
 
   :hover {
-    box-shadow: 0px 0px 6px 4px rgba(63, 75, 90, 0.11),
-      0px 0px 6px 3px rgba(63, 75, 90, 0.12),
-      0px 0px 7px 2px rgba(63, 75, 90, 0.12);
+    box-shadow: 0px 0px 10px 7px rgba(63, 75, 90, 0.11),
+      0px 0px 10px 6px rgba(63, 75, 90, 0.12),
+      0px 0px 9px 5px rgba(63, 75, 90, 0.12);
   }
 
   :focus-visible {

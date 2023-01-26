@@ -1,13 +1,12 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-import { RootState } from 'app'
 import { ModalRoutesType } from 'constant'
 
-type ModalStates = {
+type ModalState = {
   modalStates: Record<ModalRoutesType, boolean>
   modalKeys: Record<string, boolean>
 }
 
-const initialState: ModalStates = {
+const initialState: ModalState = {
   modalStates: {
     '/login': false,
     '/signup': false,
@@ -45,10 +44,11 @@ const modalSlice = createSlice({
 export const { openModal, closeModal, setModalKey, clearModalKeys } =
   modalSlice.actions
 
-const selectModalStates = ({ modal: { modalStates } }: RootState) => modalStates
+const selectModalStates = ({ modal: { modalStates } }: { modal: ModalState }) =>
+  modalStates
 const selectModalKey =
   (key: string) =>
-  ({ modal: { modalKeys } }: RootState) =>
+  ({ modal: { modalKeys } }: { modal: ModalState }) =>
     modalKeys[key] ?? false
 
 export { selectModalStates, selectModalKey }

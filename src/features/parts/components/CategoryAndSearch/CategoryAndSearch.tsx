@@ -4,24 +4,23 @@ import { PartsCategoriesKr, PartsCategoriesType } from 'constant'
 import { useDeviceDetect } from 'hooks'
 import { useParams } from 'react-router-dom'
 import styled from 'styled-components'
-import { ElementDepth, media } from 'styles'
+import { media } from 'styles'
 import { ContentLayout as Content } from '../ContentLayout/ContentLayout'
 
 const Box = styled(Content)`
   display: flex;
   flex-direction: row;
-  z-index: ${ElementDepth.parts.content};
   font-family: ${({ theme }) => theme.fonts.primary};
   height: 72px;
   color: ${({ theme }) => theme.colors.primary};
   justify-content: space-between;
   align-items: center;
 
+  ${media.device('mobile', 'foldable')`
+    height: 54px;
+  `}
   ${media.tablet`
     height: 64px;
-  `}
-  ${media.mobile`
-    height: 54px;
   `}
 `
 

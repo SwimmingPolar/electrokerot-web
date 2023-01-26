@@ -29,7 +29,7 @@ export const OptionCheckbox = ({
           : ''
       }
     }),
-    []
+    [checked, minusChecked]
   )
 
   return (

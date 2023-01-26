@@ -1,3 +1,5 @@
+// @Issue: 안 되네..?? 이유는 몰?루
+
 import { ModalRoutes } from 'constant'
 import { useCallback, useEffect } from 'react'
 import {
@@ -129,6 +131,8 @@ const hookFactory =
         // get the location key from the event and the current location key
         const fromKey = key
         const toKey = event.state?.key
+
+        console.log(isBackwardOrForward(fromKey, toKey))
 
         // invoke callback by checking the direction
         if (isBackwardOrForward(fromKey, toKey) === direction) {

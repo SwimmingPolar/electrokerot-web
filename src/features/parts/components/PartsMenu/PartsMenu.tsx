@@ -13,7 +13,7 @@ const PartsMenuBox = styled.div`
   padding-bottom: 75px;
   background-color: ${({ theme }) => theme.colors.background};
 
-  ${media.mobile`
+  ${media.device('mobile', 'foldable')`
     margin-top: 65px;
   `}
   ${media.tablet`
@@ -30,7 +30,7 @@ const PartsMenuListBox = styled.div`
   justify-content: center;
   align-items: center;
 
-  ${media.mobile`
+  ${media.device('mobile', 'foldable')`
     width: 330px; 
     gap: 12px;
   `}
@@ -43,7 +43,7 @@ const PartsMenuTitleBox = styled.div`
     font-weight: 800;
   }
 
-  ${media.mobile`
+  ${media.device('mobile', 'foldable')`
     h3 {
       font-size: 21px;
     }  
@@ -81,7 +81,7 @@ const ImageBox = styled.div`
     margin-top: 15px;
   }
 
-  ${media.mobile`
+  ${media.device('mobile', 'foldable')`
      width: 100px;
      height: 100px;
 
@@ -99,7 +99,7 @@ const MenuIconBox = styled.div`
   width: 145px;
   height: 65px;
 
-  ${media.mobile`
+  ${media.device('mobile', 'foldable')`
     width: 75px;
     height: 35px;
   `}
@@ -111,7 +111,7 @@ const MenuIcon = styled.div<{ url: string }>`
   background-color: ${({ theme }) => theme.colors.primary};
   mask: url(${({ url }) => url}) center/contain no-repeat;
 
-  ${media.mobile`
+  ${media.device('mobile', 'foldable')`
     width: 35px;
     height: 35px;
   `}
