@@ -107,6 +107,7 @@ const CategoriesBox = styled.div<{ scrollbarWidth: number }>`
     > :last-child {
       flex: 1;
       width: 100%;
+      padding-bottom: 100px;
       border-left: 1px solid ${({ theme }) => theme.colors.primary200};
     }
   `}

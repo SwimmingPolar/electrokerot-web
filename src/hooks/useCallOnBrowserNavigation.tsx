@@ -132,8 +132,6 @@ const hookFactory =
         const fromKey = key
         const toKey = event.state?.key
 
-        console.log(isBackwardOrForward(fromKey, toKey))
-
         // invoke callback by checking the direction
         if (isBackwardOrForward(fromKey, toKey) === direction) {
           callback(fromKey, toKey)

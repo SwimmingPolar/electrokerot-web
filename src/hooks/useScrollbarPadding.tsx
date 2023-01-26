@@ -115,16 +115,10 @@ export const useScrollbarWidth = () => {
   return isScrollbarHiding ? getBackupScrollbarWidth() : scrollbarWidth
 }
 
-type UseScrollbarPaddingProps = {
-  ignoreInitialPadding?: boolean
-}
-
 // If ignoreInitialPadding is true, it won't add padding on mount
-export const useScrollbarPadding = (props?: UseScrollbarPaddingProps) => {
+export const useScrollbarPadding = () => {
   const { isMobileFriendly } = useDeviceDetect()
   const isPresent = useIsPresent()
-
-  const { ignoreInitialPadding } = props || {}
 
   const addPaddingForScrollbar = () => {
     // Indicate that the scrollbar is hidden
@@ -178,17 +172,7 @@ export const useScrollbarPadding = (props?: UseScrollbarPaddingProps) => {
   }
 
   useLayoutEffect(() => {
-    if (ignoreInitialPadding) {
-      return
-    }
-
     if (!isPresent) {
-      return
-    }
-
-    // Mobile devices don't have scrollbar width thus,
-    // no need to add padding if the device is on mobile
-    if (isMobileFriendly) {
       return
     }
 

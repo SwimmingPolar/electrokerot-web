@@ -14,7 +14,7 @@ import {
   selectFilters,
   useChangeSearchParams
 } from 'features'
-import { useCallOnBackward, useCallOnForward, useDeviceDetect } from 'hooks'
+import { useDeviceDetect } from 'hooks'
 import { FC, useCallback, useMemo, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import styled from 'styled-components'
@@ -69,13 +69,6 @@ const Content = styled.div`
 export const PartListPage: FC = () => {
   // Make sure sidebar is visible only on desktop
   const { isDesktop } = useDeviceDetect()
-
-  useCallOnForward(() => {
-    console.log('forwarded')
-  })
-  useCallOnBackward(() => {
-    console.log('backwarded')
-  })
 
   const { desktopSmall, desktopLarge } = CategoryNavigationSidebarWidth
   const sidebarWidth = useMemo(
