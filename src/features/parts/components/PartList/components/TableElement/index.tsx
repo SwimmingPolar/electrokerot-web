@@ -7,24 +7,26 @@ export const TableRowBox = styled.div`
   flex-direction: row;
 
   /* Part list style for mobile */
-  ${media.mobile`
-  flex-direction: column;
+  ${media.device('mobile', 'foldable')`
+    flex-direction: column;
     flex-wrap: wrap;
   `}
 
   .name {
-    min-width: 240px;
-    flex-shrink: 0;
+    min-width: 180px;
+    flex-shrink: 1;
     flex-grow: 1;
+
+    ${media.tablet`
+      min-width: 240px;
+    `}
+    ${media.desktop`
+      min-width: 280px;
+    `}
   }
   .price {
     flex: 1 0 18%;
   }
-  ${media.desktop`
-    .name {
-      min-width: 280px;
-    }
-  `}
 `
 
 export const TableElementBox = styled.div`

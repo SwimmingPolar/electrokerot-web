@@ -9,7 +9,7 @@ export const ContentLayout = styled.div`
   background-color: ${({ theme }) => theme.colors.white};
   margin: 0;
 
-  ${media.mobile`
+  ${media.device('mobile', 'foldable')`
     border: none;
     border-radius: 0;
   `}
@@ -19,7 +19,7 @@ export const ContentLayout = styled.div`
     border-top-right-radius: 7px;
     margin-top: 0;
 
-    ${media.mobile`
+    ${media.device('mobile', 'foldable')`
       border-radius: 0;
     `}
     ${media.desktop`
@@ -40,8 +40,8 @@ export const ContentLayout = styled.div`
     `}
   }
 
-  &.shadow {
-    ${media.mobile`
+  &.drop-shadow {
+    ${media.device('mobile', 'foldable')`
       border: none;
       box-shadow: rgba(0, 0, 0, 0.15) 0px 3px 3px 0px;
       z-index: ${ElementDepth.parts.content + 1};

@@ -20,8 +20,7 @@ const Box = styled.div`
   }
 
   .name {
-    ${media.mobile`
-    
+    ${media.device('mobile', 'foldable')`
       a {
         white-space: normal;
         line-height: 1.5;
@@ -29,6 +28,7 @@ const Box = styled.div`
         font-size: 14px;
         margin-top: -2px;
         color: ${({ theme }) => theme.colors.primary};
+        margin-left: 5px;
       }
     `}
   }
@@ -36,12 +36,18 @@ const Box = styled.div`
   .content {
     display: flex;
     flex-direction: row;
-    justify-content: space-around;
-    padding-left: 3px;
+    justify-content: center;
 
-    ${media.mobile`
+    ${media.device('mobile', 'foldable')`
       justify-content: space-between;
+      padding-left: 3px;
 
+      > div:nth-child(2) {
+        span {
+          flex: 1;
+          text-align: center;
+        }
+      }
       > div:last-of-type {
         display: flex;
         flex-direction: row;
@@ -57,7 +63,7 @@ const Box = styled.div`
     padding-left: 5px;
     font-weight: 800;
 
-    ${media.mobile`
+    ${media.device('mobile', 'foldable')`
       span {
         font-size: 14px;
       }
@@ -71,17 +77,23 @@ const Box = styled.div`
       justify-content: space-around;
     `}
 
-    button {
+  .MuiButton-root {
       color: ${({ theme }) => theme.colors.primary};
       border: 1px solid ${({ theme }) => theme.colors.primary};
       transition: background-color 0.125s ease-in-out;
       font-family: ${({ theme }) => theme.fonts.primary};
       font-weight: 800;
-      width: 42px;
       font-size: 12px;
 
+      ${media.tablet`
+        padding: 5px 10px;
+        min-width:48px
+      `}
+      ${media.desktopSmall`
+        padding: 5px 12px;
+        min-width: 54px;
+      `}
       ${media.desktop`
-        width: 64px;
         font-size: 14px;
       `}
 
@@ -92,7 +104,7 @@ const Box = styled.div`
   }
 
   ${media.mobile`
-    padding: 10px 20px 15px 20px;
+    padding: 15px 10px;
 
     .MuiCheckbox-root {
       padding: 5px;
@@ -117,7 +129,6 @@ const Box = styled.div`
 const TableContentGroup = styled.div`
   display: flex;
   flex-direction: row;
-  justify-content: space-between;
   width: 100%;
 
   > div {

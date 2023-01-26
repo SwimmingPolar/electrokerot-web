@@ -1,7 +1,7 @@
 import { css } from 'styled-components'
 
 export const DeviceList = {
-  mobile: `(min-width: 0px) and (max-width: 743px)`,
+  mobile: `(min-width: 0px) and (max-width: 480px)`,
   foldable: `(min-width: 481px) and (max-width: 743px)`,
   tablet: `(min-width: 744px) and (max-width: 1199px)`,
   desktopSmall: `(min-width: 1200px) and (max-width: 1399px)`,

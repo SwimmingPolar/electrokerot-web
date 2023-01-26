@@ -12,7 +12,7 @@ import React, { useCallback } from 'react'
 import { useParams } from 'react-router-dom'
 import styled from 'styled-components'
 import { media } from 'styles'
-import { MemoizedSelectedFiltersList as SelectedFiltersList } from './SelectedFiltersList'
+import { SelectedFiltersList } from './SelectedFiltersList'
 
 const Box = styled.div`
   display: flex;

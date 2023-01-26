@@ -23,7 +23,7 @@ const Box = styled.div`
 const TableHeaderGroup = styled.div`
   display: flex;
   flex-direction: row;
-  justify-content: space-between;
+  /* justify-content: space-between; */
   width: 100%;
 
   > div {

@@ -9,7 +9,6 @@ import {
   MouseEvent,
   MouseEventHandler,
   useCallback,
-  useEffect,
   useMemo,
   useState
 } from 'react'
@@ -20,7 +19,7 @@ const MenuBox = styled.div`
   justify-content: center;
   margin-right: 50px;
 
-  ${media.mobile`
+  ${media.device('mobile', 'foldable')`
     padding-top: 3px;
     margin-right: 10px;
   `}

@@ -14,11 +14,11 @@ import {
   selectFilters,
   useChangeSearchParams
 } from 'features'
-import { useDeviceDetect } from 'hooks'
+import { useCallOnBackward, useCallOnForward, useDeviceDetect } from 'hooks'
 import { FC, useCallback, useMemo, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import styled from 'styled-components'
-import { media } from 'styles'
+import { ElementDepth, media } from 'styles'
 
 const NavbarBox = styled.div`
   display: flex;
@@ -39,14 +39,15 @@ const PageBox = styled.div`
 
 const Content = styled.div`
   display: flex;
-  /* @Important: This is import for the Section component. Without this section,
-                 'div' wiimport { useChangeSearchParams } from '../../features/parts/components/Filter/hooks/useChangeSearchParams';
-ll not take up all the left space */
+  /* @Important: This is import for the Section component. Without this section, 'div' will not take up all the left space */
   flex: 1;
   flex-direction: column;
 
   ${media.mobile`
     gap: ${Gap.mobile};
+  `}
+  ${media.foldable`
+    gap: ${Gap.foldable};
   `}
   ${media.tablet`
     gap: ${Gap.tablet + 'px'}};
@@ -54,6 +55,10 @@ ll not take up all the left space */
   ${media.desktop`
     gap: ${Gap.desktop + 'px'}};
   `}
+
+  > div {
+    z-index: ${ElementDepth.parts.content};
+  }
 `
 
 // Because of the navbar's 'position: fixed', the left part of the navbar
@@ -64,6 +69,13 @@ ll not take up all the left space */
 export const PartListPage: FC = () => {
   // Make sure sidebar is visible only on desktop
   const { isDesktop } = useDeviceDetect()
+
+  useCallOnForward(() => {
+    console.log('forwarded')
+  })
+  useCallOnBackward(() => {
+    console.log('backwarded')
+  })
 
   const { desktopSmall, desktopLarge } = CategoryNavigationSidebarWidth
   const sidebarWidth = useMemo(
@@ -117,12 +129,15 @@ export const PartListPage: FC = () => {
             <Content>
               <CategoryAndSearch
                 handleForceModalOpen={handleForceModalOpen}
-                className={hasSelectedFilters ? '' : 'shadow'}
+                // If there's no filters selected, filter(lower box) will be hidden
+                // Thus, upper box should have shadow.
+                className={hideFilter ? 'drop-shadow' : ''}
               />
               <Filter
                 forceModalOpen={forceModalOpen}
                 handleForceModalOpen={handleForceModalOpen}
-                className={hasSelectedFilters ? 'shadow' : ''}
+                // Vice versa of the above
+                className={hideFilter ? '' : 'drop-shadow'}
                 hideFilter={hideFilter}
               />
               <PartList />

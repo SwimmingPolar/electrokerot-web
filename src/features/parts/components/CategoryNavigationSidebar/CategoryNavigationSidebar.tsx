@@ -7,7 +7,7 @@ import {
 } from 'constant'
 import { BuildSummaryFooter } from 'features'
 import { useDeviceDetect, useScrollbarWidth } from 'hooks'
-import { FC, useEffect } from 'react'
+import { FC } from 'react'
 import styled from 'styled-components'
 import { ElementDepth, media } from 'styles'
 
@@ -22,7 +22,7 @@ const CategoriesWrapper = styled.div<{ scrollbarWidth: number }>`
   height: 100%;
   position: fixed;
 
-  ${media.mobile`
+  ${media.device('mobile', 'foldable')`
     box-shadow: none;
     width: ${CategoryNavigationSidebarWidth.mobile + 'px'};
     position: fixed;
@@ -73,11 +73,8 @@ const CategoriesWrapper = styled.div<{ scrollbarWidth: number }>`
 const Padding = styled.div`
   overflow-y: scroll;
 
-  ${media.mobile`
+  ${media.device('mobile', 'foldable')`
     width: ${CategoryNavigationSidebarWidth.mobile + 'px'};
-  `}
-  ${media.foldable`
-    width: ${CategoryNavigationSidebarWidth.foldable + 'px'};
   `}
   ${media.tablet`
     width: ${CategoryNavigationSidebarWidth.tablet + 'px'};
@@ -101,7 +98,7 @@ const CategoriesBox = styled.div<{ scrollbarWidth: number }>`
   overscroll-behavior: contain;
   height: 100%;
 
-  ${media.mobile`
+  ${media.device('mobile', 'foldable')`
     gap: 0;
     overflow-y: scroll;
     /* To account for 'Box' component's border-left  */
@@ -246,7 +243,7 @@ const MenuIcon = styled.div<{ url: string }>`
   background-color: ${({ theme }) => theme.colors.primary};
   mask: url(${({ url }) => url}) center/contain no-repeat;
 
-  ${media.mobile`
+  ${media.device('mobile', 'foldable')`
     display: none;
   `}
 
