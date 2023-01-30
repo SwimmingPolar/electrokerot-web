@@ -23,6 +23,11 @@ export const TableRowBox = styled.div`
     ${media.desktop`
       min-width: 280px;
     `}
+
+    > div {
+      display: flex;
+      flex-direction: row;
+    }
   }
   .price {
     flex: 1 0 18%;
@@ -45,6 +50,16 @@ export const TableElementBox = styled.div`
     align-items: center;
     font-size: 13px;
     font-family: ${({ theme }) => theme.fonts.primary};
+  }
+
+  a:focus-visible {
+    outline: none;
+  }
+  span:has(a:focus-visible) {
+    outline: 2px solid black;
+  }
+  button:focus-visible {
+    background-color: ${({ theme }) => theme.colors.primary200};
   }
 `
 

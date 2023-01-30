@@ -52,12 +52,11 @@ export type DeviceType =
   | 'tablet'
   | 'desktopSmall'
   | 'desktopLarge'
-  | null
 
-const DeviceDetectContext = createContext<DeviceType>(null)
+const DeviceDetectContext = createContext<DeviceType>('desktopLarge')
 
 const getDevice = () => {
-  let device = null as DeviceType
+  let device = 'desktopLarge' as DeviceType
   const width = window.innerWidth
   const { mobile, foldable, tablet, desktopSmall, desktopLarge } = Viewports
 

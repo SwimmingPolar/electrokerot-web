@@ -8,10 +8,10 @@ import {
   BuildSummaryCardPartsCategoriesType,
   useScrollToCard
 } from 'features'
-import React, { useMemo } from 'react'
+import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import styled from 'styled-components'
-import { media } from 'styles'
+import { ElementDepth, media } from 'styles'
 
 const Box = styled.div`
   border-radius: 4px;
@@ -60,6 +60,10 @@ const HeaderBox = styled.div`
     display: flex;
     flex-direction: row;
   }
+
+  a:focus-visible {
+    z-index: ${ElementDepth.parts.buildSummary};
+  }
 `
 
 const ContentBox = styled.div`
@@ -102,6 +106,12 @@ const ContentUpperBox = styled.div`
       font-size: 15px;
     }
   `}
+
+  a:focus-visible {
+    outline: none;
+    font-weight: bold;
+    z-index: ${ElementDepth.parts.buildSummary} !important;
+  }
 `
 const ContentLowerBox = styled.div`
   display: flex;
@@ -182,6 +192,13 @@ const ContentLowerBox = styled.div`
     width: 54px !important;
     height: 28px !important;
   }
+
+  button:focus-visible {
+    outline: none;
+    font-weight: bold;
+    color: ${({ theme }) => theme.colors.primary};
+    z-index: ${ElementDepth.parts.buildSummary};
+  }
 `
 
 type CountInputProps = {
@@ -197,6 +214,28 @@ const CountInput = ({
   // If the user can change the count value by select box, return the array of options
   // else, return true to show the text input
   const result = isTextOrSelect(partCategory)
+  const [open, setOpen] = useState(false)
+  const onOpen = useCallback(() => setOpen(true), [])
+  const onClose = useCallback(() => setOpen(false), [])
+  const handleChange = useCallback(
+    (event: SelectChangeEvent) => {
+      onClose()
+      handleCountChange(event)
+    },
+    [handleCountChange]
+  )
+  useEffect(() => {
+    if (Array.isArray(result)) {
+      window.addEventListener('resize', onClose)
+    }
+
+    return () => {
+      if (Array.isArray(result)) {
+        window.removeEventListener('resize', onClose)
+      }
+    }
+  }, [onClose])
+
   if (result === true) {
     return (
       <input
@@ -209,7 +248,10 @@ const CountInput = ({
   } else if (Array.isArray(result)) {
     return (
       <Select
-        onChange={handleCountChange}
+        open={open}
+        onOpen={onOpen}
+        onClose={onClose}
+        onChange={handleChange}
         MenuProps={{
           disableScrollLock: true
         }}
@@ -283,7 +325,7 @@ export const BuildSummaryCard = ({
         {categories.map((category, index) => {
           return (
             <div key={index}>
-              <NavLink to={`/parts/${category}`}>
+              <NavLink to={`/parts/${category}`} tabIndex={0}>
                 <h3>{PartsCategoriesKr[category as PartsCategoriesType]}</h3>
               </NavLink>
               {/* If it's not the last link, it will render "/" in between the two links */}
@@ -301,7 +343,12 @@ export const BuildSummaryCard = ({
               className={classnames(activeClassName, 'content')}
             >
               <ContentUpperBox>
-                <span>{part.name}</span>
+                <NavLink
+                  to={`/part/${part.name.replace(/\s/g, '%20')}`}
+                  tabIndex={0}
+                >
+                  <span>{part.name}</span>
+                </NavLink>
               </ContentUpperBox>
               <ContentLowerBox>
                 <div>
@@ -316,7 +363,12 @@ export const BuildSummaryCard = ({
                   })}
                 </div>
                 <div>
-                  <IconButton className="remove-button" centerRipple={false}>
+                  <IconButton
+                    className="remove-button"
+                    centerRipple={false}
+                    tabIndex={0}
+                    focusRipple={false}
+                  >
                     <ClearOutlinedIcon />
                   </IconButton>
                 </div>

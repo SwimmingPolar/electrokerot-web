@@ -53,7 +53,31 @@ const filterSlice = createSlice({
       }
 
       // Iterate over the given filter options and update the state
-      filterOptions.forEach(({ filterName, filterOptions }) => {
+      for (const filterOption of filterOptions) {
+        const { filterName } = filterOption
+        let { filterOptions: filterOptionsList } = filterOption
+        // Check if the filterOptions given by the user is valid
+        // by comparing them with the filter data.
+        // First, find the data with the given filter name
+        const validOptions =
+          // Iterate over the valid data values
+          // and remove the filter option if it's not valid
+          state[category].filterData.find(filter => {
+            return (
+              filter.category === filterName ||
+              filter.subCategory === filterName
+            )
+          })?.values
+        filterOptionsList = filterOptionsList.filter(filterOption => {
+          // Replace the !! with empty string if any
+          filterOption = filterOption.replace(/^!!/g, '')
+          return validOptions?.includes(filterOption)
+        })
+
+        if (filterOptions.length === 0) {
+          continue
+        }
+
         // If the user want to uncheck all the filter options by this filter name.
         if (filterOptions.length === 0) {
           const selectedFilterIndex = state[
@@ -72,12 +96,12 @@ const filterSlice = createSlice({
         if (selectedFilter === undefined) {
           state[category].selectedFilters?.push({
             filterName,
-            filterOptions
+            filterOptions: filterOptionsList
           })
         } else {
-          selectedFilter.filterOptions = filterOptions
+          selectedFilter.filterOptions = filterOptionsList
         }
-      })
+      }
     },
     setBackupFilterOptionValues: (
       state,
@@ -128,6 +152,21 @@ const filterSlice = createSlice({
       }
       if (state[category].selectedFilters === undefined) {
         state[category].selectedFilters = []
+      }
+
+      // Remove the !! if any
+      filterOption = filterOption.replace(/^!!/g, '')
+
+      // If the option value is not valid, then do nothing
+      const isValidFilterOption = state[category].filterData
+        .find(filter => {
+          return (
+            filter.category === filterName || filter.subCategory === filterName
+          )
+        })
+        ?.values.some(value => value === filterOption)
+      if (!isValidFilterOption) {
+        return
       }
 
       // Find an index of a matching filter option

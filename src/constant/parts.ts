@@ -1,3 +1,4 @@
+import { DeviceType } from 'hooks'
 import { DeviceList } from 'styles'
 
 export type SidebarWidth = {
@@ -128,16 +129,83 @@ export type BuildPartsCategoriesType =
   | 'reserved'
 
 export const ChangeFilterPopupDimension = {
-  withTargetFilter: {
-    default: {
-      width: 420,
-      height: 580
+  withoutTargetFilter: {
+    desktopLarge: {
+      width: '540px',
+      height: '720px'
+    },
+    desktopSmall: {
+      width: '540px',
+      height: '720px'
+    },
+    tablet: {
+      width: '420px',
+      height: '580px'
+    },
+    foldable: {
+      width: '100%',
+      height: '100%'
+    },
+    mobile: {
+      width: '100%',
+      height: '100%'
     }
   },
-  withoutTargetFilter: {
-    default: {
-      width: 540,
-      height: 720
+  withTargetFilter: {
+    desktopLarge: {
+      width: '420px',
+      height: '580px'
+    },
+    desktopSmall: {
+      width: '420px',
+      height: '580px'
+    },
+    tablet: {
+      width: '420px',
+      height: '580px'
+    },
+    foldable: {
+      width: '100%',
+      height: '100%'
+    },
+    mobile: {
+      width: '100%',
+      height: '100%'
     }
+  }
+} as {
+  withTargetFilter: {
+    [key in DeviceType]: {
+      width: string
+      height: string
+    }
+  }
+  withoutTargetFilter: {
+    [key in DeviceType]: {
+      width: string
+      height: string
+    }
+  }
+}
+
+export const ChangeFiltersPopupWidth = (
+  device: DeviceType,
+  targetFilter?: string | boolean
+) => {
+  if (targetFilter) {
+    return ChangeFilterPopupDimension.withTargetFilter[device].width
+  } else {
+    return ChangeFilterPopupDimension.withoutTargetFilter[device].width
+  }
+}
+
+export const ChangeFiltersPopupHeight = (
+  device: DeviceType,
+  targetFilter?: string
+) => {
+  if (targetFilter) {
+    return ChangeFilterPopupDimension.withTargetFilter[device].height
+  } else {
+    return ChangeFilterPopupDimension.withoutTargetFilter[device].height
   }
 }

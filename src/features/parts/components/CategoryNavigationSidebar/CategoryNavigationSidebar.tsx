@@ -7,11 +7,11 @@ import {
 } from 'constant'
 import { BuildSummaryFooter } from 'features'
 import { useDeviceDetect, useScrollbarWidth } from 'hooks'
-import { FC } from 'react'
+import React, { FC } from 'react'
 import styled from 'styled-components'
 import { ElementDepth, media } from 'styles'
 
-const CategoriesWrapper = styled.div<{ scrollbarWidth: number }>`
+const CategoriesWrapper = styled.div`
   display: flex;
   flex-direction: column;
   background-color: ${({ theme }) => theme.colors.white};
@@ -38,11 +38,6 @@ const CategoriesWrapper = styled.div<{ scrollbarWidth: number }>`
     right: 0;
     bottom: 0;
     height: calc(100vh - ${NavbarHeight + 'px'});
-
-    &.scrollbar-padding--enabled {
-      width: ${({ scrollbarWidth }: any) =>
-        CategoryNavigationSidebarWidth.tablet + scrollbarWidth + 'px'};
-    }
   `}
   ${media.desktopSmall`
     width: ${CategoryNavigationSidebarWidth.desktopSmall + 'px'};
@@ -71,8 +66,6 @@ const CategoriesWrapper = styled.div<{ scrollbarWidth: number }>`
 `
 
 const Padding = styled.div`
-  overflow-y: scroll;
-
   ${media.device('mobile', 'foldable')`
     width: ${CategoryNavigationSidebarWidth.mobile + 'px'};
   `}
@@ -117,11 +110,6 @@ const CategoriesBox = styled.div<{ scrollbarWidth: number }>`
     margin-right: ${({ scrollbarWidth }: any) => -scrollbarWidth + 'px'};
     padding-top: 55px;
     padding-bottom: 50px;
-
-    &.scrollbar-padding--enabled {
-      margin-right: ${({ scrollbarWidth }: any) => -scrollbarWidth * 2 + 'px'};
-      padding-right: 0;
-    }
   `}
   ${media.desktopSmall`
     margin-top: 75px;
@@ -236,6 +224,11 @@ const LinkBox = styled.div`
       justify-content: normal;
     }
   `}
+
+  a:focus-visible {
+    outline: none;
+    background-color: ${({ theme }) => theme.colors.primary200};
+  }
 `
 
 const MenuIcon = styled.div<{ url: string }>`
@@ -269,7 +262,7 @@ const Categories = () => (
   <>
     {PartsCategories.map(category => (
       <LinkBox key={category}>
-        <NavLink to={`/parts/${category}`}>
+        <NavLink to={`/parts/${category}`} tabIndex={0}>
           {({ isActive }) => (
             <>
               <MenuIcon
@@ -291,15 +284,9 @@ export const CategoryNavigationSidebar: FC = () => {
 
   return (
     <>
-      <Padding className="scrollbar-padding" />
-      <CategoriesWrapper
-        scrollbarWidth={scrollbarWidth}
-        className="scrollbar-padding"
-      >
-        <CategoriesBox
-          scrollbarWidth={scrollbarWidth}
-          className="scrollbar-padding"
-        >
+      <Padding />
+      <CategoriesWrapper>
+        <CategoriesBox scrollbarWidth={scrollbarWidth}>
           <Categories />
           {/* Render dummy div on mobile to fill the border-left */}
           {isMobileFriendly ? <div /> : null}

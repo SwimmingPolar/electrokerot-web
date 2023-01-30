@@ -7,13 +7,12 @@ import {
   BuildSummaryLayout
 } from 'features'
 import { useScrollbarWidth } from 'hooks'
-// import { useScrollbarWidth } from 'react-use'
 import { FC } from 'react'
 import styled from 'styled-components'
 import { ElementDepth, media } from 'styles'
 import { build } from '../../../../../cypress/fixtures'
 
-const Box = styled.aside<{ scrollbarWidth: number }>`
+const Box = styled.aside`
   display: none;
   background-color: ${({ theme }) => theme.colors.surface};
   z-index: ${ElementDepth.parts.buildSummary};
@@ -28,18 +27,9 @@ const Box = styled.aside<{ scrollbarWidth: number }>`
 
   ${media.desktopSmall`
     width: ${BuildSummaryWidth.desktopSmall + 'px'};
-
-    &.scrollbar-padding--enabled {
-      width: ${({ scrollbarWidth }: any) =>
-        BuildSummaryWidth.desktopSmall + scrollbarWidth + 'px'};
-    }
   `}
   ${media.desktopLarge`
     width: ${BuildSummaryWidth.desktopLarge + 'px'};
-    &.scrollbar-padding--enabled {
-      width: ${({ scrollbarWidth }: any) =>
-        BuildSummaryWidth.desktopLarge + scrollbarWidth + 'px'};
-    }
   `}
   ${media.desktop`
     display: flex;
@@ -47,8 +37,6 @@ const Box = styled.aside<{ scrollbarWidth: number }>`
 `
 
 const BoxPadding = styled.div`
-  overflow-y: scroll;
-
   ${media.device('mobile', 'foldable')`
     width: ${BuildSummaryWidth.mobile + 'px'};
   `}
@@ -71,14 +59,10 @@ const ContentBox = styled.div<{ scrollbarWidth: number }>`
   overflow-y: scroll;
   margin-right: ${({ scrollbarWidth }) => -scrollbarWidth + 'px'};
   overscroll-behavior: contain;
-
-  &.scrollbar-padding--enabled {
-    margin-right: ${({ scrollbarWidth }) => -scrollbarWidth * 2 + 'px'};
-  }
 `
 
 export const BuildSummary: FC = () => {
-  const scrollbarWidth = useScrollbarWidth() || 0
+  const scrollbarWidth = useScrollbarWidth()
   // Reformat the selected parts to be used in the BuildSummaryCard.
   // We need to group ssd/hdd and system/cpuCooler together to show them in one card.
   // At the same time, format into something we can easily use when rendering the BuildSummaryCard.
@@ -112,12 +96,9 @@ export const BuildSummary: FC = () => {
 
   return (
     <>
-      <BoxPadding className="scrollbar-padding" />
-      <Box scrollbarWidth={scrollbarWidth} className="scrollbar-padding">
-        <ContentBox
-          scrollbarWidth={scrollbarWidth}
-          className="scrollbar-padding build-summary"
-        >
+      <BoxPadding />
+      <Box>
+        <ContentBox scrollbarWidth={scrollbarWidth} className="build-summary">
           <BuildSummaryLayout>
             <>
               {Object.entries(selectedParts).map(

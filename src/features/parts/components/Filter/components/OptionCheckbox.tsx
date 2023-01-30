@@ -43,6 +43,7 @@ export const OptionCheckbox = ({
             onChange={handleChange}
             sx={checkboxStyle}
             indeterminate={minusChecked}
+            tabIndex={0}
           />
         }
       />

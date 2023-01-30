@@ -20,7 +20,7 @@ const Content = styled.div`
 `
 
 export default {
-  title: 'features/Builds/CategoryNavigationSidebar',
+  title: 'features/Parts/CategoryNavigationSidebar',
   component: CategoryNavigationSidebar,
   parameters: {
     layout: 'fullscreen'

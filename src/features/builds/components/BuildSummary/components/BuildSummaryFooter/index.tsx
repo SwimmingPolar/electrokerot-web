@@ -3,6 +3,7 @@ import { Link as NavLink } from 'components'
 import { CategoryNavigationSidebarWidth, NavbarHeight } from 'constant'
 import styled from 'styled-components'
 import { media } from 'styles'
+import { ElementDepth } from 'styles'
 
 const Box = styled.div`
   display: flex;
@@ -10,6 +11,7 @@ const Box = styled.div`
   width: 100%;
   position: sticky;
   bottom: 0;
+  z-index: ${ElementDepth.parts.buildSummary + 1};
 
   > div {
     flex: 1;
@@ -52,6 +54,10 @@ const Box = styled.div`
     button {
       width: 100%;
       height: 100%;
+    }
+
+    :has(a:focus-visible) {
+      border-top: 1px solid #81c5ff;
     }
   }
 
@@ -131,6 +137,15 @@ const Box = styled.div`
       order: 1;
     }
   `}
+
+  a:focus-visible {
+    outline: none;
+    background-color: #81c5ff;
+
+    button {
+      background-color: #81c5ff;
+    }
+  }
 `
 
 export const BuildSummaryFooter = () => {
@@ -140,8 +155,8 @@ export const BuildSummaryFooter = () => {
         <span>1,234,567원</span>
       </div>
       <div className="go-to-build">
-        <NavLink to="/builds">
-          <Button variant="text">
+        <NavLink to="/builds" tabIndex={0}>
+          <Button variant="text" focusRipple={false} tabIndex={-1}>
             <span>견적서</span>
           </Button>
         </NavLink>

@@ -7,18 +7,20 @@ export * from './useDeviceDetect'
 export * from './useIsDirectAccess'
 // decides modal motion based on current and previous route
 export * from './useMotionFinder'
-// adds padding to right-side the element if the scrollbar disappears
-export * from './useScrollbarPadding'
+// compensate for the scrollbar width when it has to be hidden
+export * from './useScrollbarLock'
+// calculate the scrollbar width
+export * from './useScrollbarWidth'
 // Activate empty routing
 export * from './useEmptyRoute'
 // export all hooks from ModalLayout
 export * from '../components/ModalLayout/hooks'
 // debounce value
 export * from './useDebouncedValue'
-//
-export * from './useDeferredLocation'
 // detect mobile device
 export * from './useDetectMobile'
+//
+export * from './useDeferredLocation'
 
 /*
  * list of hooks to apply globally

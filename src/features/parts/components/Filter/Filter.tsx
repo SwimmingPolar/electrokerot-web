@@ -1,14 +1,10 @@
-import { Modal } from '@mui/material'
-import { ChangeFiltersPopup } from 'features'
-import { useEmptyRoute } from 'hooks'
-import React, {
-  KeyboardEvent,
-  MouseEvent,
-  useCallback,
-  useEffect,
-  useMemo,
-  useState
-} from 'react'
+import {
+  CloseChangeFiltersPopupType,
+  MemoizedChangeFiltersPopupModal,
+  ToggleChangeFiltersPopupType
+} from 'features'
+import { useEmptyRoute, useScrollbarLock } from 'hooks'
+import React, { KeyboardEvent, MouseEvent, useCallback, useState } from 'react'
 import styled from 'styled-components'
 import { media } from 'styles'
 import { ContentLayout as Content } from '../ContentLayout/ContentLayout'
@@ -28,78 +24,6 @@ const Box = styled(Content)`
     padding: 0 10px 10px 10px;
   `}
 `
-
-const ModalBox = styled.div`
-  display: flex;
-  width: 100%;
-  height: 100%;
-  justify-content: center;
-  align-items: center;
-  flex-direction: row;
-
-  ${media.desktopLarge`
-    margin-left: -100px;
-  `}
-`
-
-// Modal wrapper component
-type ChangeFiltersPopupModalType = {
-  open: boolean
-  forceModalOpen?: boolean
-  targetFilter?: string
-  handleModalClose: () => void
-  handleForceModalOpen?: (state?: boolean) => void
-  toggleChangeFiltersPopup: ToggleChangeFiltersPopupType
-}
-const ChangeFiltersPopupModal = ({
-  open,
-  forceModalOpen,
-  targetFilter,
-  handleModalClose,
-  handleForceModalOpen,
-  toggleChangeFiltersPopup
-}: ChangeFiltersPopupModalType) => {
-  useEffect(() => {
-    if (forceModalOpen) {
-      // Cast the return value of toggleChangeFiltersPopup to OpenChangeFiltersPopupType
-      // and execute it with empty string to open the modal with all
-      // the filters available.
-      ;(toggleChangeFiltersPopup(true) as OpenChangeFiltersPopupType)('')(
-        null as any
-      )
-    }
-  }, [forceModalOpen, toggleChangeFiltersPopup])
-
-  // Set forceModalOpen to false when the modal is closed
-  useEffect(() => {
-    return () => {
-      if (open || forceModalOpen) {
-        handleForceModalOpen && handleForceModalOpen(false)
-      }
-    }
-  }, [open, forceModalOpen])
-
-  return (
-    <Modal open={open} onClose={handleModalClose} disableScrollLock>
-      <ModalBox>
-        <ChangeFiltersPopup
-          targetFilter={targetFilter}
-          toggleChangeFiltersPopup={toggleChangeFiltersPopup}
-        />
-      </ModalBox>
-    </Modal>
-  )
-}
-const MemoizedChangeFiltersPopupModal = React.memo(ChangeFiltersPopupModal)
-
-export type ToggleChangeFiltersPopupType = (
-  state: boolean
-) => OpenChangeFiltersPopupType | CloseChangeFiltersPopupType
-
-type OpenChangeFiltersPopupType = (
-  targetFilter: string
-) => (event: MouseEvent | KeyboardEvent) => void
-type CloseChangeFiltersPopupType = () => void
 
 type FilterType = {
   // This is used to open the ChangeFiltersPopup from outside
@@ -127,9 +51,7 @@ export const Filter = ({
   const { toggleModal } = useEmptyRoute({ setOpen })
   // Toggle handler
   const toggleChangeFiltersPopup = useCallback(
-    (
-      state: boolean
-    ): OpenChangeFiltersPopupType | CloseChangeFiltersPopupType => {
+    (state: boolean) => {
       // If toggle to open, set the target filter and return function
       // that returns handler.
       if (state) {
@@ -138,6 +60,7 @@ export const Filter = ({
           const container = document.querySelector(
             `.${SelectedFilterItemsBoxClassName}`
           )
+
           if (container?.classList.contains('scrolling') === true) {
             return
           }
@@ -157,33 +80,14 @@ export const Filter = ({
       }
     },
     [toggleModal]
-  )
+  ) as ToggleChangeFiltersPopupType
 
   const handleModalClose = useCallback(
     () => (toggleModal(false) as CloseChangeFiltersPopupType)(),
     [toggleModal]
   )
 
-  const ChangeFiltersPopupModal = useMemo(
-    () => (
-      <MemoizedChangeFiltersPopupModal
-        open={open}
-        forceModalOpen={forceModalOpen}
-        targetFilter={targetFilter}
-        handleModalClose={handleModalClose}
-        handleForceModalOpen={handleForceModalOpen}
-        toggleChangeFiltersPopup={toggleChangeFiltersPopup}
-      />
-    ),
-    [
-      open,
-      forceModalOpen,
-      targetFilter,
-      handleModalClose,
-      handleForceModalOpen,
-      toggleChangeFiltersPopup
-    ]
-  )
+  useScrollbarLock(open)
 
   return (
     <>
@@ -193,7 +97,14 @@ export const Filter = ({
           <LowerBox />
         </Box>
       )}
-      {ChangeFiltersPopupModal}
+      <MemoizedChangeFiltersPopupModal
+        open={open}
+        forceModalOpen={forceModalOpen}
+        targetFilter={targetFilter}
+        handleModalClose={handleModalClose}
+        handleForceModalOpen={handleForceModalOpen}
+        toggleChangeFiltersPopup={toggleChangeFiltersPopup}
+      />
     </>
   )
 }

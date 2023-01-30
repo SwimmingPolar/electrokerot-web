@@ -4,25 +4,34 @@ import InputLabel from '@mui/material/InputLabel'
 import MenuItem from '@mui/material/MenuItem'
 import Select, { SelectChangeEvent } from '@mui/material/Select'
 import {
-  ChangeFilterPopupDimension,
+  ChangeFiltersPopupWidth,
   PartsCategories,
   PartsCategoriesKr,
   PartsCategoriesType
 } from 'constant'
-import { useMemo } from 'react'
+import { DeviceType, useDeviceDetect } from 'hooks'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import styled from 'styled-components'
 
 const Box = styled.div`
   display: flex;
+
+  button[tabIndex='0']:focus-visible {
+    outline: 2px solid black;
+  }
 `
 
-const SelectBox = styled.div`
+export const SelectBoxHeight = 58
+
+const SelectBox = styled.div<{ device: DeviceType }>`
   display: flex;
   flex-direction: row;
   align-items: center;
   position: fixed;
-  height: 58px;
-  width: ${ChangeFilterPopupDimension.withoutTargetFilter.default.width}px;
+  height: ${SelectBoxHeight + 'px'};
+  ${({ device }) => `
+    width: ${ChangeFiltersPopupWidth(device, undefined)};
+  `};
   padding: 1px 0 0 25px;
   border-bottom: 1px solid ${({ theme }) => theme.colors.primary200};
   border-top-left-radius: 7px;
@@ -92,6 +101,23 @@ export const PopupHeader = ({
     return null
   }
 
+  const [open, setOpen] = useState(false)
+  const onOpen = useCallback(() => setOpen(true), [])
+  const onClose = useCallback(() => setOpen(false), [])
+  const handleChange = useCallback(
+    (event: SelectChangeEvent) => {
+      setOpen(false)
+      handleChangeCategory(event)
+    },
+    [handleChangeCategory]
+  )
+  useEffect(() => {
+    window.addEventListener('resize', onClose)
+    return () => {
+      window.removeEventListener('resize', onClose)
+    }
+  }, [onClose])
+
   const styles = useMemo(
     () => ({
       formControl: {
@@ -107,17 +133,23 @@ export const PopupHeader = ({
     []
   )
 
+  const { device } = useDeviceDetect()
+
   return (
     <Box>
-      <SelectBox>
+      <SelectBox device={device}>
         <FormControl sx={styles.formControl} size="small">
           <InputLabel>Category</InputLabel>
           <Select
             value={category}
-            onChange={handleChangeCategory}
             label="category"
-            sx={styles.select}
             className="select-box"
+            sx={styles.select}
+            open={open}
+            onChange={handleChange}
+            onOpen={onOpen}
+            onClose={onClose}
+            tabIndex={0}
           >
             {PartsCategories.map((category, index) => (
               <MenuItem key={index} value={category} sx={styles.menuItem}>
@@ -127,7 +159,7 @@ export const PopupHeader = ({
           </Select>
         </FormControl>
         <RestoreButtonBox>
-          <button onClick={handleResetFilters}>
+          <button onClick={handleResetFilters} tabIndex={0}>
             <span>필터 초기화</span>
             <RestartAltIcon className="icon reset" />
           </button>

@@ -98,7 +98,6 @@ export const Navbar = ({
           fixed={fixed}
           sidebarWidth={sidebarWidth}
           fullWidth={fullWidth}
-          className="scrollbar-padding"
         >
           <Logo siteName={siteName} />
           <Menu menuList={menuList} />

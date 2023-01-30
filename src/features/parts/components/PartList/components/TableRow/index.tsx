@@ -5,6 +5,7 @@ import React, { useCallback, useMemo } from 'react'
 import styled from 'styled-components'
 import { media } from 'styles'
 import { TableRowBox, TableRowElement } from '..'
+import { Link as NavLink } from 'components'
 
 const Box = styled.div`
   border-bottom: 1px solid ${({ theme }) => theme.colors.primary200};
@@ -179,6 +180,7 @@ export const TableRow = ({
         disabled={!isChecked && isDisabled}
         onClick={handleCheckboxClick}
         sx={checkboxStyle}
+        tabIndex={0}
       />
     ),
     [isChecked, isDisabled]
@@ -188,16 +190,17 @@ export const TableRow = ({
     const nameOfThePart = part.name.fullName
     return (
       <TableRowElement className="name">
-        <span>
-          {MemoizedCheckbox}
-          <a
-            onClick={() => {
-              //
-            }}
-          >
-            {nameOfThePart}
-          </a>
-        </span>
+        <div>
+          <div>{MemoizedCheckbox}</div>
+          <span>
+            <NavLink
+              to={`/part/${nameOfThePart.replace(/\s/g, '%20')}`}
+              tabIndex={0}
+            >
+              {nameOfThePart}
+            </NavLink>
+          </span>
+        </div>
       </TableRowElement>
     )
   }, [MemoizedCheckbox, part.name.fullName])
@@ -233,7 +236,9 @@ export const TableRow = ({
               {price.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
               <span>원</span>
             </span>
-            <Button variant="outlined">담기</Button>
+            <Button variant="outlined" tabIndex={0} focusRipple={false}>
+              담기
+            </Button>
           </>
         ) : null}
       </TableRowElement>

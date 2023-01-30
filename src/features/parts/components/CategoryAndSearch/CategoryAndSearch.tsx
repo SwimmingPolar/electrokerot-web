@@ -58,6 +58,26 @@ const Search = styled.div`
   margin-right: 15px;
   position: relative;
 
+  :hover {
+    transition: border 0.2s ease-in-out;
+    border: 1px solid ${({ theme }) => theme.colors.primary};
+
+    div {
+      transition: border 0.2s ease-in-out;
+      border: 1px solid ${({ theme }) => theme.colors.primary};
+    }
+  }
+
+  :has(input:focus) {
+    transition: border 0.2s ease-in-out;
+    border: 1px solid ${({ theme }) => theme.colors.primary};
+
+    div {
+      transition: border 0.2s ease-in-out;
+      border: 1px solid ${({ theme }) => theme.colors.primary};
+    }
+  }
+
   ${media.tablet`
     height: 42px;
     width: 400px;
@@ -74,10 +94,24 @@ const SearchInput = styled.input`
   padding-left: 15px;
   color: ${({ theme }) => theme.colors.primary};
   background-color: ${({ theme }) => theme.colors.gray100};
+  font-family: ${({ theme }) => theme.fonts.secondary};
+  font-size: 16px;
+  transition: color border 0.2s ease-in-out;
 
   ::placeholder {
+    color: ${({ theme }) => theme.colors.primary200};
     font-size: 16px;
-    font-weight: bold;
+    font-weight: 700;
+  }
+
+  :focus,
+  :hover {
+    color: ${({ theme }) => theme.colors.primary};
+
+    ::placeholder {
+      transition: color 0.2s ease-in-out;
+      color: ${({ theme }) => theme.colors.primary};
+    }
   }
 `
 
@@ -104,6 +138,10 @@ const SearchButton = styled.button`
   height: 100%;
   width: 100%;
   cursor: pointer;
+
+  :focus-visible {
+    background-color: ${({ theme }) => theme.colors.primary300};
+  }
 `
 
 const IconBox = styled.div`
@@ -139,19 +177,24 @@ export const CategoryAndSearch = ({
       </Category>
       {!isMobileFriendly ? (
         <Search>
-          <SearchInput type="text" placeholder="검색" />
+          <SearchInput
+            type="text"
+            placeholder="검색"
+            tabIndex={0}
+            spellCheck={false}
+          />
           <SearchButtonBox>
-            <SearchButton>
+            <SearchButton tabIndex={0}>
               <SearchIcon />
             </SearchButton>
           </SearchButtonBox>
         </Search>
       ) : (
         <IconBox>
-          <button>
+          <button tabIndex={0}>
             <SearchIcon className="icon search-icon" />
           </button>
-          <button>
+          <button tabIndex={0}>
             <LayersOutlinedIcon
               className="icon filter-icon"
               onClick={() => handleForceModalOpen()}

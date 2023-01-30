@@ -16,16 +16,19 @@ const SelectedFilterBox = styled.div`
   }
 
   .filter-name {
-    z-index: 0;
+    z-index: 2;
   }
   .filter-options {
     z-index: 1;
+  }
+  button:focus-visible {
+    outline: 2px solid black;
   }
 `
 
 const SelectedFilterNameBox = styled.div<{ targetFilter: string | undefined }>`
   display: flex;
-  padding-top: ${({ targetFilter }) => (targetFilter ? '0' : '54px')};
+  margin-top: ${({ targetFilter }) => (targetFilter ? '0' : '54px')};
 
   button {
     cursor: pointer;
@@ -161,6 +164,7 @@ export const SelectedFilter = ({
       >
         <button
           onClick={() => !disableSelectAll && handleFilterNameClick(filterName)}
+          tabIndex={0}
         >
           <h3>{filterName}</h3>
           {!disableSelectAll && <RestartAltIcon className="icon reset" />}
@@ -172,6 +176,7 @@ export const SelectedFilter = ({
             key={index}
             className={getFilterState(option)}
             onClick={handleFilterOptionClick(filterName, option)}
+            tabIndex={0}
           >
             <span>{option}</span>
           </button>

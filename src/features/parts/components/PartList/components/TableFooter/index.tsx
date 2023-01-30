@@ -14,6 +14,12 @@ const Box = styled.footer`
   ${media.mobile`
     padding: 0 30px;  
   `}
+
+  button:focus-visible {
+    outline: 2px solid black;
+    color: ${({ theme }) => theme.colors.primary};
+    border-radius: 0;
+  }
 `
 
 const NavigationBox = styled.div`
@@ -91,19 +97,21 @@ export const TableFooter = () => {
     <Box>
       <NavigationBox>
         {isMobileFriendly ? null : (
-          <Button className="navigation">
+          <Button className="navigation" tabIndex={0}>
             <span>이전</span>
           </Button>
         )}
         <Pages>
           {pages.map((page, index) => (
             <ButtonBox key={index}>
-              <Button className="page">{page}</Button>
+              <Button className="page" tabIndex={0}>
+                {page}
+              </Button>
             </ButtonBox>
           ))}
         </Pages>
         {isMobileFriendly ? null : (
-          <Button className="navigation">
+          <Button className="navigation" tabIndex={0}>
             <span>다음</span>
           </Button>
         )}

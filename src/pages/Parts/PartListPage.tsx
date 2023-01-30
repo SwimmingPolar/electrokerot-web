@@ -15,7 +15,7 @@ import {
   useChangeSearchParams
 } from 'features'
 import { useDeviceDetect } from 'hooks'
-import { FC, useCallback, useMemo, useState } from 'react'
+import { FC, useCallback, useEffect, useMemo, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import styled from 'styled-components'
 import { ElementDepth, media } from 'styles'
@@ -101,7 +101,9 @@ export const PartListPage: FC = () => {
   // thus, upper box should have shadow.
   const { category } = useParams() as { category: PartsCategoriesType }
   const hasSelectedFilters = useSelector(
-    state => selectFilters(state)?.[category]?.selectedFilters?.length !== 0
+    state =>
+      selectFilters(state)?.[category]?.selectedFilters &&
+      selectFilters(state)?.[category]?.selectedFilters.length > 0
   )
   const hideFilter = useMemo(
     () => isMobileFriendly && !hasSelectedFilters,

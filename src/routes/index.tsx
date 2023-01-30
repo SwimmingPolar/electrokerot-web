@@ -1,7 +1,7 @@
 import { DummyDiv, ModalBackdrop } from 'components'
 import { ModalRoutes } from 'constant'
 import { AnimatePresence, motion } from 'framer-motion'
-import { useDeferredLocation, useDeviceDetect, useRecordHistory } from 'hooks'
+import { useDeviceDetect, useRecordHistory } from 'hooks'
 import {
   BuildPage,
   LoginPage,
@@ -9,7 +9,6 @@ import {
   PartsMenuPage,
   SignupPage
 } from 'pages'
-import { useEffect } from 'react'
 import {
   BrowserRouter,
   Location,

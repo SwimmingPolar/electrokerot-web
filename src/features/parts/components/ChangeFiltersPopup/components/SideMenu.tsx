@@ -1,6 +1,7 @@
 import CircleIcon from '@mui/icons-material/Circle'
 import { FilterSideMenu } from 'constant'
-import { SelectedFiltersType } from 'features'
+import { SelectBoxHeight, SelectedFiltersType } from 'features'
+import { useDeviceDetect } from 'hooks'
 import { MouseEvent, useCallback, useMemo } from 'react'
 import styled from 'styled-components'
 
@@ -15,14 +16,24 @@ const Window = styled.div`
   overflow-x: hidden;
   overflow-y: scroll;
   overscroll-behavior: contain;
+
+  button[tabIndex='0']:focus-visible {
+    background-color: ${({ theme }) => theme.colors.gray400};
+  }
 `
 
-const Box = styled.div`
+const Box = styled.div<{ isMobileFriendly: boolean }>`
   display: flex;
   flex-direction: column;
   position: absolute;
   width: 100%;
   gap: 3px;
+  ${({ isMobileFriendly }) =>
+    isMobileFriendly
+      ? `
+    padding-top: ${SelectBoxHeight}px;
+  `
+      : ''}
 `
 
 const ButtonBox = styled.div`
@@ -35,6 +46,7 @@ const ButtonBox = styled.div`
 `
 const Button = styled.button`
   display: flex;
+  flex-direction: row;
   justify-content: center;
   align-items: center;
   padding: 15px 10px;
@@ -46,8 +58,11 @@ const Button = styled.button`
   color: ${({ theme }) => theme.colors.black};
   text-align: center;
   cursor: pointer;
+  gap: 3px;
 
   .icon.dot {
+    flex-shrink: 0;
+    display: flex;
     white-space: pre;
     text-overflow: clip;
     overflow: hidden;
@@ -83,10 +98,6 @@ export const SideMenu = ({
   )
 
   const handleClick = useCallback((event: MouseEvent) => {
-    event.preventDefault()
-    // const target = event.target as HTMLAnchorElement
-    // const targetId = target.getAttribute('href') || ''
-    // const targetElement = document.querySelector(targetId)
     const headerList = Array.from(
       document.querySelectorAll('.filter-item .filter-name') || []
     )
@@ -112,24 +123,30 @@ export const SideMenu = ({
     []
   )
 
+  const { isMobileFriendly } = useDeviceDetect()
+
   return (
     <Window>
-      <Box className="filter-box">
+      <Box className="filter-box" isMobileFriendly={isMobileFriendly}>
         {filterNames.map((filterName, index) => (
           <ButtonBox key={index}>
-            <Button data-filter-name={filterName} onClick={handleClick}>
+            <Button
+              data-filter-name={filterName}
+              onClick={handleClick}
+              tabIndex={0}
+            >
               {selectedFilterNames.includes(filterName) ? (
                 <span className="icon dot">
                   <CircleIcon sx={circleIconStyle} />
-                  {'  '}
                 </span>
               ) : (
                 <div
                   style={{
-                    width: '10px'
+                    width: '3px'
                   }}
                 />
               )}
+
               {filterName}
             </Button>
           </ButtonBox>

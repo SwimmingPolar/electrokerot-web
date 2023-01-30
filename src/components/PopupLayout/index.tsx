@@ -1,15 +1,31 @@
 import CloseIcon from '@mui/icons-material/Close'
-import { useScrollbarWidth } from 'hooks'
+import { useDeviceDetect, useScrollbarWidth } from 'hooks'
 import styled from 'styled-components'
 
 // Layout
-const Box = styled.div`
+const Box = styled.div<{ isMobileFriendly: boolean }>`
   display: flex;
   flex-direction: column;
   background-color: ${({ theme }) => theme.colors.white};
   box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
   overflow: hidden;
   border-radius: 7px;
+  /* On mobile devices, make the width and height fill the viewport */
+  ${({ isMobileFriendly }) =>
+    isMobileFriendly
+      ? `
+    width: 100%;
+    height: 100%;
+    border-radius: 0;
+  `
+      : ''}
+
+  button[tabIndex='0'].close:focus-visible {
+    background-color: #cdcdcd;
+  }
+  button[tabIndex='0'].confirm:focus-visible {
+    background-color: #81c5ff;
+  }
 `
 
 const ScrollBox = styled.div`
@@ -53,14 +69,18 @@ const ContentBox = styled.div<{ scrollbarWidth: number }>`
 `
 
 // Buttons
-const ButtonBox = styled.div`
+const ButtonBox = styled.div<{ isMobileFriendly: boolean }>`
   display: flex;
   flex-direction: row;
   position: sticky;
   bottom: 0;
   width: 100%;
-  box-shadow: rgba(14, 30, 37, 0.12) 0px 2px 4px 0px,
-    rgba(14, 30, 37, 0.32) 0px 2px 16px 0px;
+  z-index: 9999;
+  ${({ isMobileFriendly }) =>
+    isMobileFriendly
+      ? ''
+      : `box-shadow: rgba(14, 30, 37, 0.12) 0px 2px 4px 0px,
+  rgba(14, 30, 37, 0.32) 0px 2px 16px 0px;`}
 
   button {
     flex: 1;
@@ -102,9 +122,10 @@ export const PopupLayout = ({
   confirmButtonName
 }: PopupLayoutType) => {
   const scrollbarWidth = useScrollbarWidth()
+  const { isMobileFriendly } = useDeviceDetect()
 
   return (
-    <Box>
+    <Box isMobileFriendly={isMobileFriendly}>
       <ScrollBox>
         {/* Show title only if they exist */}
         {title ? (
@@ -117,11 +138,11 @@ export const PopupLayout = ({
         ) : null}
         {/* Render content inside ContentBox */}
         <ContentBox scrollbarWidth={scrollbarWidth}>{children}</ContentBox>
-        <ButtonBox>
-          <CloseButton onClick={onClose}>
+        <ButtonBox isMobileFriendly={isMobileFriendly}>
+          <CloseButton onClick={onClose} tabIndex={0} className="close">
             {closeButtonName || '닫기'}
           </CloseButton>
-          <ConfirmButton onClick={onConfirm}>
+          <ConfirmButton onClick={onConfirm} tabIndex={0} className="confirm">
             {confirmButtonName || '확인'}
           </ConfirmButton>
         </ButtonBox>

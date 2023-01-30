@@ -93,6 +93,14 @@ const FilterRowBox = styled.div`
   .show-more-padding {
     width: 42px;
   }
+
+  button:focus-visible {
+    outline: 2px solid black;
+  }
+  button.show-more:focus-visible {
+    outline: none;
+    font-weight: bold;
+  }
 `
 
 const FilterNameBox = styled.div`
@@ -114,7 +122,7 @@ const FilterNameBox = styled.div`
     align-items: center;
     font-size: 14px;
     font-family: ${({ theme }) => theme.fonts.primary};
-    font-weight: 900;
+    font-weight: 700;
     height: 24px;
     color: ${({ theme }) => theme.colors.primary};
   }
@@ -144,7 +152,11 @@ const ShowMore = ({
   }, [filterName, category])
 
   return showMore ? (
-    <button className="show-more" onClick={showMore ? handleClick : undefined}>
+    <button
+      className="show-more"
+      onClick={showMore ? handleClick : undefined}
+      tabIndex={0}
+    >
       {isOpen ? <span>{'닫기'}</span> : <span>{'+' + howManyMore + '개'}</span>}
     </button>
   ) : (
@@ -278,25 +290,28 @@ export const FilterRow = ({ category, filterName }: FilterRowType) => {
     filterMatchingType === 'min' || filterMatchingType === 'max'
 
   const OptionCheckboxList = useMemo(
-    () =>
-      optionsList.map((value, index) => {
-        const checked = selectedValues.includes(value)
-        const minusChecked = selectedValues.includes('!!' + value)
-        const checkType = checked
-          ? 'checked'
-          : minusChecked
-          ? 'minus'
-          : 'unchecked'
+    () => (
+      <FormGroup className="filter-options">
+        {optionsList.map((value, index) => {
+          const checked = selectedValues.includes(value)
+          const minusChecked = selectedValues.includes('!!' + value)
+          const checkType = checked
+            ? 'checked'
+            : minusChecked
+            ? 'minus'
+            : 'unchecked'
 
-        return (
-          <OptionCheckbox
-            key={index}
-            value={value}
-            checkType={checkType}
-            handleOptionChange={handleOptionChange}
-          />
-        )
-      }),
+          return (
+            <OptionCheckbox
+              key={index}
+              value={value}
+              checkType={checkType}
+              handleOptionChange={handleOptionChange}
+            />
+          )
+        })}
+      </FormGroup>
+    ),
     [selectedValues, optionsList]
   )
 
@@ -304,12 +319,15 @@ export const FilterRow = ({ category, filterName }: FilterRowType) => {
     <FilterRowBox>
       {/* Filter Name */}
       <FilterNameBox>
-        <button onClick={!disableSelectAll ? handleFilterNameClick : undefined}>
+        <button
+          onClick={!disableSelectAll ? handleFilterNameClick : undefined}
+          tabIndex={0}
+        >
           <span>{filterName}</span>
         </button>
       </FilterNameBox>
       {/* Filter Options */}
-      <FormGroup className="filter-options">{OptionCheckboxList}</FormGroup>
+      {OptionCheckboxList}
       <ShowMore
         filterName={filterName}
         optionsLength={filterValues.length}

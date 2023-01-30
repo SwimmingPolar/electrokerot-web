@@ -28,6 +28,9 @@ const Box = styled.div`
   button {
     cursor: pointer;
   }
+  button:focus-visible {
+    outline: 2px solid black;
+  }
 `
 
 const FilterButtonBox = styled.div`
@@ -172,7 +175,10 @@ export const UpperBox = ({ toggleChangeFiltersPopup }: UpperBoxType) => {
   return (
     <Box>
       <FilterButtonBox className={showMore ? 'show-more' : ''}>
-        <button onClick={showMore ? handleFilterButtonClick : undefined}>
+        <button
+          onClick={showMore ? handleFilterButtonClick : undefined}
+          tabIndex={0}
+        >
           <FilterAltIcon className="icon filter" />
           <span>Filter</span>
           <ArrowDropDownOutlinedIcon
@@ -187,7 +193,10 @@ export const UpperBox = ({ toggleChangeFiltersPopup }: UpperBoxType) => {
       />
       <ChangeSelectedFiltersBox>
         {/* If target filter is empty, will show all available filters */}
-        <button onClick={toggleChangeFiltersPopup(true)('') as () => void}>
+        <button
+          onClick={toggleChangeFiltersPopup(true)('') as () => void}
+          tabIndex={0}
+        >
           <LayersOutlinedIcon className="icon layer" />
           <span>필터 변경</span>
         </button>

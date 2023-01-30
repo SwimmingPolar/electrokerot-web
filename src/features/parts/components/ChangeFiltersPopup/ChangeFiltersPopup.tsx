@@ -1,30 +1,31 @@
-import { SelectChangeEvent } from '@mui/material'
+import { Modal, SelectChangeEvent } from '@mui/material'
 import { useDispatch, useSelector } from 'app'
 import { PopupLayout } from 'components'
-import { ChangeFilterPopupDimension, PartsCategoriesType } from 'constant'
 import {
-  selectFilters,
-  setFilterOptions,
-  ToggleChangeFiltersPopupType
-} from 'features'
-import { useScrollbarPadding, useScrollbarWidth } from 'hooks'
-import { useCallback, useState } from 'react'
+  ChangeFiltersPopupHeight,
+  ChangeFiltersPopupWidth,
+  PartsCategoriesType
+} from 'constant'
+import { selectFilters, setFilterOptions } from 'features'
+import { DeviceType, useDeviceDetect, useScrollbarWidth } from 'hooks'
+import React, { useCallback, useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import styled from 'styled-components'
+import { media } from 'styles'
 import { useLoadFilterJson } from '../Filter/hooks/useLoadFilterJson'
 import { FiltersList, PopupHeader, SideMenu } from './components'
 
-const Box = styled.div<{ targetFilter?: string; scrollbarWidth: number }>`
+const Box = styled.div<{
+  targetFilter?: string
+  scrollbarWidth: number
+  device: DeviceType
+}>`
   /* Without 'targetFilter', make the modal smaller */
   display: flex;
-  width: ${({ targetFilter }) =>
-    !targetFilter
-      ? `${ChangeFilterPopupDimension.withoutTargetFilter.default.width}px`
-      : `${ChangeFilterPopupDimension.withTargetFilter.default.width}px`};
-  height: ${({ targetFilter }) =>
-    !targetFilter
-      ? `${ChangeFilterPopupDimension.withoutTargetFilter.default.height}px`
-      : `${ChangeFilterPopupDimension.withTargetFilter.default.height}px`};
+  ${({ device, targetFilter }) => `
+    width: ${ChangeFiltersPopupWidth(device, targetFilter)};
+    height: ${ChangeFiltersPopupHeight(device, targetFilter)};
+  `};
   background-color: ${({ theme }) => theme.colors.white};
   position: relative;
   /* Popup layout has double negative margin-right to hide scrollbar for popup itself
@@ -317,14 +318,16 @@ export const ChangeFiltersPopup = ({
     }
   }, [clonedSelectedFilters, backupSelectedFilters])
 
-  // When modal is open, hide the scrollbar
-  // and compensate for the scrollbar width
-  useScrollbarPadding()
   const scrollbarWidth = useScrollbarWidth()
+  const { device } = useDeviceDetect()
 
   return (
     <PopupLayout onConfirm={handleConfirmClick} onClose={handleCloseClick}>
-      <Box targetFilter={targetFilter} scrollbarWidth={scrollbarWidth}>
+      <Box
+        targetFilter={targetFilter}
+        scrollbarWidth={scrollbarWidth}
+        device={device}
+      >
         <PopupHeader
           targetFilter={targetFilter}
           category={category}
@@ -347,3 +350,84 @@ export const ChangeFiltersPopup = ({
     </PopupLayout>
   )
 }
+
+/**
+ *
+ * Put the above component in a modal
+ *
+ */
+
+const ModalBox = styled.div`
+  display: flex;
+  width: 100%;
+  height: 100%;
+  justify-content: center;
+  align-items: center;
+  flex-direction: row;
+
+  ${media.desktopLarge`
+    margin-left: -100px;
+  `}
+`
+
+export type OpenChangeFiltersPopupType = (
+  targetFilter: string
+) => (event: MouseEvent | KeyboardEvent) => void
+export type CloseChangeFiltersPopupType = () => void
+
+export type ToggleChangeFiltersPopupType = (
+  state: boolean
+) => OpenChangeFiltersPopupType | CloseChangeFiltersPopupType
+
+// Modal wrapper component
+type ChangeFiltersPopupModalType = {
+  open: boolean
+  forceModalOpen?: boolean
+  targetFilter?: string
+  handleModalClose: () => void
+  handleForceModalOpen?: (state?: boolean) => void
+  toggleChangeFiltersPopup: ToggleChangeFiltersPopupType
+}
+const ChangeFiltersPopupModal = ({
+  open,
+  forceModalOpen,
+  targetFilter,
+  handleModalClose,
+  handleForceModalOpen,
+  toggleChangeFiltersPopup
+}: ChangeFiltersPopupModalType) => {
+  useEffect(() => {
+    if (forceModalOpen) {
+      // Cast the return value of toggleChangeFiltersPopup to OpenChangeFiltersPopupType
+      // and execute it with empty string to open the modal with all
+      // the filters available.
+      ;(toggleChangeFiltersPopup(true) as OpenChangeFiltersPopupType)('')(
+        null as any
+      )
+    }
+  }, [forceModalOpen, toggleChangeFiltersPopup])
+
+  // Set forceModalOpen to false when the modal is closed
+  useEffect(() => {
+    return () => {
+      if (open || forceModalOpen) {
+        handleForceModalOpen && handleForceModalOpen(false)
+      }
+    }
+  }, [open, forceModalOpen])
+
+  return (
+    <Modal open={open} onClose={handleModalClose} disableScrollLock>
+      <ModalBox>
+        <ChangeFiltersPopup
+          targetFilter={targetFilter}
+          toggleChangeFiltersPopup={toggleChangeFiltersPopup}
+        />
+      </ModalBox>
+    </Modal>
+  )
+}
+
+export const MemoizedChangeFiltersPopupModal = React.memo(
+  ChangeFiltersPopupModal
+)

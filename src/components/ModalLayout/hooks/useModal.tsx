@@ -12,7 +12,7 @@ import {
 import {
   useCallOnBrowserNavigation,
   useMotionDecider,
-  useScrollbarPadding
+  useScrollbarLock
 } from 'hooks'
 import { debounce } from 'lodash'
 import { useCallback, useEffect, useMemo, useRef } from 'react'
@@ -109,8 +109,8 @@ export const useModal = (page: ModalRoutesType) => {
   useCallOnBrowserNavigation(onBrowserNavigation)
   // set modal open and close flag globally on mount
   useOpenModalOnMount(page)
-  // add padding to account for scrollbar when it disappears
-  useScrollbarPadding()
+  // handle scrollbar
+  useScrollbarLock(open)
 
   return {
     open,

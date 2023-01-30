@@ -1,9 +1,80 @@
 import { useDispatch, useSelector } from 'app'
 import { PartsCategoriesType } from 'constant'
-import { selectFilters, setFilterOptions } from 'features'
+import { FilterDataType, selectFilters, setFilterOptions } from 'features'
 import { useIsDirectAccess } from 'hooks'
 import { useEffect, useMemo } from 'react'
 import { useParams, useSearchParams } from 'react-router-dom'
+
+const pruneSearchParams = (
+  searchParams: URLSearchParams,
+  filterData: FilterDataType[]
+) => {
+  // This will return pruned search params object
+  // e.g. { [key in string]: string }
+  // value will be a comma separated string
+
+  // Iterate over each search params with [key, value] format
+  return Array.from(searchParams.entries()).reduce((acc, [key, value]) => {
+    if (key === 'query' || key === 'page') {
+      // If the key is query or page, skip
+      return acc
+    }
+
+    try {
+      // Decode key
+      const decodedKey = decodeURI(key)
+      // Take the filterName and check if it is in the filterData
+      const filterName = filterData.find(filter => {
+        return (
+          filter.category === decodedKey || filter.subCategory === decodedKey
+        )
+      })
+
+      // If it is not in the filterData, remove it from the search params
+      if (!filterName) {
+        return acc
+      }
+
+      // Decode values
+      const decodedValues = value.split(',').map(decodeURI)
+      // Take the decoded values and check if they are in the filterData
+      const filterOptions =
+        filterData.find(filter => {
+          return (
+            filter.category === decodedKey || filter.subCategory === decodedKey
+          )
+        })?.values || []
+
+      // Take each decodedValues and check if it is in the filterData
+      const newValues = decodedValues.filter(decodedValue => {
+        // Remove !! from the decodedValue
+        decodedValue = decodedValue.replace(/^!!/g, '')
+        const isValid =
+          filterOptions.includes(decodedValue) ||
+          filterOptions.includes('!!' + decodedValue)
+
+        // If it is not in the filterData, remove it from the search params
+        if (isValid) {
+          return true
+        } else {
+          return false
+        }
+      })
+
+      const encodedValue = newValues.map(e => e.replace(/\s/g, '%20')).join(',')
+
+      return {
+        ...acc,
+        [key]: encodedValue
+      }
+    } catch (error) {
+      // If any error while decoding key and values
+      // remove from the search params
+      searchParams.delete(key)
+      return acc
+    }
+  }, {} as { [key in string]: string })
+}
 
 // This has to be a async function because we need to wait for
 // the filter data if it is not loaded yet.
@@ -52,6 +123,7 @@ export const useChangeSearchParams = () => {
   const [searchParams, setSearchParams] = useSearchParams()
 
   const filter = useSelector(state => selectFilters(state)[category])
+
   const { query, page, filterData = [] } = filter || {}
 
   const filterNames = useMemo(
@@ -61,6 +133,20 @@ export const useChangeSearchParams = () => {
       ),
     [filterData]
   )
+
+  // Remove invalid key and values from the url
+  const prunedSearchParams = useMemo(
+    () => pruneSearchParams(searchParams, filterData),
+    [searchParams]
+  )
+
+  // If the search params are not the same as the pruned search params
+  // Set the search params to the pruned search params
+  useEffect(() => {
+    if (JSON.stringify(searchParams) !== JSON.stringify(prunedSearchParams)) {
+      setSearchParams(prunedSearchParams)
+    }
+  }, [searchParams, setSearchParams, prunedSearchParams])
 
   // Get the selected filters from the store
   const selectedFilters = filter?.selectedFilters || []
@@ -84,13 +170,24 @@ export const useChangeSearchParams = () => {
   // Watch for changes in the order of the filters name and options
   // Sample: filterB=B_AMD,A_AMD&filterA=AMD,인텔
   const filtersFromUrl = useMemo(() => {
-    const temp = Array.from(searchParams.entries())
+    // const temp = Array.from(searchParams.entries())
+    const temp = Object.entries(prunedSearchParams)
       // Filter out the search params that are not related to filters
       .filter(([key]) => {
         if (['query', 'page'].includes(key)) {
           return false
         }
         return true
+      })
+      // Remove malformed search params
+      .filter(([key, value]) => {
+        try {
+          decodeURI(key)
+          value?.split(',').forEach(e => decodeURI(e))
+          return true
+        } catch (error) {
+          return false
+        }
       })
       // Extract the filter options from the search params
       .reduce<
@@ -115,7 +212,7 @@ export const useChangeSearchParams = () => {
     // Input: filterB=B_AMD,A_AMD&filterA=AMD,인텔
     // Output: [{filterA: ['AMD', '인텔']}, {filterB: ['A_AMD', 'B_AMD']}]
     return sortFilters(category, filterNames, temp)
-  }, [searchParams, selectedFilters])
+  }, [prunedSearchParams, selectedFilters])
 
   // If the user changes the search params through url, then the browser
   // will be reloaded. (Meaning, the result from this hook will be true as well).
@@ -174,10 +271,16 @@ export const useChangeSearchParams = () => {
             }
           }, {})
 
-          // Set new search params
-          setSearchParams(newSearchParams, {
-            replace: true
-          })
+          // @Issue: This may impose problems.
+          // We are deferring the search params change because we want to make sure
+          // setting the new search param which is also same as using navigate
+          // happens only after the popup is closed.
+          setTimeout(() => {
+            // Set new search params
+            setSearchParams(newSearchParams, {
+              replace: true
+            })
+          }, 0)
         }
         // If the user is changing the search params through the url
         else {
@@ -210,6 +313,6 @@ export const useChangeSearchParams = () => {
     // Every time the filters change, update the search params
     // We need searchParams and setSearchParams because every time we set new search params,
     // the reference will be changed. So we need to update the reference as well.
-    [selectedFilters, searchParams, setSearchParams]
+    [selectedFilters, prunedSearchParams, searchParams, setSearchParams]
   )
 }

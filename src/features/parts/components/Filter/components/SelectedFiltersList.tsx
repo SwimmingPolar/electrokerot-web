@@ -3,8 +3,7 @@ import {
   SelectedFiltersType,
   ToggleChangeFiltersPopupType
 } from 'features'
-import { useScrollbarWidth } from 'hooks'
-import React, { useMemo } from 'react'
+import { useMemo } from 'react'
 import styled from 'styled-components'
 import { media } from 'styles'
 import { useAreFiltersOverflow } from '../hooks/useAreFiltersOverflow'
@@ -22,16 +21,24 @@ const SelectedFiltersListBox = styled.div`
   overflow: hidden;
   position: relative;
   /* @Issue: When transition is added, there's flickering due to box-shadow being updated */
+
+  button:focus-visible {
+    outline: none !important;
+    background-color: ${({ theme }) => theme.colors.primary200};
+  }
 `
 
-const SelectedFilterItemsBox = styled.div<{ scrollbarWidth: number }>`
+const SelectedFilterItemsBox = styled.div`
   display: flex;
   flex-direction: row;
   gap: 9px;
   overflow-x: scroll;
   overflow-y: hidden;
   overscroll-behavior: contain;
-  margin-bottom: ${({ scrollbarWidth }) => -scrollbarWidth}px;
+
+  ::-webkit-scrollbar {
+    display: none;
+  }
 
   .filter-item {
     height: 100%;
@@ -92,6 +99,7 @@ const SelectedFilterItem = ({
       className="filter-item"
       // Toggle change filters popup for specific filter name
       onClick={toggleChangeFiltersPopup(true)(filterName) as () => void}
+      tabIndex={0}
     >
       <div className="filter-name">
         <span className="filter-content">{filterName + ':  '}</span>
@@ -125,8 +133,6 @@ export const SelectedFiltersList = ({
     [filter, selectedFilters]
   )
 
-  // Get scrollbar width
-  const scrollbarWidth = useScrollbarWidth()
   // Show the shadow if the filters overflow
   const hasOverflow = useAreFiltersOverflow(selectedFilters)
   // Show the shadow if the scroll is not at the end
@@ -156,7 +162,6 @@ export const SelectedFiltersList = ({
       <>
         <StyledGradientShadow direction="left" />
         <SelectedFilterItemsBox
-          scrollbarWidth={scrollbarWidth}
           onScroll={handleScroll}
           className={SelectedFilterItemsBoxClassName}
         >

@@ -10,7 +10,7 @@ import { media } from 'styles'
 const Box = styled.div`
   display: flex;
   width: 100%;
-  padding: 0 25px 25px 25px;
+  padding: 0 20px 20px 20px;
   position: relative;
 
   ${media.desktopSmall`
@@ -81,6 +81,7 @@ export const BuildSummaryLayout = ({ children }: BuildSummaryLayoutProps) => {
     }),
     []
   )
+
   return (
     <Box>
       <Header>
@@ -91,17 +92,17 @@ export const BuildSummaryLayout = ({ children }: BuildSummaryLayoutProps) => {
         {/* Buttons */}
         <ButtonsBox>
           <Tooltip title="이름 수정" arrow>
-            <IconButton>
+            <IconButton tabIndex={0}>
               <CreateOutlinedIcon sx={styles.edit} />
             </IconButton>
           </Tooltip>
           <Tooltip title="견적 삭제" arrow>
-            <IconButton>
+            <IconButton tabIndex={0}>
               <DeleteForeverOutlinedIcon sx={styles.delete} />
             </IconButton>
           </Tooltip>
           <Tooltip title="견적 변경" arrow>
-            <IconButton>
+            <IconButton tabIndex={0}>
               <FilterNoneOutlinedIcon sx={styles.change} />
             </IconButton>
           </Tooltip>

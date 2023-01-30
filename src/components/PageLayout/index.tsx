@@ -24,7 +24,7 @@ type PageLayoutProps = {
 export const PageLayout = ({ children, ...rest }: PageLayoutProps) => {
   const MergedNavbarProps = Object.assign({}, navbarProps, rest)
   return (
-    <Main className="scrollbar-padding">
+    <Main>
       <Navbar {...MergedNavbarProps} />
       <Section>{children}</Section>
     </Main>
