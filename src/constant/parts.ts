@@ -209,3 +209,11 @@ export const ChangeFiltersPopupHeight = (
     return ChangeFilterPopupDimension.withoutTargetFilter[device].height
   }
 }
+
+export const CategoryAndSearchHeight = {
+  mobile: 54,
+  foldable: 54,
+  tablet: 64,
+  desktopSmall: 72,
+  desktopLarge: 72
+}

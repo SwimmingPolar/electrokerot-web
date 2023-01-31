@@ -1,6 +1,11 @@
 import { useDispatch, useSelector } from 'app'
 import { PartsCategoriesType } from 'constant'
-import { FilterDataType, selectFilters, setFilterOptions } from 'features'
+import {
+  FilterDataType,
+  selectFilters,
+  setFilterOptions,
+  setQuery
+} from 'features'
 import { useIsDirectAccess } from 'hooks'
 import { useEffect, useMemo } from 'react'
 import { useParams, useSearchParams } from 'react-router-dom'
@@ -15,8 +20,8 @@ const pruneSearchParams = (
 
   // Iterate over each search params with [key, value] format
   return Array.from(searchParams.entries()).reduce((acc, [key, value]) => {
+    // In case of known keys, handle them separately
     if (key === 'query' || key === 'page') {
-      // If the key is query or page, skip
       return acc
     }
 
@@ -134,20 +139,6 @@ export const useChangeSearchParams = () => {
     [filterData]
   )
 
-  // Remove invalid key and values from the url
-  const prunedSearchParams = useMemo(
-    () => pruneSearchParams(searchParams, filterData),
-    [searchParams]
-  )
-
-  // If the search params are not the same as the pruned search params
-  // Set the search params to the pruned search params
-  useEffect(() => {
-    if (JSON.stringify(searchParams) !== JSON.stringify(prunedSearchParams)) {
-      setSearchParams(prunedSearchParams)
-    }
-  }, [searchParams, setSearchParams, prunedSearchParams])
-
   // Get the selected filters from the store
   const selectedFilters = filter?.selectedFilters || []
   // Reformat it to the same format as the filters from the url
@@ -171,6 +162,7 @@ export const useChangeSearchParams = () => {
   // Sample: filterB=B_AMD,A_AMD&filterA=AMD,인텔
   const filtersFromUrl = useMemo(() => {
     // const temp = Array.from(searchParams.entries())
+    const prunedSearchParams = pruneSearchParams(searchParams, filterData)
     const temp = Object.entries(prunedSearchParams)
       // Filter out the search params that are not related to filters
       .filter(([key]) => {
@@ -212,7 +204,7 @@ export const useChangeSearchParams = () => {
     // Input: filterB=B_AMD,A_AMD&filterA=AMD,인텔
     // Output: [{filterA: ['AMD', '인텔']}, {filterB: ['A_AMD', 'B_AMD']}]
     return sortFilters(category, filterNames, temp)
-  }, [prunedSearchParams, selectedFilters])
+  }, [selectedFilters])
 
   // If the user changes the search params through url, then the browser
   // will be reloaded. (Meaning, the result from this hook will be true as well).
@@ -222,97 +214,132 @@ export const useChangeSearchParams = () => {
 
   useEffect(
     () => {
-      async function init() {
-        const isEqual =
-          // Since they are both trimmed and sorted, we can compare them by stringifying them.
-          JSON.stringify(filtersFromUrl) === JSON.stringify(filtersFromStore) &&
-          page === (Number(searchParams.get('page')) || undefined) &&
-          query === (searchParams.get('query') || undefined)
+      console.log('useChangeSearchParams')
+      const isEqual =
+        //   // Since they are both trimmed and sorted, we can compare them by stringifying them.
+        JSON.stringify(filtersFromUrl) === JSON.stringify(filtersFromStore) &&
+        page === (searchParams.get('page') || undefined) &&
+        query === (searchParams.get('query') || undefined)
 
-        // @Important:
-        // Compare parsed filters from url and the selected filters in the redux store.
-        // Only attempt to change the search params if they are not same.
-        // Or else, it will cause infinite loop
+      // @Important:
+      // Compare parsed filters from url and the selected filters in the redux store.
+      // Only attempt to change the search params if they are not same.
+      // Or else, it will cause infinite loop
 
-        // Rendering scenario:
-        // with this condition check
-        // 1st render: Filter state changes
-        // 2nd render: Search params changes
-        // 3rd render: will stop here because the search params are the same as the filter state
+      // Rendering scenario:
+      // with this condition check
+      // 1st render: Filter state changes
+      // 2nd render: Search params changes
+      // 3rd render: will stop here because the search params are the same as the filter state
 
-        // without this condition check
-        // 1st render: Filter state changes
-        // 2nd render: Search params changes
-        // 3rd render: Search params changes again because it's the new reference
-        // 4th render: Search params changes again because it's the new reference
-        // ...
-        if (isEqual) {
-          return
+      // without this condition check
+      // 1st render: Filter state changes
+      // 2nd render: Search params changes
+      // 3rd render: Search params changes again because it's the new reference
+      // 4th render: Search params changes again because it's the new reference
+      // ...
+      // console.group()
+      // console.log('isEqual', isEqual)
+      // console.log(
+      //   'filters',
+      //   JSON.stringify(filtersFromUrl) === JSON.stringify(filtersFromStore)
+      // )
+      // console.log('page', page === (searchParams.get('page') || undefined))
+      // console.log('query', query === (searchParams.get('query') || undefined))
+      // console.groupEnd()
+      if (isEqual) {
+        return
+      }
+
+      // If we are the one who's changing the search params by dispatching the actions
+      if (!isDirectAccess) {
+        const newSearchParams = filtersFromStore.reduce<{
+          [key: string]: string
+        }>((acc, filter) => {
+          const key = Object.keys(filter)[0]
+
+          // Replace the spaces with %20
+          const encodedKey = Object.keys(filter)[0].replace(/\s/g, '%20')
+          // Replace the spaces with %20
+          // and join the options with comma
+          const value = filter[key].map(e => e.replace(/\s/g, '%20')).join(',')
+          return {
+            ...acc,
+            // Use encoded key and value
+            [encodedKey]: value
+          }
+        }, {})
+
+        // Set the query and page in the search params
+        if (query) {
+          newSearchParams.query = query
+        } else if (page) {
+          newSearchParams.page = page.toString()
         }
 
-        // If we are the one who's changing the search params by dispatching the actions
-        if (!isDirectAccess) {
-          const newSearchParams = filtersFromStore.reduce<{
-            [key: string]: string
-          }>((acc, filter) => {
-            const key = Object.keys(filter)[0]
-
-            // Replace the spaces with %20
-            const encodedKey = Object.keys(filter)[0].replace(/\s/g, '%20')
-            // Replace the spaces with %20
-            // and join the options with comma
-            const value = filter[key]
-              .map(e => e.replace(/\s/g, '%20'))
-              .join(',')
-            return {
-              ...acc,
-              // Use encoded key and value
-              [encodedKey]: value
-            }
-          }, {})
-
-          // @Issue: This may impose problems.
-          // We are deferring the search params change because we want to make sure
-          // setting the new search param which is also same as using navigate
-          // happens only after the popup is closed.
-          setTimeout(() => {
-            // Set new search params
-            setSearchParams(newSearchParams, {
-              replace: true
-            })
-          }, 0)
-        }
-        // If the user is changing the search params through the url
-        else {
-          // Reconstruct the selected filters from the search params
-          const newSelectedFilters = filtersFromUrl.reduce<
+        // @Issue: This may impose problems.
+        // We are deferring the search params change because we want to make sure
+        // setting the new search param which is also same as using navigate
+        // happens only after the popup is closed.
+        setTimeout(() => {
+          // Set new search params
+          setSearchParams(newSearchParams, {
+            replace: true
+          })
+        }, 0)
+      }
+      // If the user is changing the search params through the url
+      else {
+        // Reconstruct the selected filters from the search params
+        const newSelectedFilters = filtersFromUrl.reduce<
+          {
+            filterName: string
+            filterOptions: string[]
+          }[]
+        >((acc, filter) => {
+          const key = Object.keys(filter)[0]
+          const values = filter[key]
+          return [
+            ...acc,
             {
-              filterName: string
-              filterOptions: string[]
-            }[]
-          >((acc, filter) => {
-            const key = Object.keys(filter)[0]
-            const values = filter[key]
-            return [
-              ...acc,
-              {
-                filterName: key,
-                filterOptions: values
-              }
-            ]
-          }, [])
+              filterName: key,
+              filterOptions: values
+            }
+          ]
+        }, [])
+
+        // If there's new query, then set it.
+        // New query means, the value in the store is different
+        // from the value in the search params because the user
+        // might have changed it. And we respect the user's input.
+        const queryParam = searchParams.get('query')
+        const newQuery = queryParam && queryParam.length !== 0 ? queryParam : ''
+
+        // @Todo: description
+        setTimeout(() => {
+          dispatch(
+            setQuery({
+              category,
+              query: newQuery
+            })
+          )
 
           dispatch(
             setFilterOptions({ category, filterOptions: newSelectedFilters })
           )
-        }
+        })
       }
-
-      init()
     },
     // Every time the filters change, update the search params
     // We need searchParams and setSearchParams because every time we set new search params,
     // the reference will be changed. So we need to update the reference as well.
-    [selectedFilters, prunedSearchParams, searchParams, setSearchParams]
+    [
+      query,
+      page,
+      selectedFilters
+      // prunedSearchParams
+      // searchParams,
+      // setSearchParams
+    ]
   )
 }

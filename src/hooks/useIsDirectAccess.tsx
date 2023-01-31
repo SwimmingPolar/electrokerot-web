@@ -25,8 +25,13 @@ export const useIsDirectAccess = () => {
     // @Issue: This is a hack to make sure that the state is updated
     // 'after' the initial redux-persist rehydration. Without redux-persist,
     // we don't need this because the state update occurs as it should and as it looks.
-    // But if we use redux-persist, the state update occurs before the
+    // But if we use redux-persist, the 'isDirect' state update occurs before the
     // rehydration is done.
+
+    // @Issue2: During initial rendering, all the function calls pushed to the call stack
+    // are executed before the rendering is done. Meaning, the below code
+    // will not be executed until the call stack is emptied.
+    // It will hang until it gets out of the event loop.
 
     setTimeout(() => {
       setAccessType()

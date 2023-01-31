@@ -286,6 +286,7 @@ const filterSlice = createSlice({
       if (state[category] === undefined) {
         state[category] = {} as FilterState[typeof category]
       }
+      state[category].query = query
     },
     setPage: (state, { payload: { category, page } }: SetPageType) => {
       //
@@ -299,7 +300,8 @@ export const {
   setBackupFilterOptionValues,
   toggleFilterOptions,
   toggleFilter,
-  toggleSubFilter
+  toggleSubFilter,
+  setQuery
 } = filterSlice.actions
 
 const selectFilters = ({ filter }: { filter: FilterState }) =>

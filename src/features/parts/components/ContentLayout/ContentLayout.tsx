@@ -22,21 +22,23 @@ export const ContentLayout = styled.div`
     ${media.device('mobile', 'foldable')`
       border-radius: 0;
     `}
-    ${media.desktop`
-      margin-top: ${Gap.desktop + 'px'};
-    `}
     ${media.tablet`
       margin-top: ${Gap.tablet + 'px'};
     `}
+    ${media.desktop`
+      margin-top: ${Gap.desktop + 'px'};
+    `}
   }
   :last-of-type {
-    border-bottom-left-radius: 7px;
-    border-bottom-right-radius: 7px;
-    ${media.desktop`
-      margin-bottom: ${Gap.desktop + 'px'};
-    `}
     ${media.tablet`
       margin-bottom: ${Gap.tablet + 'px'};
+      border-bottom-left-radius: 7px;
+      border-bottom-right-radius: 7px;
+    `}
+    ${media.desktop`
+      margin-bottom: ${Gap.desktop + 'px'};
+      border-bottom-left-radius: 7px;
+      border-bottom-right-radius: 7px;
     `}
   }
 

@@ -15,7 +15,7 @@ import {
   useChangeSearchParams
 } from 'features'
 import { useDeviceDetect } from 'hooks'
-import { FC, useCallback, useEffect, useMemo, useState } from 'react'
+import { FC, useCallback, useMemo, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import styled from 'styled-components'
 import { ElementDepth, media } from 'styles'

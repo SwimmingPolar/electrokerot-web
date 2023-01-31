@@ -1,26 +1,44 @@
 import LayersOutlinedIcon from '@mui/icons-material/LayersOutlined'
 import SearchIcon from '@mui/icons-material/Search'
-import { PartsCategoriesKr, PartsCategoriesType } from 'constant'
+import { IconButton } from '@mui/material'
+import { useDispatch, useSelector } from 'app'
+import {
+  CategoryAndSearchHeight,
+  PartsCategoriesKr,
+  PartsCategoriesType
+} from 'constant'
+import { InputLayover, selectFilters, setQuery } from 'features'
 import { useDeviceDetect } from 'hooks'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import styled from 'styled-components'
-import { media } from 'styles'
+import { ElementDepth, media } from 'styles'
 import { ContentLayout as Content } from '../ContentLayout/ContentLayout'
 
 const Box = styled(Content)`
   display: flex;
   flex-direction: row;
   font-family: ${({ theme }) => theme.fonts.primary};
-  height: 72px;
+  height: ${CategoryAndSearchHeight.desktopLarge + 'px'};
   color: ${({ theme }) => theme.colors.primary};
   justify-content: space-between;
   align-items: center;
+  gap: 15px;
+
+  h1 {
+    width: fit-content;
+  }
+
+  ${media.mobile`
+    position: relative;
+    z-index: ${ElementDepth.parts.navbar - 1} !important;
+  `}
 
   ${media.device('mobile', 'foldable')`
-    height: 54px;
+    height: ${CategoryAndSearchHeight.mobile + 'px'};
   `}
   ${media.tablet`
-    height: 64px;
+    height: ${CategoryAndSearchHeight.tablet + 'px'};
   `}
 `
 
@@ -49,6 +67,28 @@ const Category = styled.div`
   `}
 `
 
+const IconBox = styled.div`
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  align-items: center;
+  margin-right: 15px;
+  gap: 5px;
+
+  button {
+    cursor: pointer;
+  }
+
+  .icon {
+    font-size: 32px;
+  }
+
+  ${media.device('mobile', 'foldable')`
+    margin-right: 5px;
+    flex: 1;
+  `}
+`
+
 const Search = styled.div`
   height: 32px;
   width: 300px;
@@ -57,6 +97,7 @@ const Search = styled.div`
   overflow: hidden;
   margin-right: 15px;
   position: relative;
+  flex-shrink: 1;
 
   :hover {
     transition: border 0.2s ease-in-out;
@@ -78,6 +119,10 @@ const Search = styled.div`
     }
   }
 
+  ${media.device('mobile', 'foldable')`
+    width: 100%;
+    margin-right: 5px;
+  `}
   ${media.tablet`
     height: 42px;
     width: 400px;
@@ -140,22 +185,7 @@ const SearchButton = styled.button`
   cursor: pointer;
 
   :focus-visible {
-    background-color: ${({ theme }) => theme.colors.primary300};
-  }
-`
-
-const IconBox = styled.div`
-  display: flex;
-  flex-direction: row;
-  margin-right: 15px;
-  gap: 5px;
-
-  button {
-    cursor: pointer;
-  }
-
-  .icon {
-    font-size: 32px;
+    background-color: ${({ theme }) => theme.colors.primary200};
   }
 `
 
@@ -167,41 +197,133 @@ export const CategoryAndSearch = ({
   handleForceModalOpen,
   ...rest
 }: CategoryAndSearchType) => {
+  const inputRef = useRef<HTMLInputElement>(null)
+  const { isMobile } = useDeviceDetect()
   const { category } = useParams() as { category: PartsCategoriesType }
-  const { isMobileFriendly } = useDeviceDetect()
+  const dispatch = useDispatch()
+
+  // Handle input change
+  const query =
+    useSelector(state => selectFilters(state)?.[category]?.query) || ''
+  const [value, setValue] = useState(query)
+  // If the query changes, update the value
+  useEffect(() => {
+    setValue(query)
+  }, [category, query])
+  const handleChange = useCallback(
+    (event: React.FormEvent<HTMLInputElement>) => {
+      setValue(event.currentTarget.value)
+    },
+    []
+  )
+
+  // Handle modal open
+  const handleModalOpen = useCallback(() => {
+    handleForceModalOpen && handleForceModalOpen()
+  }, [handleForceModalOpen])
+
+  // Handle input ux
+  // Enter: will set the query
+  // Escape: will cancel the query and restore the backup
+  const [showInput, setShowInput] = useState(false)
+  // Handle show input button click
+  const handleShowInput = useCallback(() => {
+    setShowInput(prev => !prev)
+  }, [showInput])
+  // Focus handler
+  const handleFocus = useCallback(() => {
+    // Backup query on focus
+    setBackupQuery(value)
+    // Show input on focus
+    setShowInput(true)
+  }, [value])
+  // Blur handler
+  const handleBlur = useCallback(() => {
+    setShowInput(false)
+  }, [value])
+  const [backupQuery, setBackupQuery] = useState(value)
+  const handleKeyDown = useCallback(
+    (event: React.KeyboardEvent) => {
+      let query = ''
+      if (event.key === 'Escape') {
+        query = backupQuery
+        ;(event.currentTarget as HTMLInputElement).blur()
+      } else if (event.key === 'Enter') {
+        query = value
+        setBackupQuery(value)
+      }
+      // Set the query when the user presses enter or escape
+      if (event.key === 'Escape' || event.key === 'Enter') {
+        dispatch(
+          setQuery({
+            category,
+            query
+          })
+        )
+      }
+    },
+    [category, value, backupQuery]
+  )
+
+  // Handle search button click
+  const handleSearch = useCallback(() => {
+    dispatch(
+      setQuery({
+        category,
+        query: value
+      })
+    )
+  }, [value])
+
+  // Handle show input layover
+  const handleShow = useCallback(
+    (state: boolean) => {
+      setShowInput(state)
+    },
+    [setShowInput]
+  )
 
   return (
     <Box {...rest}>
       <Category>
         <h1>{PartsCategoriesKr[category].toUpperCase()}</h1>
       </Category>
-      {!isMobileFriendly ? (
-        <Search>
-          <SearchInput
-            type="text"
-            placeholder="검색"
-            tabIndex={0}
-            spellCheck={false}
-          />
-          <SearchButtonBox>
-            <SearchButton tabIndex={0}>
-              <SearchIcon />
-            </SearchButton>
-          </SearchButtonBox>
-        </Search>
-      ) : (
-        <IconBox>
-          <button tabIndex={0}>
-            <SearchIcon className="icon search-icon" />
-          </button>
-          <button tabIndex={0}>
-            <LayersOutlinedIcon
-              className="icon filter-icon"
-              onClick={() => handleForceModalOpen()}
+      <IconBox>
+        {/* On mobile, show the search layover */}
+        {isMobile && showInput ? (
+          <InputLayover handleShow={handleShow} />
+        ) : null}
+        {isMobile ? (
+          <>
+            <IconButton tabIndex={0} onClick={handleShowInput}>
+              <SearchIcon className="icon search-icon" />
+            </IconButton>
+          </>
+        ) : (
+          <Search>
+            <SearchInput
+              type="text"
+              placeholder="검색"
+              tabIndex={0}
+              spellCheck={false}
+              value={value}
+              onChange={handleChange}
+              onFocus={handleFocus}
+              onBlur={handleBlur}
+              onKeyDown={handleKeyDown}
+              ref={inputRef}
             />
-          </button>
-        </IconBox>
-      )}
+            <SearchButtonBox>
+              <SearchButton tabIndex={0} onClick={handleSearch}>
+                <SearchIcon />
+              </SearchButton>
+            </SearchButtonBox>
+          </Search>
+        )}
+        <IconButton tabIndex={0} onClick={handleModalOpen}>
+          <LayersOutlinedIcon className="icon filter-icon" />
+        </IconButton>
+      </IconBox>
     </Box>
   )
 }

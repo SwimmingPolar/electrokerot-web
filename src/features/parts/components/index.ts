@@ -1,4 +1,4 @@
-export * from './CategoryAndSearch/CategoryAndSearch'
+export * from './CategoryAndSearch'
 export * from './CategoryNavigationSidebar/CategoryNavigationSidebar'
 export * from './ChangeFiltersPopup'
 export * from './ContentLayout/ContentLayout'

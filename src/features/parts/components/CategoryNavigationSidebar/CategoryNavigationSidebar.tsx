@@ -175,7 +175,7 @@ const LinkBox = styled.div`
     height: 96px;
 
     :has(a.active) {
-      color: ${({ theme }) => theme.colors.blue300};
+      color: ${({ theme }) => theme.colors.primary};
     }
 
     a {
@@ -245,7 +245,7 @@ const MenuIcon = styled.div<{ url: string }>`
     width: 48px;
     height: 48px;
     &.active {
-      background-color: ${({ theme }) => theme.colors.blue300};
+      background-color: ${({ theme }) => theme.colors.primary};
     }
   `}
 

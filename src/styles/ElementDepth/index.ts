@@ -1,9 +1,10 @@
 export const ElementDepth = {
   parts: {
-    sidebar: 10000,
-    navbar: 9000,
+    navbar: 10000,
+    sidebar: 9000,
     priceSummary: 8000,
     buildSummary: 7000,
     content: 6000
-  }
+  },
+  modal: 99999
 }
