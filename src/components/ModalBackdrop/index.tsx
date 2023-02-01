@@ -25,9 +25,8 @@ const StyledModalBackdrop = styled(motion.div)`
   top: 0;
   left: 0;
   background-color: rgba(0, 0, 0, 0.45);
-  /* mui modal's z-index value is 1300
-  maintain z-index of backdrop just below that value */
   z-index: 99999;
+  pointer-events: none;
 
   ${media.device('mobile', 'foldable')`
     display: none;

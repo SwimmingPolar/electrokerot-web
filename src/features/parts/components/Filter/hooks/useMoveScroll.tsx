@@ -2,9 +2,6 @@ import { useCallback, useEffect } from 'react'
 
 let isMouseDown = false
 
-const MoveLeft = -1
-const MoveRight = 1
-
 const registerEvents = (events: any[]) =>
   events.forEach(event => {
     window.addEventListener(event.type, event.handler)

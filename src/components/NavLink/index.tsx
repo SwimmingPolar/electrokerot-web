@@ -96,11 +96,7 @@ export const Link = (props: NavLinkProps) => {
     disableSamePathNavigation(from, to) ||
     mergeEventListeners(removeFocusRingAfterClick, props?.onClick)
 
-  const className = mergeClassNames(props.className, ['route-link'])
-
-  return (
-    <NavLink {...props} className={className} onClick={onClick} tabIndex={0} />
-  )
+  return <NavLink {...props} onClick={onClick} tabIndex={0} />
 }
 
 /*
@@ -170,12 +166,9 @@ export const ModalLink = ({ handleExitMotion, ...rest }: ModalLinkProps) => {
       rest?.onClick
     )
 
-  const className = mergeClassNames(rest?.className, ['route-link'])
-
   return (
     <NavLink
       {...rest}
-      className={className}
       tabIndex={0}
       onClick={onClick}
       state={{

@@ -6,7 +6,7 @@ import {
 import { useEmptyRoute, useScrollbarLock } from 'hooks'
 import React, { KeyboardEvent, MouseEvent, useCallback, useState } from 'react'
 import styled from 'styled-components'
-import { media } from 'styles'
+import { ElementDepth, media } from 'styles'
 import { ContentLayout as Content } from '../ContentLayout/ContentLayout'
 import { MemoizedLowerBox as LowerBox } from './components/LowerBox'
 import { SelectedFilterItemsBoxClassName } from './components/SelectedFiltersList'
@@ -16,10 +16,8 @@ import { useLoadFilterJson } from './hooks'
 const Box = styled(Content)`
   padding: 20px 20px 9px 20px;
   gap: 20px;
+  z-index: ${ElementDepth.parts.filter} !important;
 
-  /* On mobile, second component which is Filter has drop-shadow
-     if all the card components have the same z-index, this shadow will be hidden
-     thus, increase the z-index of Filter component */
   ${media.device('mobile', 'foldable')`
     padding: 0 10px 10px 10px;
   `}

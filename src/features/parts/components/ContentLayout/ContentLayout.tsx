@@ -1,6 +1,6 @@
 import { Gap } from 'constant'
 import styled from 'styled-components'
-import { ElementDepth, media } from 'styles'
+import { media } from 'styles'
 
 export const ContentLayout = styled.div`
   border: 1px solid ${({ theme }) => theme.colors.primary100};
@@ -12,6 +12,7 @@ export const ContentLayout = styled.div`
   ${media.device('mobile', 'foldable')`
     border: none;
     border-radius: 0;
+    box-shadow: none;
   `}
 
   :first-of-type {
@@ -46,7 +47,6 @@ export const ContentLayout = styled.div`
     ${media.device('mobile', 'foldable')`
       border: none;
       box-shadow: rgba(0, 0, 0, 0.15) 0px 3px 3px 0px;
-      z-index: ${ElementDepth.parts.content + 1};
     `}
   }
 

@@ -23,7 +23,8 @@ const Box = styled(Content)`
   color: ${({ theme }) => theme.colors.primary};
   justify-content: space-between;
   align-items: center;
-  gap: 15px;
+  gap: 30px;
+  z-index: ${ElementDepth.parts.categoryAndSearch} !important;
 
   h1 {
     width: fit-content;
@@ -90,6 +91,8 @@ const IconBox = styled.div`
 `
 
 const Search = styled.div`
+  display: flex;
+  flex-direction: row;
   height: 32px;
   width: 300px;
   border: 1px solid ${({ theme }) => theme.colors.primary200};
@@ -134,9 +137,9 @@ const Search = styled.div`
   `}
 `
 const SearchInput = styled.input`
-  width: 100%;
+  flex: 1;
   height: 100%;
-  padding-left: 15px;
+  padding: 0 15px;
   color: ${({ theme }) => theme.colors.primary};
   background-color: ${({ theme }) => theme.colors.gray100};
   font-family: ${({ theme }) => theme.fonts.secondary};
@@ -164,9 +167,6 @@ const SearchButtonBox = styled.div`
   width: 45px;
   height: 32px;
   margin: -1px -1px;
-  right: 0;
-  bottom: 0;
-  position: absolute;
   border: 1px solid ${({ theme }) => theme.colors.primary200};
   background-color: ${({ theme }) => theme.colors.gray100};
 

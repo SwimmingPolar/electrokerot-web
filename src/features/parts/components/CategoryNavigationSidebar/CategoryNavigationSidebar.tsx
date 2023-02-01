@@ -17,7 +17,7 @@ const CategoriesWrapper = styled.div`
   background-color: ${({ theme }) => theme.colors.white};
   box-shadow: 0px 0px 4px 1px rgba(0, 0, 0, 0.25);
   /* Default depth to build summary as it will replace build summary on mobile view */
-  z-index: ${ElementDepth.parts.buildSummary};
+  z-index: ${ElementDepth.parts.sidebar};
   overflow: hidden;
   height: 100%;
   position: fixed;
@@ -63,6 +63,10 @@ const CategoriesWrapper = styled.div`
   ${media.desktop`
     order: 1 !important;
   `}
+
+  ${media.mobileExtraSmall`
+    display: none;
+  `}
 `
 
 const Padding = styled.div`
@@ -80,6 +84,9 @@ const Padding = styled.div`
   `}
   ${media.desktop`
     order: 0 !important;
+  `}
+  ${media.mobileExtraSmall`
+    display: none;
   `}
 `
 

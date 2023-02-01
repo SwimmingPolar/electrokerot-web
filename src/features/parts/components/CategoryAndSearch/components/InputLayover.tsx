@@ -3,18 +3,19 @@ import CloseOutlinedIcon from '@mui/icons-material/CloseOutlined'
 import SearchOutlinedIcon from '@mui/icons-material/SearchOutlined'
 import { IconButton, Link } from '@mui/material'
 import { useDispatch, useSelector } from 'app'
+import classNames from 'classnames'
 import {
   CategoryAndSearchHeight,
   NavbarHeight,
   PartsCategoriesType
 } from 'constant'
 import { selectFilters, setQuery } from 'features'
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import styled from 'styled-components'
 import { ElementDepth } from 'styles'
 
-const DropShadowZIndex = ElementDepth.parts.navbar - 10
+const DropShadowZIndex = ElementDepth.parts.navbar - 1
 const ContentZIndex = DropShadowZIndex + 1
 
 const Box = styled.div`
@@ -81,6 +82,10 @@ const SearchResultBox = styled.div`
         width: fit-content;
       }
     }
+
+    .item.active {
+      background-color: ${({ theme }) => theme.colors.gray200};
+    }
   }
 `
 
@@ -97,7 +102,9 @@ type InputLayoverProps = {
 }
 
 export const InputLayover = ({ handleShow }: InputLayoverProps) => {
+  const dispatch = useDispatch()
   const inputRef = useRef<HTMLInputElement>(null)
+  const [keyboardSelection, setKeyboardSelection] = useState(-1)
   const data = [
     'Lorem, ipsum dolor.',
     'A, quod optio.',
@@ -118,7 +125,6 @@ export const InputLayover = ({ handleShow }: InputLayoverProps) => {
     []
   )
 
-  const dispatch = useDispatch()
   const setNewQuery = useCallback(() => {
     dispatch(
       setQuery({
@@ -138,9 +144,38 @@ export const InputLayover = ({ handleShow }: InputLayoverProps) => {
       } else if (event.key === 'Enter') {
         setNewQuery()
         handleShow(false)
+      } else if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
+        // Prevent the default action just in case
+        event.preventDefault()
+
+        // Get the current selection
+        const currentSelection = keyboardSelection
+        const direction = event.key === 'ArrowDown' ? 1 : -1
+        const newSelection =
+          // If the current selection is the first/last item,
+          // then select the first/last item
+          currentSelection + direction < 0 ||
+          currentSelection + direction >= data.length
+            ? // When the selection range is out of bound
+              // Which means the current selection is the first/last item
+              // Select the first/last item base on the direction
+              direction === 1
+              ? // Select the first item if the direction is down
+                0
+              : // Select the last item if the direction is up
+                data.length - 1
+            : // When the selection range is in bound
+              // just calculate the new selection
+              currentSelection + direction
+
+        // Set new selection
+        setKeyboardSelection(newSelection)
+        // Set the value of the input
+        // to the value of the selected item
+        setValue(data[newSelection])
       }
     },
-    [setNewQuery]
+    [setNewQuery, keyboardSelection, data.length]
   )
 
   const handleClearSearch = useCallback(() => {
@@ -177,15 +212,16 @@ export const InputLayover = ({ handleShow }: InputLayoverProps) => {
   }, [])
 
   return (
-    <Box>
+    // TabIndex -1 will prevent the focus from leaving
+    // the current box when navigating with the keyboard
+    <Box tabIndex={-1}>
       <Content>
         <SearchBox>
-          <IconButton className="back">
+          <IconButton className="back" onClick={handleCancel}>
             <ArrowBackOutlinedIcon
               sx={{
                 fontSize: 28
               }}
-              onClick={handleCancel}
             />
           </IconButton>
           <div className="input">
@@ -195,6 +231,7 @@ export const InputLayover = ({ handleShow }: InputLayoverProps) => {
               value={value}
               onChange={handleChange}
               onKeyDown={handleKeyDown}
+              tabIndex={0}
             />
             <div className="icon-box">
               <IconButton onClick={handleClearSearch}>
@@ -208,7 +245,13 @@ export const InputLayover = ({ handleShow }: InputLayoverProps) => {
         </SearchBox>
         <SearchResultBox className="result">
           {data.map((item, index) => (
-            <div key={index} className="item">
+            <div
+              key={index}
+              className={classNames(
+                'item',
+                index === keyboardSelection ? 'active' : null
+              )}
+            >
               <Link onClick={handleItemClick}>
                 <span data-value={item}>{item}</span>
               </Link>

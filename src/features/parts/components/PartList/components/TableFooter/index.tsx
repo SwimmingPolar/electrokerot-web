@@ -1,4 +1,5 @@
 import { useDeviceDetect } from 'hooks'
+import { useMemo } from 'react'
 import styled from 'styled-components'
 import { media } from 'styles'
 
@@ -13,6 +14,9 @@ const Box = styled.footer`
 
   ${media.mobile`
     padding: 0 30px;  
+  `}
+  ${media.mobileSmall`
+    padding: 0 15px;
   `}
 
   button:focus-visible {
@@ -90,7 +94,10 @@ const Button = styled.button`
 
 export const TableFooter = () => {
   const { isMobileFriendly } = useDeviceDetect()
-  const pages = [1, 2, 3, 4, 5]
+  const pages = useMemo(
+    () => (isMobileFriendly ? [1, 2, 3, 4] : [1, 2, 3, 4, 5]),
+    [isMobileFriendly]
+  )
 
   // Do not render prev/next buttons on mobile device
   return (

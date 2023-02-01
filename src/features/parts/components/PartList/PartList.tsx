@@ -9,7 +9,7 @@ import { useDeviceDetect } from 'hooks'
 import React, { FC, useMemo } from 'react'
 import { useParams } from 'react-router-dom'
 import styled from 'styled-components'
-import { media } from 'styles'
+import { ElementDepth, media } from 'styles'
 import { parts } from '../../../../../cypress/fixtures'
 import { ContentLayout as Content } from '../ContentLayout/ContentLayout'
 import {
@@ -18,7 +18,9 @@ import {
   TableHeader
 } from './components'
 
-const Box = styled(Content)``
+const Box = styled(Content)`
+  z-index: ${ElementDepth.parts.partList} !important;
+`
 
 const Table = styled.div`
   overflow: hidden;

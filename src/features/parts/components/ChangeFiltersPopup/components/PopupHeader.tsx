@@ -12,6 +12,7 @@ import {
 import { DeviceType, useDeviceDetect } from 'hooks'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import styled from 'styled-components'
+import { media } from 'styles'
 
 const Box = styled.div`
   display: flex;
@@ -82,6 +83,10 @@ const RestoreButtonBox = styled.div`
       }
     }
   }
+
+  ${media.mobileExtraSmall`
+    display: none;
+  `}
 `
 
 type PopupHeaderType = {
@@ -133,7 +138,14 @@ export const PopupHeader = ({
     []
   )
 
-  const { device } = useDeviceDetect()
+  const { device, isMobileFriendly } = useDeviceDetect()
+
+  const selectStyle = useMemo(
+    () => ({
+      width: isMobileFriendly ? 125 : 150
+    }),
+    [isMobileFriendly]
+  )
 
   return (
     <Box>
@@ -150,6 +162,7 @@ export const PopupHeader = ({
             onOpen={onOpen}
             onClose={onClose}
             tabIndex={0}
+            style={selectStyle}
           >
             {PartsCategories.map((category, index) => (
               <MenuItem key={index} value={category} sx={styles.menuItem}>

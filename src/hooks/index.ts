@@ -26,7 +26,7 @@ export * from './useDeferredLocation'
  * list of hooks to apply globally
  */
 // allows the user to navigate through elements by arrow key
-import { useArrowMoveFocus } from './useArrowMoveFocus'
+import { useMoveFocusByKeyboard } from './useMoveFocusByKeyboard'
 // determines if the user is accessing the modal page directly via url
 import { useIsDirectAccess } from './useIsDirectAccess'
-export const globalHooks = [useArrowMoveFocus, useIsDirectAccess]
+export const globalHooks = [useMoveFocusByKeyboard, useIsDirectAccess]

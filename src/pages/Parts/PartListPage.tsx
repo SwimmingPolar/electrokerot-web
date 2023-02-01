@@ -20,7 +20,7 @@ import { useParams } from 'react-router-dom'
 import styled from 'styled-components'
 import { ElementDepth, media } from 'styles'
 
-const NavbarBox = styled.div`
+const Box = styled.div`
   display: flex;
   flex-direction: row;
   flex-grow: 1;
@@ -103,7 +103,9 @@ export const PartListPage: FC = () => {
   const hasSelectedFilters = useSelector(
     state =>
       selectFilters(state)?.[category]?.selectedFilters &&
-      selectFilters(state)?.[category]?.selectedFilters.length > 0
+      selectFilters(state)?.[category]?.selectedFilters.some(
+        filter => filter.filterOptions.length > 0
+      )
   )
   const hideFilter = useMemo(
     () => isMobileFriendly && !hasSelectedFilters,
@@ -117,7 +119,7 @@ export const PartListPage: FC = () => {
   const render = useMemo(
     () => (
       // NavbarBox is needed to make the sidebar sticky
-      <NavbarBox>
+      <Box>
         <PageLayout sidebarWidth={sidebarWidth}>
           {/* PageBox is actual box component */}
           <PageBox>
@@ -142,7 +144,7 @@ export const PartListPage: FC = () => {
           </PageBox>
         </PageLayout>
         {isDesktop && <CategoryNavigationSidebar />}
-      </NavbarBox>
+      </Box>
     ),
     [sidebarWidth, handleForceModalOpen, forceModalOpen, isDesktop, hideFilter]
   )

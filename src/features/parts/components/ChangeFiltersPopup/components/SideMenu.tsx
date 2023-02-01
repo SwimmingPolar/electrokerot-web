@@ -4,6 +4,7 @@ import { SelectBoxHeight, SelectedFiltersType } from 'features'
 import { useDeviceDetect } from 'hooks'
 import { MouseEvent, useCallback, useMemo } from 'react'
 import styled from 'styled-components'
+import { media } from 'styles'
 
 const Window = styled.div`
   display: flex;
@@ -20,6 +21,10 @@ const Window = styled.div`
   button[tabIndex='0']:focus-visible {
     background-color: ${({ theme }) => theme.colors.gray400};
   }
+
+  ${media.mobileExtraSmall`
+    display: none;
+  `}
 `
 
 const Box = styled.div<{ isMobileFriendly: boolean }>`

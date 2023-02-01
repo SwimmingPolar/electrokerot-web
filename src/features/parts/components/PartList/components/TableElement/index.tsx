@@ -17,6 +17,9 @@ export const TableRowBox = styled.div`
     flex-shrink: 1;
     flex-grow: 1;
 
+    ${media.mobileSmall`
+      min-width: 100px;
+    `}
     ${media.tablet`
       min-width: 240px;
     `}
@@ -61,6 +64,12 @@ export const TableElementBox = styled.div`
   button:focus-visible {
     background-color: ${({ theme }) => theme.colors.primary200};
   }
+
+  ${media.mobileSmall`
+    .compare-checkbox {
+      display: none;
+    }
+  `}
 `
 
 type TableRowElementProps = {

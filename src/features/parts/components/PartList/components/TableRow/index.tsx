@@ -131,13 +131,20 @@ const TableContentGroup = styled.div`
   display: flex;
   flex-direction: row;
   width: 100%;
+  pointer-events: none;
 
   > div {
     flex: 1;
   }
 `
 
-const ContentBox = styled.div``
+const ContentBox = styled.div`
+  ${media.mobileSmall`
+    > div:nth-child(2) {
+      display: none;
+    }
+  `}
+`
 
 type TableRowProps = {
   headerNames: string[]
@@ -191,7 +198,7 @@ export const TableRow = ({
     return (
       <TableRowElement className="name">
         <div>
-          <div>{MemoizedCheckbox}</div>
+          <div className="compare-checkbox">{MemoizedCheckbox}</div>
           <span>
             <NavLink
               to={`/part/${nameOfThePart.replace(/\s/g, '%20')}`}

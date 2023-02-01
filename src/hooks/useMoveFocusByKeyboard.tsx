@@ -34,9 +34,17 @@ const findNextFocusableElement = (direction: 'next' | 'previous') => {
   return focusableElements[indexOfNextElement]
 }
 
-export const useArrowMoveFocus = () => {
+export const useMoveFocusByKeyboard = () => {
   useEffect(() => {
     const eventHandler = (event: KeyboardEvent) => {
+      const node = event.target as HTMLElement
+      // If inside an input, ignore the event
+      // Or else, the user will not be able navigate inside the input
+      // with the keyboard
+      if (node.nodeName === 'INPUT') {
+        return
+      }
+
       // move focus by arrow key only when focus ring is visible
       const isFocusVisible = document.querySelector('*:focus-visible')
       if (!isFocusVisible) {
@@ -45,17 +53,14 @@ export const useArrowMoveFocus = () => {
 
       // on ArrowLeft/ArrowUp, move focus to previous focusable element
       // on ArrowRight/ArrowDown, move focus to next focusable element
-      const keyList = ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight']
+      const keyList = ['ArrowLeft', 'ArrowRight']
       if (keyList.includes(event.key)) {
         // If the focus ring is visible, that means the user is using keyboard
         // to navigate the page. In this case, we don't want to scroll the page.
         // So we prevent the default behavior of the arrow keys.
         event.preventDefault()
 
-        const direction =
-          event.key === 'ArrowLeft' || event.key === 'ArrowUp'
-            ? 'previous'
-            : 'next'
+        const direction = event.key === 'ArrowLeft' ? 'previous' : 'next'
         const target = findNextFocusableElement(direction) as HTMLElement
         target?.focus()
         return

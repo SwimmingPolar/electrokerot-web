@@ -110,7 +110,7 @@ const ContentUpperBox = styled.div`
   a:focus-visible {
     outline: none;
     font-weight: bold;
-    z-index: ${ElementDepth.parts.buildSummary} !important;
+    z-index: ${ElementDepth.parts.buildSummary};
   }
 `
 const ContentLowerBox = styled.div`

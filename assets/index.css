@@ -144,10 +144,9 @@ a {
   outline: none;
 }
 
-/* add outline to nav links */
-.route-link:focus-visible {
+/* add outline to links */
+.a:focus-visible {
   outline: 2px solid black;
-  z-index: 10000000;
 }
 
 body {
