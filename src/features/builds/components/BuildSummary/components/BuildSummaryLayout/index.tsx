@@ -2,7 +2,7 @@ import CreateOutlinedIcon from '@mui/icons-material/CreateOutlined'
 import DeleteForeverOutlinedIcon from '@mui/icons-material/DeleteForeverOutlined'
 import FilterNoneOutlinedIcon from '@mui/icons-material/FilterNoneOutlined'
 import IconButton from '@mui/material/IconButton'
-import Tooltip from '@mui/material/Tooltip'
+import Tooltip, { tooltipClasses, TooltipProps } from '@mui/material/Tooltip'
 import { useMemo } from 'react'
 import styled from 'styled-components'
 import { media } from 'styles'
@@ -16,6 +16,19 @@ const Box = styled.div`
   ${media.desktopSmall`
     padding: 0 15px 15px 15px;
   `}
+
+  .MuiTooltip-tooltip {
+    background-color: red;
+    color: blue;
+  }
+  .MuiTooltip-tooltipArrow {
+    background-color: red;
+    color: blue;
+  }
+  .MuiTooltip-arrow {
+    background-color: red;
+    color: blue;
+  }
 `
 
 const Header = styled.div`
@@ -62,23 +75,61 @@ const Section = styled.section`
   gap: 7px;
 `
 
+const CustomTooltip = styled(({ className, ...props }: TooltipProps) => (
+  <Tooltip {...props} classes={{ popper: className }} />
+))(() => ({
+  [`& .${tooltipClasses.tooltip}`]: {
+    backgroundColor: 'black',
+    color: 'white',
+    fontSize: 11,
+    fontWeight: 'bold'
+  },
+  [`& .${tooltipClasses.arrow}`]: {
+    color: 'black'
+  }
+}))
+
 type BuildSummaryLayoutProps = {
   children: JSX.Element
 }
 
 export const BuildSummaryLayout = ({ children }: BuildSummaryLayoutProps) => {
-  const styles = useMemo(
+  const miniButtons = useMemo(
     () => ({
       edit: {
-        fontSize: '28px'
+        name: '이름 수정',
+        style: {
+          fontSize: '28px'
+        },
+        icon: CreateOutlinedIcon
       },
       delete: {
-        fontSize: '28px'
+        name: '견적 삭제',
+        style: {
+          fontSize: '28px'
+        },
+        icon: DeleteForeverOutlinedIcon
       },
       change: {
-        fontSize: '24px'
+        name: '견적 변경',
+        style: {
+          fontSize: '24px'
+        },
+        icon: FilterNoneOutlinedIcon
       }
     }),
+    []
+  )
+
+  const MiniButtons = useMemo(
+    () =>
+      Object.values(miniButtons).map(({ name, style, icon: Icon }, index) => (
+        <CustomTooltip title={name} arrow key={index}>
+          <IconButton tabIndex={0}>
+            <Icon sx={style} />
+          </IconButton>
+        </CustomTooltip>
+      )),
     []
   )
 
@@ -90,23 +141,7 @@ export const BuildSummaryLayout = ({ children }: BuildSummaryLayoutProps) => {
           <h3>Build #1</h3>
         </BuildTitleBox>
         {/* Buttons */}
-        <ButtonsBox>
-          <Tooltip title="이름 수정" arrow>
-            <IconButton tabIndex={0}>
-              <CreateOutlinedIcon sx={styles.edit} />
-            </IconButton>
-          </Tooltip>
-          <Tooltip title="견적 삭제" arrow>
-            <IconButton tabIndex={0}>
-              <DeleteForeverOutlinedIcon sx={styles.delete} />
-            </IconButton>
-          </Tooltip>
-          <Tooltip title="견적 변경" arrow>
-            <IconButton tabIndex={0}>
-              <FilterNoneOutlinedIcon sx={styles.change} />
-            </IconButton>
-          </Tooltip>
-        </ButtonsBox>
+        <ButtonsBox>{MiniButtons}</ButtonsBox>
       </Header>
       {/* Section */}
       <Section>{children}</Section>

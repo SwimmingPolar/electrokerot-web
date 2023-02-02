@@ -1,22 +1,22 @@
 import ArrowBackOutlinedIcon from '@mui/icons-material/ArrowBackOutlined'
 import CloseOutlinedIcon from '@mui/icons-material/CloseOutlined'
 import SearchOutlinedIcon from '@mui/icons-material/SearchOutlined'
-import { IconButton, Link } from '@mui/material'
+import { IconButton } from '@mui/material'
 import { useDispatch, useSelector } from 'app'
-import classNames from 'classnames'
 import {
   CategoryAndSearchHeight,
   NavbarHeight,
   PartsCategoriesType
 } from 'constant'
-import { selectFilters, setQuery } from 'features'
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { SearchResult, selectFilters, setQuery } from 'features'
+import { useDeviceDetect } from 'hooks'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import styled from 'styled-components'
-import { ElementDepth } from 'styles'
+import { ElementDepth, media } from 'styles'
 
-const DropShadowZIndex = ElementDepth.parts.navbar - 1
-const ContentZIndex = DropShadowZIndex + 1
+const ContentZIndex = ElementDepth.parts.searchResultLayover
+const DropShadowZIndex = ContentZIndex - 1
 
 const Box = styled.div`
   position: fixed;
@@ -48,45 +48,51 @@ const SearchBox = styled.div`
     flex-direction: row;
     background-color: ${({ theme }) => theme.colors.gray200};
     border-radius: 50px;
-    padding: 0 10px 0 15px;
+    padding: 0 0 0 15px;
     z-index: ${ContentZIndex};
 
     input[type='text'] {
       flex: 1;
+      width: 100px;
     }
+
     .icon-box {
       display: flex;
       flex-direction: row;
     }
+
+    ${media.mobileExtraSmall`
+      padding: 0 10px 0 15px;
+      .icon-box {
+        display: none;
+      }
+    `}
   }
 `
 const SearchResultBox = styled.div`
   background-color: ${({ theme }) => theme.colors.white};
   z-index: ${ContentZIndex};
 
-  > div {
+  .search-result-item {
     padding: 10px 15px;
     border-bottom: 1px solid ${({ theme }) => theme.colors.gray200};
 
     &:last-of-type {
       border-bottom: none;
     }
+
+    &.active {
+      background-color: ${({ theme }) => theme.colors.gray200};
+    }
+
+    a {
+      color: ${({ theme }) => theme.colors.primary};
+      text-decoration: none;
+      width: fit-content;
+    }
   }
 
   /* Style for search result items */
-  &.result {
-    .item {
-      a {
-        color: ${({ theme }) => theme.colors.primary};
-        text-decoration: none;
-        width: fit-content;
-      }
-    }
-
-    .item.active {
-      background-color: ${({ theme }) => theme.colors.gray200};
-    }
-  }
 `
 
 const Backdrop = styled.div`
@@ -97,11 +103,15 @@ const Backdrop = styled.div`
   z-index: ${DropShadowZIndex};
 `
 
-type InputLayoverProps = {
-  handleShow: (value: boolean) => void
+type MobileSearchInputProps = {
+  showInput: boolean
+  handleShowInput: (value: boolean) => void
 }
 
-export const InputLayover = ({ handleShow }: InputLayoverProps) => {
+export const MobileSearchInput = ({
+  showInput,
+  handleShowInput
+}: MobileSearchInputProps) => {
   const dispatch = useDispatch()
   const inputRef = useRef<HTMLInputElement>(null)
   const [keyboardSelection, setKeyboardSelection] = useState(-1)
@@ -135,15 +145,15 @@ export const InputLayover = ({ handleShow }: InputLayoverProps) => {
   }, [value, category])
   const handleSearch = useCallback(() => {
     setNewQuery()
-    handleShow(false)
+    handleShowInput(false)
   }, [setNewQuery])
   const handleKeyDown = useCallback(
     (event: React.KeyboardEvent) => {
       if (event.key === 'Escape') {
-        handleShow(false)
+        handleShowInput(false)
       } else if (event.key === 'Enter') {
         setNewQuery()
-        handleShow(false)
+        handleShowInput(false)
       } else if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
         // Prevent the default action just in case
         event.preventDefault()
@@ -184,27 +194,21 @@ export const InputLayover = ({ handleShow }: InputLayoverProps) => {
 
   // Handle backdrop click and back button click
   const handleCancel = useCallback(() => {
-    handleShow(false)
+    handleShowInput(false)
   }, [])
 
-  // Handle click on search result item
-  const handleItemClick = useCallback(
-    (event: React.MouseEvent<HTMLAnchorElement>) => {
-      const value =
-        (event.target as HTMLSpanElement).getAttribute('data-value') || ''
-      if (value.length === 0) {
-        return
-      }
-      dispatch(
-        setQuery({
-          category,
-          query: value
-        })
-      )
-      handleShow(false)
-    },
-    [category]
-  )
+  // Show the search result when the query is not empty and
+  // the data fetched is not empty
+  const shouldShowSearchResult = useMemo(() => {
+    const hasQuery = value.length > 0
+    return hasQuery && data.length > 0
+  }, [value, data])
+
+  // Handler for after the search like event is triggered
+  // In this case, we will hide the input
+  const handleAfterClick = useCallback(() => {
+    handleShowInput(false)
+  }, [])
 
   // Focus to the input when the component is mounted
   useEffect(() => {
@@ -243,21 +247,18 @@ export const InputLayover = ({ handleShow }: InputLayoverProps) => {
             </div>
           </div>
         </SearchBox>
-        <SearchResultBox className="result">
-          {data.map((item, index) => (
-            <div
-              key={index}
-              className={classNames(
-                'item',
-                index === keyboardSelection ? 'active' : null
-              )}
-            >
-              <Link onClick={handleItemClick}>
-                <span data-value={item}>{item}</span>
-              </Link>
-            </div>
-          ))}
-        </SearchResultBox>
+
+        {shouldShowSearchResult ? (
+          <SearchResultBox>
+            <SearchResult
+              category={category}
+              searchResults={data}
+              keyboardSelection={keyboardSelection}
+              setKeyboardSelection={setKeyboardSelection}
+              onAfterClick={handleAfterClick}
+            />
+          </SearchResultBox>
+        ) : null}
       </Content>
       <Backdrop onClick={handleCancel} />
     </Box>

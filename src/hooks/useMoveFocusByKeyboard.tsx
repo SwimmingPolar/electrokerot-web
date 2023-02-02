@@ -41,7 +41,7 @@ export const useMoveFocusByKeyboard = () => {
       // If inside an input, ignore the event
       // Or else, the user will not be able navigate inside the input
       // with the keyboard
-      if (node.nodeName === 'INPUT') {
+      if (node.nodeName === 'INPUT' && node.getAttribute('type') === 'text') {
         return
       }
 

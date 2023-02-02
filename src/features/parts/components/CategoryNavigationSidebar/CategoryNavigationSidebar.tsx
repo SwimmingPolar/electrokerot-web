@@ -17,7 +17,7 @@ const CategoriesWrapper = styled.div`
   background-color: ${({ theme }) => theme.colors.white};
   box-shadow: 0px 0px 4px 1px rgba(0, 0, 0, 0.25);
   /* Default depth to build summary as it will replace build summary on mobile view */
-  z-index: ${ElementDepth.parts.sidebar};
+  z-index: ${ElementDepth.parts.buildSummary};
   overflow: hidden;
   height: 100%;
   position: fixed;
@@ -31,6 +31,8 @@ const CategoriesWrapper = styled.div`
     top: ${NavbarHeight + 'px'};
     height: 100%;
     border-left: none;
+    /* On mobile, put the sidebar below the search result lay */
+    z-index: ${ElementDepth.parts.searchResultLayover - 1};
   `}
   ${media.tablet`
     width: ${CategoryNavigationSidebarWidth.tablet + 'px'};
@@ -51,7 +53,6 @@ const CategoriesWrapper = styled.div`
     bottom: 0;
     left: 0;
     right: 0;
-    z-index: ${ElementDepth.parts.sidebar};
     padding-right: 0 !important;
     margin-right: 0 !important;
   `}
