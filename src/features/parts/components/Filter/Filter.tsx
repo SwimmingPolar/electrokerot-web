@@ -1,17 +1,29 @@
 import {
+  CategoryAndSearchHeight,
+  CategoryNavigationSidebarWidth,
+  FilterHeight,
+  NavbarHeight
+} from 'constant'
+import {
   CloseChangeFiltersPopupType,
   MemoizedChangeFiltersPopupModal,
   ToggleChangeFiltersPopupType
 } from 'features'
-import { useEmptyRoute, useScrollbarLock } from 'hooks'
-import React, { KeyboardEvent, MouseEvent, useCallback, useState } from 'react'
+import { useDeviceDetect, useEmptyRoute, useScrollbarLock } from 'hooks'
+import React, {
+  KeyboardEvent,
+  MouseEvent,
+  useCallback,
+  useRef,
+  useState
+} from 'react'
 import styled from 'styled-components'
 import { ElementDepth, media } from 'styles'
 import { ContentLayout as Content } from '../ContentLayout/ContentLayout'
 import { MemoizedLowerBox as LowerBox } from './components/LowerBox'
 import { SelectedFilterItemsBoxClassName } from './components/SelectedFiltersList'
 import { MemoizedUpperBox as UpperBox } from './components/UpperBox'
-import { useLoadFilterJson } from './hooks'
+import { useHideOnScroll, useLoadFilterJson } from './hooks'
 
 const Box = styled(Content)`
   padding: 20px 20px 9px 20px;
@@ -19,8 +31,16 @@ const Box = styled(Content)`
   z-index: ${ElementDepth.parts.filter} !important;
 
   ${media.device('mobile', 'foldable')`
+  position: fixed;
     padding: 0 10px 10px 10px;
+    top: ${NavbarHeight + CategoryAndSearchHeight.mobile + 'px'};
+    width: calc(100% - ${CategoryNavigationSidebarWidth.mobile + 'px'});
+    height: ${FilterHeight.mobile + 'px'};
   `}
+`
+
+const BoxPadding = styled.div`
+  height: ${FilterHeight.mobile + 'px'};
 `
 
 type FilterType = {
@@ -87,13 +107,27 @@ export const Filter = ({
 
   useScrollbarLock(open)
 
+  const { isMobileFriendly } = useDeviceDetect()
+
+  const boxRef = useRef<HTMLDivElement>(null)
+  useHideOnScroll({
+    target: boxRef,
+    precedingHeaderHeight: CategoryAndSearchHeight.mobile,
+    trailingHeaderHeight: 0
+  })
+
   return (
     <>
       {hideFilter ? null : (
-        <Box {...rest}>
-          <UpperBox toggleChangeFiltersPopup={toggleChangeFiltersPopup} />
-          <LowerBox />
-        </Box>
+        <>
+          <Box {...rest} ref={boxRef}>
+            <UpperBox toggleChangeFiltersPopup={toggleChangeFiltersPopup} />
+            <LowerBox />
+          </Box>
+
+          {/* Render the padding element on mobile friendly devices to account for the fixed element */}
+          {isMobileFriendly ? <BoxPadding className="filter-padding" /> : null}
+        </>
       )}
       <MemoizedChangeFiltersPopupModal
         open={open}

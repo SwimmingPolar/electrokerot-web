@@ -217,3 +217,7 @@ export const CategoryAndSearchHeight = {
   desktopSmall: 72,
   desktopLarge: 72
 }
+
+export const FilterHeight = {
+  mobile: 49
+}

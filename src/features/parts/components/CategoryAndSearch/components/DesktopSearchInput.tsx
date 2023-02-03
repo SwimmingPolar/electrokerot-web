@@ -4,14 +4,7 @@ import { IconButton } from '@mui/material'
 import { useDispatch } from 'app'
 import { PartsCategoriesType } from 'constant'
 import { SearchResult, setQuery } from 'features'
-import {
-  useCallback,
-  useDeferredValue,
-  useEffect,
-  useMemo,
-  useRef,
-  useState
-} from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import styled from 'styled-components'
 import { ElementDepth, media } from 'styles'

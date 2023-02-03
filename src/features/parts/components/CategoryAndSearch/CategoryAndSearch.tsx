@@ -1,15 +1,23 @@
 import LayersOutlinedIcon from '@mui/icons-material/LayersOutlined'
 import SearchIcon from '@mui/icons-material/Search'
 import { IconButton } from '@mui/material'
-import { useDispatch, useSelector } from 'app'
+import { useSelector } from 'app'
 import {
   CategoryAndSearchHeight,
+  CategoryNavigationSidebarWidth,
+  FilterHeight,
+  NavbarHeight,
   PartsCategoriesKr,
   PartsCategoriesType
 } from 'constant'
-import { DesktopSearchInput, MobileSearchInput, selectFilters } from 'features'
+import {
+  DesktopSearchInput,
+  MobileSearchInput,
+  selectFilters,
+  useHideOnScroll
+} from 'features'
 import { useDeviceDetect } from 'hooks'
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import styled from 'styled-components'
 import { ElementDepth, media } from 'styles'
@@ -30,17 +38,21 @@ const Box = styled(Content)`
     width: fit-content;
   }
 
-  ${media.mobile`
-    position: relative;
-    z-index: ${ElementDepth.parts.navbar - 1} !important;
-  `}
-
   ${media.device('mobile', 'foldable')`
+    position: fixed;
+    z-index: ${ElementDepth.parts.navbar - 1} !important;
+    top: ${NavbarHeight + 'px'};
+    width: calc(100% - ${CategoryNavigationSidebarWidth.mobile + 'px'});
     height: ${CategoryAndSearchHeight.mobile + 'px'};
   `}
   ${media.tablet`
     height: ${CategoryAndSearchHeight.tablet + 'px'};
   `}
+`
+
+// Padding for mobile devices to account for the fixed element
+const BoxPadding = styled.div`
+  height: ${CategoryAndSearchHeight.mobile + 'px'};
 `
 
 const Category = styled.div`
@@ -136,7 +148,7 @@ export const CategoryAndSearch = ({
     setValue(query)
   }, [category, query])
 
-  const { isMobile } = useDeviceDetect()
+  const { isMobile, isMobileFriendly } = useDeviceDetect()
 
   const shouldShowMobileSearchInput = useMemo(() => {
     return isMobile && showInput
@@ -146,37 +158,48 @@ export const CategoryAndSearch = ({
     return !isMobile
   }, [isMobile])
 
+  const boxRef = useRef<HTMLDivElement>(null)
+  useHideOnScroll({
+    target: boxRef,
+    precedingHeaderHeight: 0,
+    trailingHeaderHeight: FilterHeight.mobile
+  })
+
   return (
-    <Box {...rest}>
-      <Category>
-        <h1>{PartsCategoriesKr[category].toUpperCase()}</h1>
-      </Category>
-      <ContentBox>
-        {/* Render show search input button on mobile only */}
-        {isMobile ? (
-          <IconButton tabIndex={0} onClick={handleShowInputClick}>
-            <SearchIcon className="icon search-icon" />
+    <>
+      <Box {...rest} ref={boxRef}>
+        <Category>
+          <h1>{PartsCategoriesKr[category].toUpperCase()}</h1>
+        </Category>
+        <ContentBox>
+          {/* Render show search input button on mobile only */}
+          {isMobile ? (
+            <IconButton tabIndex={0} onClick={handleShowInputClick}>
+              <SearchIcon className="icon search-icon" />
+            </IconButton>
+          ) : null}
+          {/* Search input for mobile */}
+          {shouldShowMobileSearchInput ? (
+            <MobileSearchInput
+              showInput={showInput}
+              handleShowInput={handleShowInput}
+            />
+          ) : null}
+          {/* Search input for desktop */}
+          {shouldShowDesktopSearchInput ? (
+            <DesktopSearchInput value={value} setValue={setValue} />
+          ) : null}
+          {/* Change filters popup toggle button */}
+          <IconButton tabIndex={0} onClick={handleModalOpen}>
+            <LayersOutlinedIcon className="icon filter-icon" />
           </IconButton>
-        ) : null}
+        </ContentBox>
+      </Box>
 
-        {/* Search input for mobile */}
-        {shouldShowMobileSearchInput ? (
-          <MobileSearchInput
-            showInput={showInput}
-            handleShowInput={handleShowInput}
-          />
-        ) : null}
-
-        {/* Search input for desktop */}
-        {shouldShowDesktopSearchInput ? (
-          <DesktopSearchInput value={value} setValue={setValue} />
-        ) : null}
-
-        {/* Change filters popup toggle button */}
-        <IconButton tabIndex={0} onClick={handleModalOpen}>
-          <LayersOutlinedIcon className="icon filter-icon" />
-        </IconButton>
-      </ContentBox>
-    </Box>
+      {/* Render the padding element on mobile friendly devices to account for the fixed element */}
+      {isMobileFriendly ? (
+        <BoxPadding className="category-and-search-padding" />
+      ) : null}
+    </>
   )
 }

@@ -1,4 +1,5 @@
 import { NavbarHeight, SidebarWidth } from 'constant'
+import { useStickyHeader } from 'lib'
 import styled from 'styled-components'
 import { DeviceList, ElementDepth, media } from 'styles'
 import Logo from './components/Logo'

@@ -42,6 +42,7 @@ const Content = styled.div`
   /* @Important: This is import for the Section component. Without this section, 'div' will not take up all the left space */
   flex: 1;
   flex-direction: column;
+  position: relative;
 
   ${media.mobile`
     gap: ${Gap.mobile};
