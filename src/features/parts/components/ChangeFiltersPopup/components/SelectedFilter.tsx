@@ -1,5 +1,5 @@
 import RestartAltIcon from '@mui/icons-material/RestartAlt'
-import { FilterDataType, SelectedFiltersType } from 'features'
+import { FilterDataType, SelectBoxHeight, SelectedFiltersType } from 'features'
 import { useMemo } from 'react'
 import styled from 'styled-components'
 
@@ -15,11 +15,18 @@ const SelectedFilterBox = styled.div`
     }
   }
 
+  /*  filter-name has padding-top to account for the select box height.
+      This overlaps with the filter-options box, resulting in the filter-options box being hidden
+      from the user's click. So, we need to set the z-index of the filter-name box to 1, and the
+      z-index of the filter-options box to 2.
+      But then, we we toggle focus ring the outline is under the filter-options box thus, we need to
+      have extra padding or margin for the filter-name's button
+  */
   .filter-name {
-    z-index: 2;
+    z-index: 1;
   }
   .filter-options {
-    z-index: 1;
+    z-index: 2;
   }
   button:focus-visible {
     outline: 2px solid black;
@@ -28,7 +35,8 @@ const SelectedFilterBox = styled.div`
 
 const SelectedFilterNameBox = styled.div<{ targetFilter: string | undefined }>`
   display: flex;
-  margin-top: ${({ targetFilter }) => (targetFilter ? '0' : '54px')};
+  padding-top: ${({ targetFilter }) =>
+    targetFilter ? '0' : `${SelectBoxHeight}px`};
 
   button {
     cursor: pointer;
@@ -36,6 +44,7 @@ const SelectedFilterNameBox = styled.div<{ targetFilter: string | undefined }>`
     display: flex;
     flex-direction: row;
     align-items: center;
+    padding: 2px 0;
 
     .icon {
       font-size: 22px;

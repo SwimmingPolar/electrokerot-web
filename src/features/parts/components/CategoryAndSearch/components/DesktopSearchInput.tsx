@@ -44,6 +44,9 @@ const Wrapper = styled.div`
   ${media.device('mobile', 'foldable')`
     width: 100%;
   `}
+  ${media.foldable`
+    margin-right: 0;
+  `}
   ${media.tablet`
     height: 42px;
     width: 400px;
@@ -237,6 +240,17 @@ export const DesktopSearchInput = ({
   // Use for keyboard selection
   const [keyboardSelection, setKeyboardSelection] = useState(-1)
 
+  // To show/hide erase query button conditionally based on the input value
+  // If it has a value, show the erase button or hide it
+  const hasQuery = useMemo(() => value?.length || 0, [value])
+
+  // Show the search result when
+  // the query is not empty and
+  // the focus is on the input
+  const shouldShowSearchResult = useMemo(() => {
+    return hasQuery && SearchResultData.length > 0 && forceShowResult
+  }, [hasQuery, SearchResultData, forceShowResult])
+
   // Focus handler
   const handleFocus = useCallback(() => {
     // Gain focus-within when the input is focused
@@ -253,11 +267,13 @@ export const DesktopSearchInput = ({
   const handleKeyDown = useCallback(
     (event: React.KeyboardEvent) => {
       if (event.key === 'Escape') {
-        // Loose focus on escape
+        // Loose focus on escape (This will close the search result)
         ;(event.currentTarget as HTMLInputElement).blur()
         // Restore the backup query
         setValue(backupQuery)
       } else if (event.key === 'Enter') {
+        // Close the search result
+        setForceShowResult(false)
         // Set the backup to the new query
         setBackupQuery(value)
         // Set the new query
@@ -268,6 +284,11 @@ export const DesktopSearchInput = ({
           })
         )
       } else if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
+        // If should not show the search result, then do nothing
+        if (!shouldShowSearchResult) {
+          return
+        }
+
         // Prevent the default action just in case
         event.preventDefault()
 
@@ -298,7 +319,7 @@ export const DesktopSearchInput = ({
         setValue(SearchResultData[newSelection])
       }
     },
-    [category, value, backupQuery]
+    [category, value, backupQuery, SearchResultData, shouldShowSearchResult]
   )
 
   const handleSearch = useCallback(() => {
@@ -317,17 +338,6 @@ export const DesktopSearchInput = ({
     inputRef.current?.focus()
   }, [])
 
-  // To show/hide erase query button conditionally based on the input value
-  // If it has a value, show the erase button or hide it
-  const hasQuery = useMemo(() => value?.length || 0, [value])
-
-  // Show the search result when
-  // the query is not empty and
-  // the focus is on the input
-  const shouldShowSearchResult = useMemo(() => {
-    return hasQuery && SearchResultData.length > 0 && forceShowResult
-  }, [hasQuery, SearchResultData, forceShowResult])
-
   // Handler for after the search like event is triggered.
   // In this case, loose the focus
   const handleAfterClick = useCallback(() => {
@@ -338,31 +348,6 @@ export const DesktopSearchInput = ({
   useEffect(() => {
     inputRef.current?.focus()
   }, [])
-
-  // @Todo: not sure if it's the best way to handle this
-  //        maybe refactor this later
-  // Remove focus when the user click outside the input and
-  // move focus back to the input when the user click the children
-  // of the wrapper
-  useEffect(() => {
-    // const handler = (event: MouseEvent) => {
-    //   const clickedElement = event.target as HTMLElement
-    //   const isClickedInside = wrapperRef.current?.contains(clickedElement)
-    //   if (isClickedInside) {
-    //     inputRef.current?.focus()
-    //   } else {
-    //     setHasFocusWithin(false)
-    //   }
-    // }
-    // window.addEventListener('click', handler)
-    // return () => {
-    //   window.removeEventListener('click', handler)
-    // }
-  }, [])
-
-  useEffect(() => {
-    console.log(forceShowResult)
-  }, [forceShowResult])
 
   return (
     <Wrapper ref={wrapperRef}>
@@ -391,12 +376,7 @@ export const DesktopSearchInput = ({
         </InputBox>
 
         {shouldShowSearchResult ? (
-          <SearchResultWrapper
-            className="search-result"
-            style={{
-              display: forceShowResult ? 'flex' : 'none !important;'
-            }}
-          >
+          <SearchResultWrapper className="search-result">
             <SearchResultBox>
               <SearchResult
                 category={category}

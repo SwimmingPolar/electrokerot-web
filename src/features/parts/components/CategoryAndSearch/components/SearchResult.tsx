@@ -3,7 +3,7 @@ import { useDispatch } from 'app'
 import classNames from 'classnames'
 import { PartsCategoriesType } from 'constant'
 import { setQuery } from 'features'
-import React, { CSSProperties, useCallback, useMemo } from 'react'
+import React, { useCallback, useMemo } from 'react'
 
 type UseSearchResultsProps = {
   category: PartsCategoriesType

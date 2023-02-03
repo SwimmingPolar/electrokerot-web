@@ -14,6 +14,8 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import styled from 'styled-components'
 import { media } from 'styles'
 
+export const SelectBoxHeight = 58
+
 const Box = styled.div`
   display: flex;
 
@@ -21,8 +23,6 @@ const Box = styled.div`
     outline: 2px solid black;
   }
 `
-
-export const SelectBoxHeight = 58
 
 const SelectBox = styled.div<{ device: DeviceType }>`
   display: flex;
@@ -44,9 +44,6 @@ const SelectBox = styled.div<{ device: DeviceType }>`
     font-size: 14px;
     font-weight: 700;
     font-family: ${({ theme }) => theme.fonts.secondary};
-  }
-
-  .select-item {
   }
 `
 

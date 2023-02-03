@@ -4,7 +4,7 @@ import styled from 'styled-components'
 import { SelectedFilter } from './SelectedFilter'
 
 const Box = styled.div`
-  padding: 20px 20px;
+  padding: 0 20px 20px 20px;
 `
 
 type FiltersListType = {
