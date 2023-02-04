@@ -24,8 +24,9 @@ export const useHideOnScroll = ({
   const { isMobileFriendly } = useDeviceDetect()
 
   useEffect(() => {
-    let lastScroll = document.documentElement.scrollTop
+    let originalTop = 0
     let height = 0
+    let lastScroll = document.documentElement.scrollTop
 
     const scrollHandler = () => {
       // If the target element is not mounted, return
@@ -37,38 +38,36 @@ export const useHideOnScroll = ({
       const offset = document.documentElement.scrollTop - lastScroll
 
       // Calculate the current matrix value for the y axis
-      const currentMatrix = getComputedStyle(target.current).getPropertyValue(
-        'transform'
-      )
+      const oldTop =
+        parseInt(getComputedStyle(target.current).top.replace('px', '')) || 0
 
-      // 'm41' and 'm42' are the x and y values of the matrix
-      const oldTranslateY = new DOMMatrixReadOnly(currentMatrix).m42
-      let newTranslateY = oldTranslateY - offset
+      let newTop = oldTop - offset
 
-      // Lowest possible value for the translateY
-      const lowestTranslateY =
-        0 - height - precedingHeaderHeight - trailingHeaderHeight
+      // Lowest possible value for the top position
+      const lowestTop =
+        originalTop - height - precedingHeaderHeight - trailingHeaderHeight
 
       // Handle out of range values
-      if (newTranslateY < lowestTranslateY) {
-        newTranslateY = lowestTranslateY
-      } else if (newTranslateY > 0) {
-        newTranslateY = 0
+      if (newTop < lowestTop) {
+        newTop = lowestTop
+      } else if (newTop > originalTop) {
+        newTop = originalTop
       }
 
       // Save the current scroll position
       lastScroll = document.documentElement.scrollTop
 
       // @Todo: Find a way to preserve the other values of the matrix
-      target.current.style.transform = `translateY(${newTranslateY}px)`
+      target.current.style.top = newTop + 'px'
     }
 
-    // Save the height of the target element on mount
+    // Save the height and the original top of the target element on mount
     height = target.current?.offsetHeight || 0
+    originalTop = target.current?.offsetTop || 0
 
     // Enable the hook on mobile friendly devices only
     if (isMobileFriendly) {
-      target.current && (target.current.style.transform = '')
+      target.current && (target.current.style.top = originalTop + 'px')
       window.addEventListener('scroll', scrollHandler)
     }
     return () => {
