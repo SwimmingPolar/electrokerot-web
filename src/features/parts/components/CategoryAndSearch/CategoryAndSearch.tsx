@@ -48,6 +48,9 @@ const Box = styled(Content)`
   ${media.tablet`
     height: ${CategoryAndSearchHeight.tablet + 'px'};
   `}
+  ${media.mobileExtraSmall`
+    width: 100%;
+  `}
 `
 
 // Padding for mobile devices to account for the fixed element
@@ -159,10 +162,23 @@ export const CategoryAndSearch = ({
   }, [isMobile])
 
   const boxRef = useRef<HTMLDivElement>(null)
+  // Indicator to know if there are any selected filters
+  const selectedFilters = useSelector(
+    state => selectFilters(state)?.[category]?.selectedFilters
+  )
+  const hasSelectedFilters = useMemo(
+    () => selectedFilters?.some(filter => filter.filterOptions.length > 0),
+    [selectedFilters]
+  )
+  const trailingHeaderHeight = useMemo(
+    () => (hasSelectedFilters ? FilterHeight.mobile : 0),
+    [hasSelectedFilters]
+  )
+
   useHideOnScroll({
     target: boxRef,
     precedingHeaderHeight: 0,
-    trailingHeaderHeight: FilterHeight.mobile
+    trailingHeaderHeight
   })
 
   return (
@@ -178,13 +194,6 @@ export const CategoryAndSearch = ({
               <SearchIcon className="icon search-icon" />
             </IconButton>
           ) : null}
-          {/* Search input for mobile */}
-          {shouldShowMobileSearchInput ? (
-            <MobileSearchInput
-              showInput={showInput}
-              handleShowInput={handleShowInput}
-            />
-          ) : null}
           {/* Search input for desktop */}
           {shouldShowDesktopSearchInput ? (
             <DesktopSearchInput value={value} setValue={setValue} />
@@ -194,6 +203,11 @@ export const CategoryAndSearch = ({
             <LayersOutlinedIcon className="icon filter-icon" />
           </IconButton>
         </ContentBox>
+
+        {/* Search input for mobile */}
+        {shouldShowMobileSearchInput ? (
+          <MobileSearchInput handleShowInput={handleShowInput} />
+        ) : null}
       </Box>
 
       {/* Render the padding element on mobile friendly devices to account for the fixed element */}

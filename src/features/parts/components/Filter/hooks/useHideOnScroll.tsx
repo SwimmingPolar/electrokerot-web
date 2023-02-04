@@ -1,4 +1,7 @@
+import { PartsCategoriesType } from 'constant'
+import { useDeviceDetect } from 'hooks'
 import React, { useEffect } from 'react'
+import { useParams } from 'react-router-dom'
 
 type UseHideOnScrollProps = {
   target: React.RefObject<HTMLDivElement>
@@ -17,10 +20,13 @@ export const useHideOnScroll = ({
   precedingHeaderHeight,
   trailingHeaderHeight
 }: UseHideOnScrollProps) => {
-  let lastScroll = document.documentElement.scrollTop
-  let height = 0
+  const { category } = useParams() as { category: PartsCategoriesType }
+  const { isMobileFriendly } = useDeviceDetect()
 
   useEffect(() => {
+    let lastScroll = document.documentElement.scrollTop
+    let height = 0
+
     const scrollHandler = () => {
       // If the target element is not mounted, return
       if (!target.current) {
@@ -60,9 +66,13 @@ export const useHideOnScroll = ({
     // Save the height of the target element on mount
     height = target.current?.offsetHeight || 0
 
-    window.addEventListener('scroll', scrollHandler)
+    // Enable the hook on mobile friendly devices only
+    if (isMobileFriendly) {
+      target.current && (target.current.style.transform = '')
+      window.addEventListener('scroll', scrollHandler)
+    }
     return () => {
       window.removeEventListener('scroll', scrollHandler)
     }
-  }, [])
+  }, [category, isMobileFriendly])
 }

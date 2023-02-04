@@ -9,7 +9,6 @@ import {
   PartsCategoriesType
 } from 'constant'
 import { SearchResult, selectFilters, setQuery } from 'features'
-import { useDeviceDetect } from 'hooks'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import styled from 'styled-components'
@@ -104,12 +103,10 @@ const Backdrop = styled.div`
 `
 
 type MobileSearchInputProps = {
-  showInput: boolean
   handleShowInput: (value: boolean) => void
 }
 
 export const MobileSearchInput = ({
-  showInput,
   handleShowInput
 }: MobileSearchInputProps) => {
   const dispatch = useDispatch()

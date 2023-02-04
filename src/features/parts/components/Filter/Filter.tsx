@@ -31,11 +31,14 @@ const Box = styled(Content)`
   z-index: ${ElementDepth.parts.filter} !important;
 
   ${media.device('mobile', 'foldable')`
-  position: fixed;
+     position: fixed;
     padding: 0 10px 10px 10px;
     top: ${NavbarHeight + CategoryAndSearchHeight.mobile + 'px'};
     width: calc(100% - ${CategoryNavigationSidebarWidth.mobile + 'px'});
     height: ${FilterHeight.mobile + 'px'};
+  `}
+  ${media.mobileExtraSmall`
+    width: 100%;
   `}
 `
 

@@ -337,11 +337,6 @@ export const DesktopSearchInput = ({
     setForceShowResult(false)
   }, [])
 
-  // Focus to the input when the component is mounted
-  useEffect(() => {
-    inputRef.current?.focus()
-  }, [])
-
   return (
     <Wrapper ref={wrapperRef}>
       <Box>

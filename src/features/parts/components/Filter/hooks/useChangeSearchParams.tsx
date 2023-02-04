@@ -238,15 +238,6 @@ export const useChangeSearchParams = () => {
       // 3rd render: Search params changes again because it's the new reference
       // 4th render: Search params changes again because it's the new reference
       // ...
-      // console.group()
-      // console.log('isEqual', isEqual)
-      // console.log(
-      //   'filters',
-      //   JSON.stringify(filtersFromUrl) === JSON.stringify(filtersFromStore)
-      // )
-      // console.log('page', page === (searchParams.get('page') || undefined))
-      // console.log('query', query === (searchParams.get('query') || undefined))
-      // console.groupEnd()
       if (isEqual) {
         return
       }
