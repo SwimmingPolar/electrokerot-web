@@ -14,6 +14,7 @@ import styled from 'styled-components'
 import { media } from 'styles'
 import { useLoadFilterJson } from '../Filter/hooks/useLoadFilterJson'
 import { FiltersList, PopupHeader, SideMenu } from './components'
+import structuredClone from '@ungap/structured-clone'
 
 const Box = styled.div<{
   targetFilter?: string

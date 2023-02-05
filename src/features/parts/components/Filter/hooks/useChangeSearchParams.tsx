@@ -9,6 +9,7 @@ import {
 import { useIsDirectAccess } from 'hooks'
 import { useEffect, useMemo } from 'react'
 import { useParams, useSearchParams } from 'react-router-dom'
+import structuredClone from '@ungap/structured-clone'
 
 const pruneSearchParams = (
   searchParams: URLSearchParams,

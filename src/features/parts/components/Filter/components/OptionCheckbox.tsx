@@ -47,7 +47,8 @@ export const OptionCheckbox = ({
           />
         }
       />
-      <div className="padding" />
+      {/* @Todo: remove this later if no issue occurs */}
+      {/* <div className="padding" /> */}
     </div>
   )
 }

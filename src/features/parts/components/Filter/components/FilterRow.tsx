@@ -33,6 +33,8 @@ const FilterRowBox = styled.div`
       display: flex;
       flex-direction: row;
       height: 24px;
+      user-select: none;
+
       /* default row count: 5 */
       width: calc(100% / ${RowCount.desktopLarge});
       /* 4 rows on desktopSmall and tablet */
@@ -107,6 +109,7 @@ const FilterNameBox = styled.div`
   display: flex;
   width: 135px;
   flex-direction: row;
+  user-select: none;
 
   button {
     cursor: pointer;
