@@ -13,7 +13,7 @@
     "test:integration:headless": "cypress run --e2e",
     "test:component": "cypress open --component --config watchForFileChanges=true",
     "test:integration": "cypress open --config watchForFileChanges=true",
-    "chromatic": "npx chromatic --project-token=efad5eab2675"
+    "chromatic": "npx chromatic --project-token=CHROMATIC_PROJECT_TOKEN"
   },
   "dependencies": {
     "@emotion/react": "^11.10.5",
