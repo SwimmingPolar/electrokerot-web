@@ -51,13 +51,10 @@ export const useMoveFocusByKeyboard = () => {
         return
       }
 
-      // on ArrowLeft/ArrowUp, move focus to previous focusable element
-      // on ArrowRight/ArrowDown, move focus to next focusable element
+      // on ArrowLeft, move focus to previous focusable element
+      // on ArrowRight, move focus to next focusable element
       const keyList = ['ArrowLeft', 'ArrowRight']
       if (keyList.includes(event.key)) {
-        // If the focus ring is visible, that means the user is using keyboard
-        // to navigate the page. In this case, we don't want to scroll the page.
-        // So we prevent the default behavior of the arrow keys.
         event.preventDefault()
 
         const direction = event.key === 'ArrowLeft' ? 'previous' : 'next'

@@ -1,4 +1,5 @@
 import { withProvider } from '../src/lib'
+import '../assets/index.css'
 
 export const decorators = [withProvider]
 

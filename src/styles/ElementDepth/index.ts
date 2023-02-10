@@ -3,8 +3,8 @@ export const ElementDepth = {
     // @Todo: 이거 왜 10000이지?
     //        navbar랑 sidebar 우선순위 뭐더라 까먹음zzz
     // General
+    sidebar: 10001,
     navbar: 10000,
-    sidebar: 10000 - 1,
     // Sidebar:
     buildSummary: 9500,
     // Content:

@@ -99,7 +99,7 @@ const overlapping_vendors = vendors.reduce(
   {}
 )
 
-// returns overall cost of
+// returns overall cost of the products selected
 const getTotalCost = productsList => {
   let productsCost = 0
   const usedVendors = new Set()

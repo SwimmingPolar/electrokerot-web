@@ -23,7 +23,7 @@ export const withRouter = ({ path, options }: WithRouterProps) => {
     return (
       <MemoryRouter {...options}>
         <Routes>
-          <Route path={path} element={<Story />} />
+          {path ? <Route path={path} element={<Story />} /> : null}
           <Route path="*" element={<Story />} />
         </Routes>
       </MemoryRouter>

@@ -25,8 +25,6 @@ actual router history:  / -> /login
                       current
 ----------------------------------------------
 
-
-
 Modal access directly via url:
 ----------------------------------------------
 user navigation:        /login -> /signup -> /
@@ -53,8 +51,6 @@ user navigation:        /signup -> /login -> /signup -> /
 
 actual router history:  /login -> /
                               current
-
-
 
 Mobile: sync the user navigation history with the actual router history
 ----------------------------------------------
