@@ -43,13 +43,18 @@
 //     vendors: [...]
 //  }
 // }
+
 // Preprocess
 // 1. Find product with lowest price and shipping cost (=lowest_offer)
 // 2. Filter product with
-//      price greater than lowest_offer (lowest_offer <= product_price)
-//      price that is not lowest and that cannot be packaged or bundled (has only 1 overlapping vendor when ordering more than 2 parts)
-// 3. .. the more preprocessing logics, the less time to find feasible combinations ...
-const p_price = [
+//    price greater than lowest_offer (lowest_offer <= product_price)
+//    price that is not lowest and that cannot be packaged or bundled (has only 1 overlapping vendor when ordering more than 2 parts)
+// 3. The more preprocessing logics, the less time to find feasible combinations ...
+
+// In real, these values are in one matrix
+// They can be separted into 3 matrixes like below or
+// just use as they are
+const product_price = [
   [3000, 3000, 3500, 5000, 4000, 3000, 3500, 2500],
   [3500, 4000, 4500, 5500, 5000, 3500, 4000, 3000],
   [2000, 3000, 2500, 4500, 3000, 2000, 2500, 1500],
@@ -73,7 +78,6 @@ const vendors = [
   [5, 1, 0, 6, 7],
   [5, 1, 0, 6, 7]
 ]
-
 const shipping_costs = {
   0: 0,
   1: 3000,
@@ -87,6 +91,13 @@ const shipping_costs = {
   9: 2500
 }
 
+// In the entire selected products list, which vendors sells the most products?
+// e.g. cpu: 'vendor A', 'vendor B', 'vendor C'
+//      memory: 'vendor A', 'vendor B'
+//      gpu: 'vendor A'
+// result: { 'vendor A': 3, 'vendor B': 2, 'vendor C': 1 }
+// Among the lowest products, selecting the product from 'vendor A' will
+// result in the lowest price
 const overlapping_vendors = vendors.reduce(
   (vendorList, parts) =>
     parts.reduce(
@@ -99,7 +110,7 @@ const overlapping_vendors = vendors.reduce(
   {}
 )
 
-// returns overall cost of the products selected
+// Returns the cost of the given products combination
 const getTotalCost = productsList => {
   let productsCost = 0
   const usedVendors = new Set()
@@ -115,74 +126,112 @@ const getTotalCost = productsList => {
   return productsCost + shippingCost
 }
 
-const getVendors = productsList => productsList.map(product => product[1])
-
-// filter products combinations with price greater than priceFilter
-const p_price_with_shipping = p_price.map((products, i) =>
+// Combine product price matrix and the shipping cost matrix
+const product_price_with_shipping = product_price.map((products, i) =>
   products.map((price, j) => +price + shipping_costs[vendors[i][j]])
 )
-const priceFilter = p_price_with_shipping.reduce((sum, products, i) => {
-  const lowestPrice = Math.min(...products)
-  const lowestPriceIndexes = products
-    .map((price, j) => (price === lowestPrice ? j : undefined))
-    .filter(e => e !== undefined)
-  const lowestPriceIndexesSortedByMostOverlappingVendors =
-    lowestPriceIndexes.sort((a, b) => {
-      const aOverlappingVendors = overlapping_vendors[vendors[i][a]]
-      const bOverlappingVendors = overlapping_vendors[vendors[i][b]]
-      return bOverlappingVendors - aOverlappingVendors
-    })
-  return sum + products[lowestPriceIndexesSortedByMostOverlappingVendors[0]]
-}, 0)
 
-// const priceFilter = p_price_with_shipping.reduce(
-//   (sum, products) => sum + Math.min(...products),
-//   0
-// )
+// Get rough estimate of the lowest price
+const priceFilter = product_price_with_shipping
 
+  // Iterate through each part category
+  .reduce((sum, products, i) => {
+    // Find the lowest price of the part category
+    const lowestPrice = Math.min(...products)
+    // Get the indexes of the products with lowest price
+    const lowestPriceIndexes = products
+      .map((price, j) => (price === lowestPrice ? j : undefined))
+      .filter(e => e !== undefined)
+
+    // Among the lowest price products, find the one with the most overlapping vendors
+    const lowestPriceIndexesSortedByMostOverlappingVendors =
+      lowestPriceIndexes.sort((a, b) => {
+        const aOverlappingVendors = overlapping_vendors[vendors[i][a]]
+        const bOverlappingVendors = overlapping_vendors[vendors[i][b]]
+        return bOverlappingVendors - aOverlappingVendors
+      })
+
+    // Pick product with the lowest price and the most overlapping vendors
+    return sum + products[lowestPriceIndexesSortedByMostOverlappingVendors[0]]
+  }, 0)
+
+// Variable to store all the combinations generated
 const generatedCombinations = []
+
+// Variable to tempoarily store the selected parts just like a cart
 const selectedParts = []
-function selectPart(currentPart = 0) {
-  if (p_price.length <= currentPart) {
+
+// Core: Recursive function to find all the combinations
+function selectPart(currentPart = 0, currentCombinationsPrice = 0) {
+  if (currentCombinationsPrice > priceFilter) return
+
+  if (product_price.length <= currentPart) {
+    // This takes more time than the below, why?
+    // if (currentCombinationsPrice <= priceFilter) {
     const totalCost = getTotalCost(selectedParts)
     if (totalCost <= priceFilter) {
       generatedCombinations.push([...selectedParts])
     }
     return
   }
-  for (let i = 0; i < p_price[currentPart].length; i++) {
-    selectedParts.push([p_price[currentPart][i], vendors[currentPart][i]])
-    selectPart(currentPart + 1)
+  for (let i = 0; i < product_price[currentPart].length; i++) {
+    const currentPartPrice = product_price[currentPart][i]
+    const currentPartVendor = vendors[currentPart][i]
+
+    if (currentCombinationsPrice + currentPartPrice > priceFilter) {
+      continue
+    }
+
+    selectedParts.push([currentPartPrice, currentPartVendor])
+    selectPart(currentPart + 1, currentCombinationsPrice + currentPartPrice)
     selectedParts.pop()
   }
 }
 
-const totalOperation = p_price.reduce(
+// Get the total operations needed to find all the combinations
+const totalOperation = product_price.reduce(
   (total, products) => total * products.length,
   1
 )
 console.log(
-  `Total operation: ${String(totalOperation).replace(
+  `Total operations: ${String(totalOperation).replace(
     /\B(?=(\d{3})+(?!\d))/g,
     ','
   )}`
 )
-console.time()
-// p_price: product price matrix
-selectPart()
-console.timeEnd()
-console.log(generatedCombinations.length)
 
-const getFeasibleLists = result =>
-  result.filter(e => getTotalCost(e) <= priceFilter)
-const sortLists = list =>
-  list.sort((a, b) => {
-    return getTotalCost(a) - getTotalCost(b)
-  })
+// Get the lowest price combination
+function getLowestprice() {
+  // Measuring the time of calcuation
+  const start = performance.now()
+  selectPart()
+  const end = performance.now()
+  console.log('Total time consumed: ', ((end - start) / 1000).toFixed(2), 's')
 
-const ff = getFeasibleLists(generatedCombinations)
-const ss = sortLists(ff)
-const res = ss.map(list => getTotalCost(list))
+  // Length of all the combinations
+  console.log('Total generated combinations: ', generatedCombinations.length)
 
-console.log(ss[0])
-console.log(res[0])
+  // Get the feasible combinations
+  const getFeasibleLists = result =>
+    result.filter(e => getTotalCost(e) <= priceFilter)
+  const feasibleCombinations = getFeasibleLists(generatedCombinations)
+
+  // Sort the combinations in ascending order of total cost
+  const sortLists = list =>
+    list.sort((a, b) => {
+      return getTotalCost(a) - getTotalCost(b)
+    })
+  const sortedCombinations = sortLists(feasibleCombinations)
+
+  // Convert the combinations to numbers list
+  const result = sortedCombinations.map(list => getTotalCost(list))
+
+  // Print the result
+  // Lowest price combinations
+  console.log('Lowest price combinations: ')
+  console.log(sortedCombinations[0])
+  // Lowest price
+  console.log('Lowest price combinations: ', result[0])
+}
+
+getLowestprice()
