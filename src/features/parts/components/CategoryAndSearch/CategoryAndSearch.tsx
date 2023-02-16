@@ -175,11 +175,11 @@ export const CategoryAndSearch = ({
     [hasSelectedFilters]
   )
 
-  useHideOnScroll({
-    target: boxRef,
-    precedingHeaderHeight: 0,
-    trailingHeaderHeight
-  })
+  // useHideOnScroll({
+  //   target: boxRef,
+  //   precedingHeaderHeight: 0,
+  //   trailingHeaderHeight
+  // })
 
   return (
     <>

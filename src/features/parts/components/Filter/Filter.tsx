@@ -113,11 +113,11 @@ export const Filter = ({
   const { isMobileFriendly } = useDeviceDetect()
 
   const boxRef = useRef<HTMLDivElement>(null)
-  useHideOnScroll({
-    target: boxRef,
-    precedingHeaderHeight: CategoryAndSearchHeight.mobile,
-    trailingHeaderHeight: 0
-  })
+  // useHideOnScroll({
+  //   target: boxRef,
+  //   precedingHeaderHeight: CategoryAndSearchHeight.mobile,
+  //   trailingHeaderHeight: 0
+  // })
 
   return (
     <>
