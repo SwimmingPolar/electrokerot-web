@@ -9,6 +9,7 @@
     "plugin:react/recommended",
     "plugin:@typescript-eslint/recommended",
     "prettier",
+    "plugin:storybook/recommended",
     "plugin:cypress/recommended"
   ],
   "parser": "@typescript-eslint/parser",

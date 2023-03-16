@@ -40,6 +40,9 @@ const CategoriesWrapper = styled.div`
     right: 0;
     bottom: 0;
     height: calc(100vh - ${NavbarHeight + 'px'});
+
+    /* On tablet, put the sidebar below the navbar */
+    z-index: ${ElementDepth.parts.navbar - 1};
   `}
   ${media.desktopSmall`
     width: ${CategoryNavigationSidebarWidth.desktopSmall + 'px'};
